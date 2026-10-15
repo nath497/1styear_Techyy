@@ -15,11 +15,26 @@ export default async function TutorProfilePage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/tutor-profile");
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", user.id)
     .maybeSingle();
+
+  // If we can't tell who this is, say so — don't guess "learner".
+  if (profileError || !profile) {
+    if (profileError) console.error("Tutor profile: could not load account", profileError);
+    return (
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-10">
+        <Card className="border-destructive">
+          <CardHeader>
+            <CardTitle className="text-2xl">We couldn&apos;t load your account</CardTitle>
+            <CardDescription>Please refresh the page in a moment.</CardDescription>
+          </CardHeader>
+        </Card>
+      </main>
+    );
+  }
 
   // Learners see a friendly message instead of the form. (The database
   // would refuse to save a learner's listing anyway.)

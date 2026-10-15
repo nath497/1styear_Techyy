@@ -69,7 +69,7 @@ with it. You will be asked.
 4. Add the **same two variables** in Vercel: **Settings → Environment
    Variables**, then redeploy. Forgetting this step is the single most
    common reason the local app works and the live one does not.
-5. Read `supabase/sql/001-example.sql`. It explains Row Level Security,
+5. Read `supabase/sql/002-profiles-and-tutor-profiles.sql`. It shows Row Level Security,
    which is what stops strangers reading your data.
 
 ## The commands

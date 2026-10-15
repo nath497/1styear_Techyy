@@ -7,10 +7,13 @@ import { LEVELS } from "@/lib/tutormatch";
 export type AuthFormState = { error?: string; message?: string };
 
 // Only allow redirects to pages on this site (e.g. "/tutors"), never to
-// another website.
-function safeNext(value: FormDataEntryValue | null) {
+// another website. Browsers treat a backslash like "/", so "/\evil.com"
+// would leave the site too — reject any backslash.
+function safeNext(value: FormDataEntryValue | null, fallback = "/tutors") {
   const next = typeof value === "string" ? value : "";
-  return next.startsWith("/") && !next.startsWith("//") ? next : "/tutors";
+  return next.startsWith("/") && !next.startsWith("//") && !next.includes("\\")
+    ? next
+    : fallback;
 }
 
 // Turn Supabase's technical messages into friendly ones.
@@ -53,7 +56,8 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
     return { message: "Account created! Check your email for a confirmation link, then log in." };
   }
 
-  redirect(safeNext(formData.get("next")));
+  // New tutors go straight to their profile, unless a page asked to come back.
+  redirect(safeNext(formData.get("next"), role === "tutor" ? "/tutor-profile" : "/tutors"));
 }
 
 export async function logIn(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
