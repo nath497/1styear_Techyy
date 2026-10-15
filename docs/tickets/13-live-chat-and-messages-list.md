@@ -11,14 +11,14 @@ any. Messages is in the sidebar and phone menu for learners and tutors.
 
 **Blocked by:** 12
 
-**Status:** todo
+**Status:** done
 
-- [ ] Messages are switched on for Supabase Realtime from a numbered SQL file; no new keys or environment variables
-- [ ] Both people see a new message appear without refreshing; people outside the conversation never receive it
-- [ ] The database keeps each conversation's last-message time up to date; no one can change it by hand
-- [ ] The Messages page lists only my conversations that have messages, newest first, with loading, empty and error states
-- [ ] Desktop shows the list and the open chat side by side; phones show one at a time with a back arrow
-- [ ] Both dashboards show my latest chats, only when I have at least one
-- [ ] Messages is in the sidebar and phone menu for both roles (no longer greyed out)
-- [ ] Works on a phone
-- [ ] Works on the live URL
+- [x] Messages are switched on for Supabase Realtime from a numbered SQL file; no new keys or environment variables
+- [x] Both people see a new message appear without refreshing; people outside the conversation never receive it
+- [x] The database keeps each conversation's last-message time up to date; no one can change it by hand
+- [x] The Messages page lists only my conversations that have messages, newest first, with loading, empty and error states
+- [x] Desktop shows the list and the open chat side by side; phones show one at a time with a back arrow
+- [x] Both dashboards show my latest chats, only when I have at least one
+- [x] Messages is in the sidebar and phone menu for both roles (no longer greyed out)
+- [x] Works on a phone
+- [x] Works on the live URL
