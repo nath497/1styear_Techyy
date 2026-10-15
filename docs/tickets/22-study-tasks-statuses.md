@@ -10,15 +10,15 @@ policies.
 
 **Blocked by:** 21
 
-**Status:** todo
+**Status:** done
 
-- [ ] SQL 017 runs with no errors; study_activities, learning_goals and
+- [x] SQL 017 runs with no errors; study_activities, learning_goals and
       session_notes show RLS enabled
-- [ ] A task moves To Do → In Progress → Completed, and back
-- [ ] In Progress tasks stay in their Overdue / Today / Upcoming group,
+- [x] A task moves To Do → In Progress → Completed, and back
+- [x] In Progress tasks stay in their Overdue / Today / Upcoming group,
       marked clearly
-- [ ] The priority filter works with the subject and status filters,
+- [x] The priority filter works with the subject and status filters,
       with a way to reset
-- [ ] The Overview and dashboard still count tasks correctly
-- [ ] A second learner and a tutor still can't see or change the tasks
-- [ ] Works on the live URL, on a phone
+- [x] The Overview and dashboard still count tasks correctly
+- [x] A second learner and a tutor still can't see or change the tasks
+- [x] Works on the live URL, on a phone
