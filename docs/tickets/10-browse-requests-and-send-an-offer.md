@@ -8,14 +8,14 @@ The tutors' Help Requests link in the navigation goes live.
 
 **Blocked by:** 09
 
-**Status:** todo
+**Status:** done
 
-- [ ] `help_offers` is created from a numbered SQL file with RLS ON; no one can edit or delete offers
-- [ ] The board shows only Open requests, to logged-in tutors only; each card shows subject, level, title, budget, mode, preferred time, the learner's first name and the offer count
-- [ ] Subject and level filters work, with an empty state when nothing matches
-- [ ] Only tutors with a tutor profile can offer, only for themselves, only on Open requests, and at most once per request (enforced by the database)
-- [ ] Learners can't see the board or other learners' requests
-- [ ] My help requests (ticket 09) now shows each request's offer count
-- [ ] Help Requests is no longer greyed out for tutors
-- [ ] Works on a phone
-- [ ] Works on the live URL
+- [x] `help_offers` is created from a numbered SQL file with RLS ON; no one can edit or delete offers
+- [x] The board shows only Open requests, to logged-in tutors only; each card shows subject, level, title, budget, mode, preferred time, the learner's first name and the offer count
+- [x] Subject and level filters work, with an empty state when nothing matches
+- [x] Only tutors with a tutor profile can offer, only for themselves, only on Open requests, and at most once per request (enforced by the database)
+- [x] Learners can't see the board or other learners' requests
+- [x] My help requests (ticket 09) now shows each request's offer count
+- [x] Help Requests is no longer greyed out for tutors
+- [x] Works on a phone
+- [x] Works on the live URL
