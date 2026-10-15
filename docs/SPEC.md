@@ -1,11 +1,11 @@
 # Spec: TutorMatch
 
 ## Problem
-I'm a Senior High or college **learner** stuck on a subject before a
-quiz or exam. Classmates are busy, YouTube doesn't answer my exact
-question, and paid tutoring (around ₱499/hour at one provider) is more
-than I can spend. I don't know which fellow students could help me, or
-what they would charge.
+I'm a college **learner** stuck on Math, like Mathematics in the Modern
+World. When I'm stuck, I study on my own, search online, or ask a
+senior or friend I know, but they're often busy and I'm still stuck.
+I'd pay a fellow student to explain it, but only within my budget
+(₱100–₱150 a session).
 
 ## Solution
 TutorMatch shows me student **tutors** who teach my subject, at my
@@ -16,9 +16,11 @@ the session is completed, TutorMatch records a transparent 10%
 **commission** so everyone can see how the price is split.
 
 ## The user
-The **learner**: a Senior High or college student in the Philippines
-with a limited tutoring budget. Tutors are supporting users — they need
-a profile and must respond to requests — but every screen exists to get
+The **learner**: a college student in the Philippines like Josh,
+Jamaica or Angel, struggling with a subject, with a tutoring budget of
+around ₱100–₱150. Senior High learners can also use the app, but the
+demo is built around Josh. Tutors are supporting users — they need a
+profile and must respond to requests — but every screen exists to get
 the learner from "stuck" to "session accepted".
 
 ## User stories
@@ -52,7 +54,7 @@ the learner from "stuck" to "session accepted".
    availability as text (e.g. "Weekdays after 4pm"). Create and edit.
 5. **Find a Tutor (BudgetMatch)** — learner picks subject, level,
    budget per session and mode; matching tutor cards each show a "why
-   it matches" line (e.g. "₱150 ≤ your ₱200 budget · teaches
+   it matches" line (e.g. "₱100 ≤ your ₱100 budget · teaches
    Mathematics · face-to-face"). Empty state: "No tutors within ₱X yet —
    try raising your budget." Browsing works without logging in.
 6. **Tutor page** — full tutor profile plus a **Request a Session**
