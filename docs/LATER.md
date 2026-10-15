@@ -70,3 +70,11 @@ stretch goal if there is time.
   not today's free text.
 - **Session Preparation Notes, Post-Session Reflection, Study Buddy
   Path, Achievement Milestones.**
+
+## Parked from the Help Request Board spec (2026-10-15)
+
+- **Custom offer prices** — offers use the tutor's listed rate for now.
+- **Editing a help request** — cancel and post a new one instead.
+- **Help Request Match Score** — offers show a plain budget tag instead.
+- **Tutors withdrawing an offer.**
+- **Closing a help request automatically** when the session is booked.

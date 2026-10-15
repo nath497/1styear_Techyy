@@ -159,8 +159,76 @@ On the **live Vercel URL**, on a phone:
 - [x] Every table shows RLS enabled in the Supabase Table Editor.
 - [x] At least 2–3 real classmates have tutor profiles (no fake data).
 
+## Stretch goal: Help Request Board
+
+Built only after everything above works on the live URL. A **help
+request** is a learner describing what they need help with, so tutors
+can come to them. A **help offer** is a tutor's reply. Choosing an offer
+never books anything — the learner then sends a normal **session
+request**, so pricing, statuses and commission stay exactly as above.
+
+### Stretch user stories
+8. As a learner, I want to post what I need help with (subject, level,
+   budget, mode and preferred time), so that tutors can come to me.
+9. As a tutor, I want to browse open help requests and make an offer,
+   so that I can find learners who need what I teach.
+10. As a learner, I want to compare the offers on my request and choose
+    one, so that I can then request a session with that tutor.
+
+### Stretch screens
+9. **Help Request Board** (logged-in tutors) — open help requests,
+   newest first, filter by subject and level. Each card: subject,
+   level, title, budget, mode, preferred time, the learner's first name
+   and the number of offers.
+10. **Post a help request** (learners) — title, details, subject,
+    level, budget per session in ₱, mode, preferred days/times (text).
+11. **My help requests** (learners) — my requests with status (Open /
+    Matched / Cancelled) and offer count; **Cancel** while Open.
+12. **Help request page** — the learner who posted it sees every offer:
+    tutor name, the tutor's listed rate with a "within your budget" or
+    "₱X over your budget" tag, proposed time and message, and **Choose
+    this tutor** (marks the request Matched and links to that tutor's
+    page to send a session request). A tutor sees the request and a
+    **Send an offer** form (proposed time + short message), or "Your
+    offer" if they already made one.
+
+The navigation shows **Request Help** to learners and **Help Requests**
+to tutors.
+
+### Stretch data
+**help_requests** — what a learner needs help with.
+- Columns: id, learner_id, title, details, subject, level,
+  budget_centavos (whole number, greater than 0), mode (`online` or
+  `face_to_face`), preferred_time (text), status (`open`, `matched`,
+  `cancelled`), chosen_offer_id, created_at, updated_at.
+- Read: the learner who posted it; any logged-in tutor while it is
+  `open`. Once `matched` or `cancelled`, only the learner and the tutors
+  who made an offer on it.
+- Create: a logged-in learner, for themselves only, always as `open`.
+- Update: only the learner who posted it, and only `open → cancelled`,
+  or `open → matched` by choosing an offer made on that request.
+- No one can delete help requests.
+
+**help_offers** — a tutor's reply to a help request.
+- Columns: id, request_id, tutor_id, message, proposed_time (text),
+  created_at.
+- An offer has no price of its own: it shows the tutor's current listed
+  rate, because that is what a session request will cost.
+- Read: the tutor who wrote it, and the learner who owns the request.
+- Create: a logged-in tutor with a tutor profile, for themselves only,
+  only on an `open` request, at most one offer per tutor per request.
+- No one can edit or delete offers.
+
+### Stretch: done for the demo
+- [ ] A learner posts a help request; it appears on the tutors' board.
+- [ ] A tutor makes an offer; the learner sees it with the right
+      budget tag.
+- [ ] The learner chooses the offer (request shows Matched) and then
+      sends a session request to that tutor.
+- [ ] A second learner cannot see the first learner's help requests or
+      offers, and help_requests / help_offers show RLS enabled.
+
 ## Out of scope
-- Help Request Board with tutor offers (first stretch goal)
 - Subscriptions, pricing page, TutorMatch Plus / Tutor Pro
 - Real payments, collection and payouts
 - Study Planner, LearnTrack
