@@ -1,7 +1,8 @@
 -- 017 — My Learning Space (Tickets 22–26)
 --
 -- Run in: Supabase -> SQL Editor -> New query -> paste -> Run
--- Needs 002, 003, 006 and 015 first. Safe to run more than once.
+-- Needs 002, 003 and 015 first. Safe to run more than once. It needs no
+-- Postgres add-ons.
 --
 -- It only ADDS things and WIDENS one rule; no data is deleted:
 --   1. study_tasks: a new "In Progress" status, and an optional link to
@@ -181,17 +182,6 @@ grant insert (goal_id), update (goal_id) on public.study_tasks to authenticated;
 
 -- 3. study_activities: planned study time ----------------------------------
 
--- The time an activity takes up on its date. (A rule can't do this maths
--- directly, so it lives in a function — like session_slot in 006.)
-create or replace function public.activity_slot(activity_date date, start_time time, end_time time)
-returns tsrange
-language sql
-immutable
-set search_path = ''
-as $$
-  select tsrange(activity_date + start_time, activity_date + end_time, '[)');
-$$;
-
 create table if not exists public.study_activities (
   id            uuid primary key default gen_random_uuid(),
   learner_id    uuid not null default auth.uid() references public.profiles (id) on delete cascade,
@@ -210,26 +200,20 @@ create table if not exists public.study_activities (
   constraint study_activities_end_after_start check (end_time > start_time)
 );
 
--- Two of a learner's own activities can't overlap. (Back-to-back is fine:
--- 4:00–5:00 and 5:00–6:00 don't clash.)
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'study_activities_no_overlap') then
-    alter table public.study_activities
-      add constraint study_activities_no_overlap
-      exclude using gist (
-        learner_id with =,
-        public.activity_slot(activity_date, start_time, end_time) with &&
-      );
-  end if;
-end;
-$$;
+create index if not exists study_activities_learner_date_idx
+  on public.study_activities (learner_id, activity_date);
 
+-- Sets the owner and dates, and refuses an activity that overlaps one of
+-- the learner's own activities on the same date. (Back-to-back is fine:
+-- 4:00–5:00 and 5:00–6:00 don't clash.) Row Level Security means this only
+-- ever sees the learner's own activities.
 create or replace function public.prepare_study_activity()
 returns trigger
 language plpgsql
 set search_path = ''
 as $$
+declare
+  clash text;
 begin
   if tg_op = 'INSERT' then
     new.learner_id := auth.uid();
@@ -239,6 +223,22 @@ begin
     new.created_at := old.created_at;
   end if;
   new.updated_at := now();
+
+  select a.title into clash
+  from public.study_activities a
+  where a.learner_id = new.learner_id
+    and a.id <> new.id
+    and a.activity_date = new.activity_date
+    and a.start_time < new.end_time
+    and new.start_time < a.end_time
+  limit 1;
+  if clash is not null then
+    raise exception using
+      errcode = 'exclusion_violation',
+      message = 'This clashes with another study activity.',
+      detail = clash;
+  end if;
+
   return new;
 end;
 $$;
