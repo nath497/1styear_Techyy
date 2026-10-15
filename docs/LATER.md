@@ -26,7 +26,7 @@ search on Find a Tutor.
 - **Forgot-password / password-reset flow.**
 - **Dashboard charts** — earnings graphs and learning goals (the
   dashboards show counts and lists only).
-- **Chat, messaging, video calls.**
+- **Video calls.** (Text chat is in the spec as a stretch goal.)
 - **Email confirmation on sign-up** — turned off for the demo because
   Supabase's built-in email has a low hourly limit. Turn it back on
   (with a real email provider) before real users.
@@ -54,7 +54,6 @@ Everything below needs new tables and a spec update first
 stretch goal, has since been built.)
 
 - **Help Request Match Score** (the board itself is built).
-- **Chatbox / messaging** — needs Supabase Realtime and careful RLS.
 - **LearnTrack** — goals, topics, confidence, Learning Gap Finder,
   Next Best Study Step, progress over time.
 - **Study Planner** — tasks, due dates, priorities, Smart Study
@@ -74,3 +73,11 @@ stretch goal, has since been built.)
 - **Help Request Match Score** — offers show a plain budget tag instead.
 - **Tutors withdrawing an offer.**
 - **Closing a help request automatically** when the session is booked.
+
+## Parked from the Chat spec (2026-10-15)
+
+- **Blocking and reporting users** — needs moderation tools to be safe.
+- **Read receipts and typing indicators.**
+- **Attachments** (photos, files).
+- **Group chats.**
+- **Message notifications** (emails, push) when you're not on the page.

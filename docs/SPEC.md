@@ -268,6 +268,64 @@ no new tables, no invented numbers.
 - Logged-out visitors are sent to log in; each role can only open its
   own dashboard (checked on the server from the database role).
 
+## Stretch goal: Chat
+
+Learners and tutors can message each other inside TutorMatch, so they
+can ask questions before a **session request** without sharing phone
+numbers or emails. Text only. Messages appear without refreshing.
+
+### Chat user stories
+11. As a learner, I want to message a tutor before I request a session,
+    so that I can check they can help with my topic.
+12. As a tutor, I want to message a learner about their help request,
+    so that I can understand what they need before they choose.
+
+### Chat screens
+13. **Messages** (learners and tutors) — my conversations, newest
+    activity first: the other person's name, the start of the latest
+    message and when it was sent; an empty state when there are none.
+    **Messages** is in the sidebar and phone menu for both roles.
+14. **Conversation** — messages oldest first, mine on one side, each
+    with the sender's first name and time; a box to send a message (up
+    to 1000 characters). New messages appear without refreshing. If a
+    message fails to send, it says so and lets you try again.
+15. A **"Message [tutor]"** button on each tutor page, for logged-in
+    learners — opens the conversation, or starts one.
+16. A **"Message [learner]"** button on a help request page, for a tutor
+    who made an offer on it.
+
+Only display names are shown — never emails or phone numbers.
+
+### Chat data
+**conversations** — one per learner–tutor pair.
+- Columns: id, learner_id, tutor_id, created_at, last_message_at. Only
+  one conversation per learner–tutor pair.
+- Read: only the learner and the tutor in it.
+- Create: a logged-in learner, for themselves, with any tutor who has a
+  tutor profile; or a logged-in tutor, for themselves, only with a
+  learner whose help request they made an offer on.
+- Update: only `last_message_at`, set by the database when a message
+  arrives. No one can delete conversations.
+
+**messages** — what people say.
+- Columns: id, conversation_id, sender_id, body (1–1000 characters,
+  not blank), created_at.
+- Read: only the two people in that conversation.
+- Create: only someone in that conversation, and the sender is always
+  the logged-in user (set by the database), so no one can send as
+  someone else.
+- No one can edit or delete messages.
+- Messages are switched on for Supabase Realtime so they appear without
+  refreshing; Row Level Security still decides who receives each one.
+
+### Chat: done for the demo
+- [ ] A learner messages a tutor from the tutor page; the tutor replies;
+      both see the messages appear without refreshing.
+- [ ] A tutor who offered on a help request messages that learner.
+- [ ] A third account cannot open or send to their conversation.
+- [ ] No one can send a message as someone else; conversations and
+      messages show RLS enabled.
+
 ## Out of scope
 - Subscriptions, pricing page, TutorMatch Plus / Tutor Pro
 - Real payments, collection and payouts
@@ -278,4 +336,4 @@ no new tables, no invented numbers.
 - Forgot-password / password-reset flow
 - Email confirmation on sign-up (off for the demo)
 - Dashboard charts and earnings graphs
-- Chat, messaging, video calls
+- Video calls
