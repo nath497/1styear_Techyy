@@ -220,12 +220,12 @@ to tutors.
 - No one can edit or delete offers.
 
 ### Stretch: done for the demo
-- [ ] A learner posts a help request; it appears on the tutors' board.
-- [ ] A tutor makes an offer; the learner sees it with the right
+- [x] A learner posts a help request; it appears on the tutors' board.
+- [x] A tutor makes an offer; the learner sees it with the right
       budget tag.
-- [ ] The learner chooses the offer (request shows Matched) and then
+- [x] The learner chooses the offer (request shows Matched) and then
       sends a session request to that tutor.
-- [ ] A second learner cannot see the first learner's help requests or
+- [x] A second learner cannot see the first learner's help requests or
       offers, and help_requests / help_offers show RLS enabled.
 
 ## Out of scope
