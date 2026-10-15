@@ -427,12 +427,12 @@ Sessions in the planner are read from **bookings** (the learner's own
 Accepted ones only). Nothing new is stored for them.
 
 ### Study Planner: done for the demo
-- [ ] A learner adds a task, sees it under Today, and marks it done
+- [x] A learner adds a task, sees it under Today, and marks it done
       (and can undo).
-- [ ] Editing and deleting a task work.
-- [ ] The dashboard card shows today's tasks.
-- [ ] An accepted tutoring session appears in the planner on its date.
-- [ ] A second learner and a tutor can't see the first learner's tasks;
+- [x] Editing and deleting a task work.
+- [x] The dashboard card shows today's tasks.
+- [x] An accepted tutoring session appears in the planner on its date.
+- [x] A second learner and a tutor can't see the first learner's tasks;
       study_tasks shows RLS enabled.
 
 ## Out of scope
