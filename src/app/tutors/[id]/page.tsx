@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { createClient } from "@/lib/supabase/server";
 import {
   budgetBreakdown,
+  firstName,
   formatPeso,
   isUuid,
   LEVELS,
@@ -15,6 +16,7 @@ import {
   type Mode,
   type Subject,
 } from "@/lib/tutormatch";
+import { MessageTutorButton } from "@/app/messages/message-tutor-button";
 import { RequestForm } from "./request-form";
 
 export const metadata: Metadata = { title: "Tutor · TutorMatch" };
@@ -107,11 +109,17 @@ export default async function TutorPage({ params }: PageProps<"/tutors/[id]">) {
         </CardHeader>
         <CardContent>
           {isLearner ? (
-            <RequestForm
-              tutorId={tutor.tutor_id}
-              subjects={tutor.subjects}
-              priceLabel={formatPeso(tutor.rate_centavos)}
-            />
+            <div className="flex flex-col gap-4">
+              <RequestForm
+                tutorId={tutor.tutor_id}
+                subjects={tutor.subjects}
+                priceLabel={formatPeso(tutor.rate_centavos)}
+              />
+              <div className="flex flex-col gap-2 border-t border-border pt-4">
+                <p className="text-sm text-muted-foreground">Have a question first?</p>
+                <MessageTutorButton tutorId={tutor.tutor_id} tutorName={firstName(name, "the tutor")} />
+              </div>
+            </div>
           ) : user ? (
             <p className="text-sm text-muted-foreground">
               Session requests are sent from learner accounts.
