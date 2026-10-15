@@ -149,7 +149,11 @@ export default async function LearnerDashboard() {
     supabase.from("study_tasks").select("id", { count: "exact", head: true }),
   ]);
   if (dueRes.error) console.error("Dashboard: could not load study tasks", dueRes.error);
-  const hasTasks = (anyRes.count ?? 0) > 0;
+  if (anyRes.error) console.error("Dashboard: could not count study tasks", anyRes.error);
+  const tasksError = Boolean(dueRes.error || anyRes.error);
+  // Show the card once they have tasks — or when we can't tell, so a
+  // failed load says so instead of the card silently vanishing.
+  const showTasks = tasksError || (anyRes.count ?? 0) > 0;
   if (inbox.error) console.error("Dashboard: could not load chats", inbox.error);
 
   return (
@@ -174,9 +178,9 @@ export default async function LearnerDashboard() {
 
       {inbox.items.length > 0 && <RecentChats items={inbox.items} />}
 
-      {hasTasks && (
+      {showTasks && (
         <Section title="Today's study tasks" action={{ href: "/planner", label: "Open Study Planner" }}>
-          {dueRes.error ? (
+          {tasksError ? (
             <LoadError what="your study tasks" />
           ) : !dueRes.data?.length ? (
             <Empty>Nothing due today. Nice work!</Empty>
@@ -194,7 +198,7 @@ export default async function LearnerDashboard() {
                       {SUBJECTS[t.subject]} · {formatDue(t.due_date, t.due_time)}
                     </span>
                   </span>
-                  <TaskDoneButton taskId={t.id} done={false} />
+                  <TaskDoneButton taskId={t.id} title={t.title} done={false} />
                 </li>
               ))}
             </ul>

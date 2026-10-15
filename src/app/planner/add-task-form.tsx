@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { addTask, type TaskFormState } from "./actions";
 import { TaskFields } from "./task-fields";
+import { taskFormValues } from "@/lib/planner";
 
 // "Add a task": a button that opens the form. After a successful add the
 // form clears and stays open, so adding several tasks is quick.
@@ -12,13 +13,19 @@ export function AddTaskForm({ today }: { today: string }) {
   const [open, setOpen] = useState(false);
   const form = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState<TaskFormState, FormData>(async (prev, formData) => {
+    let result: TaskFormState;
     try {
-      const result = await addTask(prev, formData);
-      if (!result.error) form.current?.reset();
-      return result;
+      result = await addTask(prev, formData);
     } catch {
-      return { error: "We couldn't add the task — check your connection and try again." };
+      result = { error: "We couldn't add the task — check your connection and try again." };
     }
+    if (!result.error) {
+      form.current?.reset();
+      return result;
+    }
+    // React empties a form after every submit, so hand back what was typed
+    // and refill the boxes with it.
+    return { ...result, values: taskFormValues(formData), attempt: Date.now() };
   }, {});
 
   if (!open) {
@@ -31,7 +38,7 @@ export function AddTaskForm({ today }: { today: string }) {
 
   return (
     <form ref={form} action={formAction} className="flex flex-col gap-4 rounded-[var(--radius)] border border-border bg-card p-4">
-      <TaskFields idPrefix="new-task" today={today} />
+      <TaskFields key={state.attempt} idPrefix="new-task" values={state.values} today={today} />
 
       {state.error ? (
         <p role="alert" className="rounded-[var(--radius)] bg-destructive/10 px-3 py-2 text-sm text-destructive">

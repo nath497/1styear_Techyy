@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import { Clock, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatDue, PRIORITIES, PRIORITY_STYLE, type StudyTask } from "@/lib/planner";
+import { formatDue, PRIORITIES, PRIORITY_STYLE, taskFormValues, type StudyTask } from "@/lib/planner";
 import { SUBJECTS } from "@/lib/tutormatch";
 import { deleteTask, updateTask, type TaskFormState } from "./actions";
 import { TaskDoneButton } from "./task-done-button";
@@ -17,13 +17,18 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
   const done = task.status === "done";
 
   const [editState, editAction, saving] = useActionState<TaskFormState, FormData>(async (prev, formData) => {
+    let result: TaskFormState;
     try {
-      const result = await updateTask(prev, formData);
-      if (!result.error) setEditing(false);
-      return result;
+      result = await updateTask(prev, formData);
     } catch {
-      return { error: "We couldn't save your changes — check your connection and try again." };
+      result = { error: "We couldn't save your changes — check your connection and try again." };
     }
+    if (!result.error) {
+      setEditing(false);
+      return result;
+    }
+    // React empties a form after every submit, so hand back what was typed.
+    return { ...result, values: taskFormValues(formData), attempt: Date.now() };
   }, {});
   const [deleteState, deleteAction, deleting] = useActionState<TaskFormState, FormData>(async (prev, formData) => {
     try {
@@ -39,7 +44,13 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
         <CardContent className="pt-4 pb-4">
           <form action={editAction} className="flex flex-col gap-4">
             <input type="hidden" name="task_id" value={task.id} />
-            <TaskFields idPrefix={`edit-${task.id}`} task={task} today={today} />
+            <TaskFields
+              key={editState.attempt}
+              idPrefix={`edit-${task.id}`}
+              task={task}
+              values={editState.values}
+              today={today}
+            />
             {editState.error && (
               <p role="alert" className="rounded-[var(--radius)] bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {editState.error}
@@ -73,11 +84,9 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
                 <Clock className="h-3.5 w-3.5" aria-hidden /> {task.estimated_minutes} min
               </span>
             )}
-            {!done && (
-              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${PRIORITY_STYLE[task.priority]}`}>
-                {PRIORITIES[task.priority]}
-              </span>
-            )}
+            <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${PRIORITY_STYLE[task.priority]}`}>
+              {PRIORITIES[task.priority]}
+            </span>
           </p>
           {task.notes && <p className="whitespace-pre-line break-words text-muted-foreground">{task.notes}</p>}
           {deleteState.error && (
@@ -88,7 +97,7 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
         </div>
 
         <div className="flex shrink-0 flex-wrap items-start gap-1 sm:justify-end">
-          <TaskDoneButton taskId={task.id} done={done} />
+          <TaskDoneButton taskId={task.id} title={task.title} done={done} />
           <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(true)} aria-label={`Edit ${task.title}`}>
             <Pencil className="h-4 w-4" aria-hidden />
             <span className="sm:sr-only">Edit</span>

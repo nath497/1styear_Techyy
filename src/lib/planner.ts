@@ -119,6 +119,20 @@ export function parseTaskForm(form: FormData): { task: TaskInput } | { error: st
   };
 }
 
+// What the learner typed into the add / edit form, as text, so the form can
+// be refilled after an error instead of losing their work.
+const TASK_FIELDS = ["title", "subject", "due_date", "due_time", "priority", "estimated_minutes", "notes"] as const;
+export type TaskFormValues = Partial<Record<(typeof TASK_FIELDS)[number], string>>;
+
+export function taskFormValues(form: FormData): TaskFormValues {
+  const values: TaskFormValues = {};
+  for (const k of TASK_FIELDS) {
+    const v = form.get(k);
+    if (typeof v === "string") values[k] = v;
+  }
+  return values;
+}
+
 // ---- Filters and sessions in the planner (ticket 17) ----------------------
 
 export const STATUS_FILTERS = { all: "All", todo: "To do", done: "Done" } as const;

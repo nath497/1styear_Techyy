@@ -2,18 +2,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { PRIORITIES, type Priority, type StudyTask } from "@/lib/planner";
+import { PRIORITIES, type Priority, type StudyTask, type TaskFormValues } from "@/lib/planner";
 import { SUBJECTS, type Subject } from "@/lib/tutormatch";
 
 // The task fields, shared by "Add a task" and "Edit". `idPrefix` keeps
-// each form's labels pointing at its own boxes.
+// each form's labels pointing at its own boxes. `values` (what the learner
+// typed before an error) wins over the saved task.
 export function TaskFields({
   idPrefix,
   task,
+  values = {},
   today,
 }: {
   idPrefix: string;
   task?: StudyTask;
+  values?: TaskFormValues;
   today: string;
 }) {
   const id = (name: string) => `${idPrefix}-${name}`;
@@ -27,7 +30,7 @@ export function TaskFields({
           required
           maxLength={100}
           placeholder="e.g. Review truth tables"
-          defaultValue={task?.title ?? ""}
+          defaultValue={values.title ?? task?.title ?? ""}
           autoFocus
         />
       </div>
@@ -35,7 +38,7 @@ export function TaskFields({
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor={id("subject")}>Subject</Label>
-          <Select id={id("subject")} name="subject" required defaultValue={task?.subject ?? ""}>
+          <Select id={id("subject")} name="subject" required defaultValue={values.subject ?? task?.subject ?? ""}>
             <option value="" disabled>
               Choose a subject
             </option>
@@ -48,7 +51,7 @@ export function TaskFields({
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor={id("priority")}>Priority</Label>
-          <Select id={id("priority")} name="priority" defaultValue={task?.priority ?? "medium"}>
+          <Select id={id("priority")} name="priority" defaultValue={values.priority ?? task?.priority ?? "medium"}>
             {(Object.keys(PRIORITIES) as Priority[]).map((key) => (
               <option key={key} value={key}>
                 {PRIORITIES[key]}
@@ -58,11 +61,22 @@ export function TaskFields({
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor={id("date")}>Due date</Label>
-          <Input id={id("date")} name="due_date" type="date" required defaultValue={task?.due_date ?? today} />
+          <Input
+            id={id("date")}
+            name="due_date"
+            type="date"
+            required
+            defaultValue={values.due_date ?? task?.due_date ?? today}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor={id("time")}>Time (optional)</Label>
-          <Input id={id("time")} name="due_time" type="time" defaultValue={task?.due_time?.slice(0, 5) ?? ""} />
+          <Input
+            id={id("time")}
+            name="due_time"
+            type="time"
+            defaultValue={values.due_time ?? task?.due_time?.slice(0, 5) ?? ""}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor={id("minutes")}>Estimated minutes (optional)</Label>
@@ -74,7 +88,7 @@ export function TaskFields({
             min={5}
             max={600}
             placeholder="e.g. 45"
-            defaultValue={task?.estimated_minutes ?? ""}
+            defaultValue={values.estimated_minutes ?? task?.estimated_minutes ?? ""}
           />
         </div>
       </div>
@@ -87,7 +101,7 @@ export function TaskFields({
           maxLength={500}
           rows={2}
           placeholder="Pages, links, what to focus on…"
-          defaultValue={task?.notes ?? ""}
+          defaultValue={values.notes ?? task?.notes ?? ""}
         />
       </div>
     </>

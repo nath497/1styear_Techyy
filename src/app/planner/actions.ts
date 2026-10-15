@@ -2,10 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { parseTaskForm } from "@/lib/planner";
+import { parseTaskForm, type TaskFormValues } from "@/lib/planner";
 import { isUuid } from "@/lib/tutormatch";
 
-export type TaskFormState = { error?: string; saved?: number };
+// `values` and `attempt` are filled in by the forms after an error, so the
+// learner's typing comes back (see add-task-form.tsx).
+export type TaskFormState = { error?: string; saved?: number; values?: TaskFormValues; attempt?: number };
 
 // Add a study task. The database sets the owner, the "to do" status and
 // the dates, and only lets learners add tasks (SQL 015).
