@@ -9,15 +9,15 @@ goals appear on the Overview.
 
 **Blocked by:** 22
 
-**Status:** todo
+**Status:** done
 
-- [ ] Adding, editing and deleting a goal work; mistakes keep what was
+- [x] Adding, editing and deleting a goal work; mistakes keep what was
       typed and show a friendly error
-- [ ] A task can be linked to one of the learner's own goals from the
+- [x] A task can be linked to one of the learner's own goals from the
       task form (never to someone else's — checked on the database)
-- [ ] The progress bar moves when a linked task is completed
-- [ ] Deleting a goal keeps its tasks and removes the link
-- [ ] "Mark achieved" works, and can be undone
-- [ ] The Overview shows active goals with progress
-- [ ] A second learner and a tutor can't see the goals
-- [ ] Works on the live URL, on a phone
+- [x] The progress bar moves when a linked task is completed
+- [x] Deleting a goal keeps its tasks and removes the link
+- [x] "Mark achieved" works, and can be undone
+- [x] The Overview shows active goals with progress
+- [x] A second learner and a tutor can't see the goals
+- [x] Works on the live URL, on a phone
