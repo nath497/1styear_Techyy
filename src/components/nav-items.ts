@@ -28,7 +28,7 @@ export function navFor(account: Account): NavItem[] {
     { href: "/", label: "Home", icon: "home" },
     { href: "/dashboard", label: "Dashboard", icon: "dashboard", soon: true },
     { href: "/tutors", label: "Find a Tutor", icon: "search" },
-    { href: "/help-requests", label: "Request Help", icon: "help", soon: true },
+    { href: "/help-requests", label: "Request Help", icon: "help" },
     { href: "/sessions", label: "My Sessions", icon: "sessions" },
     { href: "/planner", label: "Study Planner", icon: "planner", soon: true },
     { href: "/learntrack", label: "LearnTrack", icon: "learntrack", soon: true },

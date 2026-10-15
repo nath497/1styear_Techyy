@@ -15,6 +15,7 @@ The tutors' Help Requests link in the navigation goes live.
 - [ ] Subject and level filters work, with an empty state when nothing matches
 - [ ] Only tutors with a tutor profile can offer, only for themselves, only on Open requests, and at most once per request (enforced by the database)
 - [ ] Learners can't see the board or other learners' requests
+- [ ] My help requests (ticket 09) now shows each request's offer count
 - [ ] Help Requests is no longer greyed out for tutors
 - [ ] Works on a phone
 - [ ] Works on the live URL

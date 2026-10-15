@@ -76,7 +76,7 @@ type SearchParams = Record<string, string | string[] | undefined>;
 export const MAX_BUDGET_CENTAVOS = 10_000_000; // ₱100,000
 
 // "100" or "100.50" pesos → whole centavos. Anything else → undefined.
-function pesosToCentavos(value: string) {
+export function pesosToCentavos(value: string) {
   if (!/^\d+(\.\d{1,2})?$/.test(value)) return undefined;
   const centavos = Math.round(Number(value) * 100);
   // Over ₱100,000 is a typo, not a budget (and huge numbers show as ₱∞).
@@ -273,3 +273,13 @@ export function groupSessions<T extends { status: Status; starts_at: string }>(s
       .sort((a, b) => time(b) - time(a)),
   };
 }
+
+// ---- Help Request Board -------------------------------------------------
+
+export const HELP_STATUSES = {
+  open: "Open",
+  matched: "Matched",
+  cancelled: "Cancelled",
+} as const;
+
+export type HelpStatus = keyof typeof HELP_STATUSES;
