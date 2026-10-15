@@ -104,6 +104,7 @@ export default async function FindATutorPage({ searchParams }: PageProps<"/tutor
                 type="number"
                 inputMode="decimal"
                 min="1"
+                max="100000"
                 step="0.01"
                 placeholder="e.g. 100"
                 required
@@ -185,7 +186,7 @@ export default async function FindATutorPage({ searchParams }: PageProps<"/tutor
                         <span className="text-sm font-normal text-muted-foreground">per session</span>
                       </p>
                       <p>{MODES[tutor.mode]}</p>
-                      <p className="text-muted-foreground">
+                      <p className="break-words text-muted-foreground">
                         {tutor.levels.map((l) => LEVELS[l]).join(", ")}
                         {tutor.availability ? ` · ${tutor.availability}` : ""}
                       </p>

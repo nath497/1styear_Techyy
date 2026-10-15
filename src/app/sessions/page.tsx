@@ -60,16 +60,29 @@ export default async function MySessionsPage() {
 
   if (error) console.error("My sessions: could not load bookings", error);
 
+  // Sessions that still need something done come first (soonest at the
+  // top); finished ones go below (most recent first).
+  const isActive = (b: BookingRow) => b.status === "pending" || b.status === "accepted";
+  const time = (b: BookingRow) => new Date(b.starts_at).getTime();
+  const bookings = [...(data ?? [])].sort((a, b) => {
+    if (isActive(a) !== isActive(b)) return isActive(a) ? -1 : 1;
+    return isActive(a) ? time(a) - time(b) : time(b) - time(a);
+  });
+
   // Tutors also see the 10% commission the database recorded for each
   // completed session. (Learners can't read these — RLS, SQL 005.)
   let commissions: CommissionRow[] = [];
+  let commissionFailed = false;
   if (isTutor) {
     const { data: rows, error: commissionError } = await supabase
       .from("commission_records")
       .select("booking_id, price_centavos, commission_centavos, tutor_amount_centavos")
       .eq("tutor_id", user.id)
       .returns<CommissionRow[]>();
-    if (commissionError) console.error("My sessions: could not load commission records", commissionError);
+    if (commissionError) {
+      console.error("My sessions: could not load commission records", commissionError);
+      commissionFailed = true;
+    }
     commissions = rows ?? [];
   }
   const commissionFor = new Map(commissions.map((c) => [c.booking_id, c]));
@@ -93,17 +106,25 @@ export default async function MySessionsPage() {
         </p>
       </header>
 
-      {isTutor && commissions.length > 0 && (
-        <Card className="border-primary">
-          <CardContent className="flex flex-col gap-1 pt-6 text-sm">
-            <p className="font-semibold">Completed sessions: {formatPeso(total.price)}</p>
-            <p>
-              {formatPeso(total.commission)} TutorMatch (10%) · {formatPeso(total.tutor)} you
-            </p>
-            <p className="mt-1 font-medium text-primary">Recorded, not collected — no real money has moved.</p>
-          </CardContent>
-        </Card>
-      )}
+      {isTutor &&
+        (commissionFailed ? (
+          <Card className="border-destructive">
+            <CardContent className="pt-6 text-sm">
+              <p className="font-medium text-destructive">We couldn&apos;t load your earnings right now.</p>
+              <p className="mt-1 text-muted-foreground">Please refresh the page in a moment.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="border-primary">
+            <CardContent className="flex flex-col gap-1 pt-6 text-sm">
+              <p className="font-semibold">Completed sessions: {formatPeso(total.price)}</p>
+              <p>
+                {formatPeso(total.commission)} TutorMatch (10%) · {formatPeso(total.tutor)} you
+              </p>
+              <p className="mt-1 font-medium text-primary">Recorded, not collected — no real money has moved.</p>
+            </CardContent>
+          </Card>
+        ))}
 
       {error ? (
         <Card className="border-destructive">
@@ -112,7 +133,7 @@ export default async function MySessionsPage() {
             <p className="mt-1 text-muted-foreground">Please try again in a moment.</p>
           </CardContent>
         </Card>
-      ) : data.length === 0 ? (
+      ) : bookings.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-4 pt-6 text-center">
             {isTutor ? (
@@ -139,7 +160,7 @@ export default async function MySessionsPage() {
         </Card>
       ) : (
         <ul className="flex flex-col gap-3">
-          {data.map((b) => {
+          {bookings.map((b) => {
             const other = isTutor
               ? (b.learner?.display_name ?? "A learner")
               : (b.tutor?.profiles?.display_name ?? "your tutor");

@@ -24,9 +24,10 @@ function friendly(message: string) {
   if (m.includes("already registered")) return "An account with this email already exists. Try logging in instead.";
   if (m.includes("email not confirmed")) return "Please confirm your email first — check your inbox.";
   // Supabase's built-in email sends only a few emails an hour. This only
-  // happens if "Confirm email" is ON (sign-up is trying to send one).
+  // happens if "Confirm email" is ON in Supabase — team: check that if
+  // you see "email rate limit" in Vercel's logs.
   if (m.includes("email rate limit"))
-    return "Sign-up is paused: too many confirmation emails this hour. Ask your team to check that \"Confirm email\" is off in Supabase.";
+    return "Sign-up is busy right now. Please try again in about an hour.";
   if (m.includes("rate limit") || m.includes("too many")) return "Too many attempts. Please wait a minute and try again.";
   if (m.includes("password")) return message;
   return "Something went wrong. Please try again.";

@@ -18,8 +18,10 @@ export async function requestSession(
   if (!Object.hasOwn(SUBJECTS, subject)) return { error: "Choose a subject." };
   if (!topic) return { error: "Tell the tutor what topic you need help with." };
   if (topic.length > 200) return { error: "Please keep the topic under 200 characters." };
-  if (!startsAt) return { error: "Choose a date and time." };
+  if (!startsAt) return { error: "Choose a real date and time." };
   if (startsAt.getTime() <= Date.now()) return { error: "Please pick a date and time in the future." };
+  if (startsAt.getTime() > Date.now() + 365 * 24 * 60 * 60 * 1000)
+    return { error: "Please pick a date within the next year." };
 
   const supabase = await createClient();
   const {

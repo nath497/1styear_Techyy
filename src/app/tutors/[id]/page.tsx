@@ -79,7 +79,7 @@ export default async function TutorPage({ params }: PageProps<"/tutors/[id]">) {
             <span className="text-sm font-normal text-muted-foreground">per session</span>
           </p>
 
-          {tutor.bio && <p className="whitespace-pre-line">{tutor.bio}</p>}
+          {tutor.bio && <p className="whitespace-pre-line break-words">{tutor.bio}</p>}
 
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
             <dt className="text-muted-foreground">Teaches</dt>
@@ -87,7 +87,7 @@ export default async function TutorPage({ params }: PageProps<"/tutors/[id]">) {
             <dt className="text-muted-foreground">Mode</dt>
             <dd>{MODES[tutor.mode]}</dd>
             <dt className="text-muted-foreground">Available</dt>
-            <dd>{tutor.availability || "Ask the tutor"}</dd>
+            <dd className="min-w-0 break-words">{tutor.availability || "Ask the tutor"}</dd>
           </dl>
         </CardContent>
       </Card>

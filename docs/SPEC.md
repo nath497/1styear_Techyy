@@ -135,20 +135,20 @@ rate limits; re-enabling it is in LATER.md.
 
 ## Done for the demo
 On the **live Vercel URL**, on a phone:
-- [ ] Home page loads and both buttons go somewhere real.
-- [ ] A tutor can sign up, create a profile, and edit it.
-- [ ] A logged-out visitor can use BudgetMatch and see matching tutors
+- [x] Home page loads and both buttons go somewhere real.
+- [x] A tutor can sign up, create a profile, and edit it.
+- [x] A logged-out visitor can use BudgetMatch and see matching tutors
       with a "why it matches" line, or the empty state.
-- [ ] A learner can sign up, log in, log out, and send a session
+- [x] A learner can sign up, log in, log out, and send a session
       request (shows as Pending).
-- [ ] The tutor sees the request and can accept or decline it.
-- [ ] The learner sees the new status and can cancel.
-- [ ] The tutor marks an accepted session completed, and the ₱/10%/
+- [x] The tutor sees the request and can accept or decline it.
+- [x] The learner sees the new status and can cancel.
+- [x] The tutor marks an accepted session completed, and the ₱/10%/
       tutor split appears, labelled "recorded, not collected".
-- [ ] A learner cannot see other people's bookings or any commission
+- [x] A learner cannot see other people's bookings or any commission
       records (checked with a second learner account).
-- [ ] Every table shows RLS enabled in the Supabase Table Editor.
-- [ ] At least 2–3 real classmates have tutor profiles (no fake data).
+- [x] Every table shows RLS enabled in the Supabase Table Editor.
+- [x] At least 2–3 real classmates have tutor profiles (no fake data).
 
 ## Out of scope
 - Help Request Board with tutor offers (first stretch goal)

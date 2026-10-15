@@ -48,6 +48,8 @@ export type MatchFilters = {
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
+export const MAX_BUDGET_CENTAVOS = 10_000_000; // ₱100,000
+
 // Read the Find a Tutor form from the page address (?subject=math&...).
 // Returns null unless all four answers are present and valid.
 export function parseMatchFilters(params: SearchParams): MatchFilters | null {
@@ -62,7 +64,8 @@ export function parseMatchFilters(params: SearchParams): MatchFilters | null {
   // Budget is typed in pesos ("100" or "100.50") and compared in centavos.
   if (!/^\d+(\.\d{1,2})?$/.test(budget)) return null;
   const budgetCentavos = Math.round(Number(budget) * 100);
-  if (budgetCentavos <= 0) return null;
+  // Over ₱100,000 is a typo, not a budget (and huge numbers show as ₱∞).
+  if (budgetCentavos <= 0 || budgetCentavos > MAX_BUDGET_CENTAVOS) return null;
 
   return { subject: subject as Subject, level: level as Level, budgetCentavos, mode };
 }
@@ -106,7 +109,11 @@ export type Status = keyof typeof STATUSES;
 export function parseManilaDateTime(value: string): Date | null {
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return null;
   const date = new Date(`${value}:00+08:00`);
-  return Number.isNaN(date.getTime()) ? null : date;
+  if (Number.isNaN(date.getTime())) return null;
+  // JavaScript quietly turns "Feb 30" into "Mar 2". Convert back to
+  // Philippine time and make sure it's the same date and time we were given.
+  const backInManila = new Date(date.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 16);
+  return backInManila === value ? date : null;
 }
 
 // e.g. "Tue, Oct 20, 2026, 4:00 PM" in Philippine time.
