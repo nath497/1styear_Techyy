@@ -17,11 +17,11 @@ export type NoteSession = {
   tutorName: string;
   subjectName: string;
   topic: string;
-  started: boolean;
+  ended: boolean;
 };
 
 // One real tutoring session with the learner's private notes: questions
-// to ask, topics they need help with, and (once it has started) a
+// to ask, topics they need help with, and (once it has ended) a
 // reflection. `reviewTopics` are their Need to Review topics in this
 // session's subject, for "Add from LearnTrack".
 export function NoteCard({
@@ -103,7 +103,7 @@ export function NoteCard({
               )}
             </div>
 
-            {session.started && (
+            {session.ended && (
               <div className="flex flex-col gap-2">
                 <Label htmlFor={id("reflection")}>Reflection</Label>
                 <Textarea

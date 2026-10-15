@@ -1,5 +1,6 @@
 // Learning goal rules (SQL 017, ticket 25). The database checks the same
 // limits; these give the learner friendly messages first.
+import { calendarDateError, hasLetterOrNumber } from "@/lib/dates";
 import { formValues } from "@/lib/form-values";
 
 export const GOAL_STATUSES = { active: "Active", achieved: "Achieved" } as const;
@@ -29,14 +30,11 @@ export function parseGoalForm(form: FormData): { goal: GoalInput } | { error: st
   const description = text("description");
   const date = text("target_date");
 
-  if (!/[\p{L}\p{N}]/u.test(title)) return { error: "Give the goal a title." };
+  if (!hasLetterOrNumber(title)) return { error: "Give the goal a title." };
   if (title.length > 100) return { error: "Please keep the title under 100 characters." };
   if (description.length > 500) return { error: "Please keep the description under 500 characters." };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(`${date}T00:00:00Z`)))
-    return { error: "Choose a target date." };
-  if (new Date(`${date}T00:00:00Z`).toISOString().slice(0, 10) !== date) return { error: "Choose a real date." };
-  const year = Number(date.slice(0, 4));
-  if (year < 2020 || year > 2100) return { error: "Choose a date between 2020 and 2100." };
+  const dateError = calendarDateError(date, "a target date");
+  if (dateError) return { error: dateError };
 
   return { goal: { title, description, target_date: date } };
 }

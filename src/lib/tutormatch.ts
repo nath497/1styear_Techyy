@@ -262,6 +262,13 @@ export function formatSessionTime(iso: string) {
 //   pending  — waiting for the tutor (soonest first)
 //   upcoming — accepted (soonest first)
 //   history  — declined, cancelled or completed (most recent first)
+// "Upcoming" in the dashboard and Overview figures: an Accepted session
+// that hasn't started yet. (My Sessions still lists past Accepted ones, so
+// the tutor can mark them Completed.)
+export function isUpcomingSession(s: { status: Status; starts_at: string }, now = new Date()) {
+  return s.status === "accepted" && new Date(s.starts_at).getTime() >= now.getTime();
+}
+
 export function groupSessions<T extends { status: Status; starts_at: string }>(sessions: T[]) {
   const time = (s: T) => new Date(s.starts_at).getTime();
   const soonestFirst = (a: T, b: T) => time(a) - time(b);

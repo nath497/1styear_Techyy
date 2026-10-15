@@ -14,7 +14,7 @@ export type SessionNote = {
 export type NoteInput = { questions: string; help_topics: string; reflection?: string };
 
 // Read and check the notes form. The reflection box only appears once the
-// session has started, so it's only saved when it was on the form.
+// session has ended, so it's only saved when it was on the form.
 export function parseNoteForm(form: FormData): { note: NoteInput } | { error: string } {
   const text = (k: string) => String(form.get(k) ?? "").trim();
   const questions = text("questions");
@@ -36,9 +36,10 @@ export function noteFormValues(form: FormData): NoteFormValues {
   return formValues(form, NOTE_FIELDS);
 }
 
-// Has the session started? (The reflection box appears from then on.)
-export function sessionHasStarted(startsAt: string, now = new Date()) {
-  return new Date(startsAt).getTime() <= now.getTime();
+// Has the 1-hour session finished? The reflection box appears from then
+// on, and the session moves from "Coming up" to "Past sessions".
+export function sessionHasEnded(startsAt: string, now = new Date()) {
+  return new Date(startsAt).getTime() + 60 * 60 * 1000 <= now.getTime();
 }
 
 // "Add from LearnTrack": add topic names to what's already in the box,

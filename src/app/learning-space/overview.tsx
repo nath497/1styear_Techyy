@@ -2,6 +2,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Empty, LoadError, Section, StatCard } from "@/app/dashboard/parts";
+import { InProgressBadge } from "@/app/planner/in-progress-badge";
 import { TaskDoneButton } from "@/app/planner/task-done-button";
 import { createClient } from "@/lib/supabase/server";
 import { addDays, overallProgress, spaceHref } from "@/lib/learning-space";
@@ -96,7 +97,14 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
 
   const progress =
     understood.error || allTopics.error ? null : overallProgress(understood.count ?? 0, allTopics.count ?? 0);
-  const isNew = !allTasks.error && !allTopics.error && (allTasks.count ?? 0) === 0 && (allTopics.count ?? 0) === 0;
+  // New = nothing anywhere yet: no tasks, topics, active goals or upcoming
+  // activities (and none of those failed to load).
+  const isNew =
+    [allTasks, allTopics, goals, upcomingActivities].every((r) => !r.error) &&
+    (allTasks.count ?? 0) === 0 &&
+    (allTopics.count ?? 0) === 0 &&
+    (goals.data?.length ?? 0) === 0 &&
+    (upcomingActivities.data?.length ?? 0) === 0;
   const next = sessions.data?.[0];
   const nextStudy = nextActivity(upcomingActivities.data ?? [], today, manilaNowTime());
 
@@ -141,7 +149,7 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
 
       {anyError && <LoadError what="some of your figures" />}
 
-      <Section title="Due today" action={{ href: spaceHref("tasks"), label: "All study tasks" }}>
+      <Section title="Due today & overdue" action={{ href: spaceHref("tasks"), label: "All study tasks" }}>
         {todayTasks.error ? (
           <LoadError what="today's tasks" />
         ) : !todayTasks.data?.length ? (
@@ -154,7 +162,10 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
                 className="flex items-center justify-between gap-3 rounded-[var(--radius)] bg-muted/60 px-3 py-2"
               >
                 <span className="min-w-0">
-                  <span className="block truncate font-medium">{t.title}</span>
+                  <span className="block truncate font-medium">
+                    {t.status === "in_progress" && <InProgressBadge />}
+                    {t.title}
+                  </span>
                   <span className={t.due_date < today ? "text-destructive" : "text-muted-foreground"}>
                     {t.due_date < today ? "Overdue · " : ""}
                     {SUBJECTS[t.subject]} · {formatDue(t.due_date, t.due_time)}
@@ -179,7 +190,7 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
                     <span className="shrink-0 text-xs text-muted-foreground">by {formatTargetDate(g.target_date)}</span>
                   </div>
                   {p.total === 0 ? (
-                    <span className="text-xs text-muted-foreground">No linked tasks yet</span>
+                    <span className="text-xs text-muted-foreground">Link study tasks to track progress</span>
                   ) : (
                     <>
                       <div className="h-2 overflow-hidden rounded-full bg-muted" aria-hidden>

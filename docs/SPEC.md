@@ -621,9 +621,13 @@ own.
   learners and logged-out visitors can't see notes.
 - No deleting; clearing the text does the same job.
 
-All database changes are one file (SQL 017). It only adds things and
-widens one allowed list; no data is deleted. Every new table has Row
-Level Security with explicit policies.
+The database changes are SQL 017 (all the tables above). It only adds
+things and widens one allowed list; no data is deleted. Every new table
+has Row Level Security with explicit policies. Two follow-ups use no
+Postgres add-ons, because the live project doesn't have btree_gist:
+SQL 018 enforces "no double-booking a tutor" (006's rule never took
+effect live), and SQL 019 makes the Schedule's clash check safe when
+two saves arrive at once.
 
 ### My Learning Space: done for the demo
 - [x] One "My Learning Space" link opens the page; all six tabs work on

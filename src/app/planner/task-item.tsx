@@ -8,6 +8,7 @@ import type { GoalOption } from "@/lib/goals";
 import { formatDue, PRIORITIES, PRIORITY_STYLE, taskFormValues, type StudyTask } from "@/lib/planner";
 import { SUBJECTS } from "@/lib/tutormatch";
 import { deleteTask, updateTask, type TaskFormState } from "./actions";
+import { InProgressBadge } from "./in-progress-badge";
 import { TaskDoneButton, TaskStatusButton } from "./task-done-button";
 import { TaskFields } from "./task-fields";
 
@@ -35,11 +36,7 @@ export function TaskItem({ task, today, goals = [] }: { task: StudyTask; today: 
       <CardContent className="flex flex-col gap-3 pt-4 pb-4 text-sm sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 flex-col gap-1">
           <p className={`font-medium break-words ${done ? "text-muted-foreground line-through" : ""}`}>
-            {task.status === "in_progress" && (
-              <span className="mr-2 inline-block rounded-full bg-primary/15 px-2 py-0.5 align-middle text-xs font-medium text-primary">
-                In Progress
-              </span>
-            )}
+            {task.status === "in_progress" && <InProgressBadge />}
             {task.title}
           </p>
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">

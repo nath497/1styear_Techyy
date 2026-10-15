@@ -2,7 +2,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
-import { sessionHasStarted, type SessionNote } from "@/lib/session-notes";
+import { sessionHasEnded, type SessionNote } from "@/lib/session-notes";
 import { formatSessionTime, SUBJECTS, type Subject } from "@/lib/tutormatch";
 import { NoteCard } from "./note-card";
 
@@ -48,11 +48,11 @@ export async function SessionNotesTab({ learnerId }: { learnerId: string }) {
     tutorName: b.tutor?.profiles?.display_name ?? "your tutor",
     subjectName: SUBJECTS[b.subject],
     topic: b.topic,
-    started: sessionHasStarted(b.starts_at, now),
+    ended: sessionHasEnded(b.starts_at, now),
   }));
   // Coming up: soonest first. Past: most recent first.
-  const upcoming = sessions.filter((s) => !s.started);
-  const past = sessions.filter((s) => s.started).reverse();
+  const upcoming = sessions.filter((s) => !s.ended);
+  const past = sessions.filter((s) => s.ended).reverse();
   const notes = new Map((notesRes.data ?? []).map((n) => [n.booking_id, n]));
   const reviewFor = (subject: Subject) =>
     (topicsRes.data ?? []).filter((t) => t.subject === subject).map((t) => t.name as string);

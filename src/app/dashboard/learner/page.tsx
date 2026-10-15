@@ -8,6 +8,7 @@ import {
   formatPeso,
   formatSessionTime,
   groupSessions,
+  isUpcomingSession,
   HELP_STATUS_STYLE,
   HELP_STATUSES,
   LEVELS,
@@ -25,6 +26,7 @@ import {
   type Subject,
 } from "@/lib/tutormatch";
 import { JoinCallLink } from "@/components/join-call-link";
+import { InProgressBadge } from "@/app/planner/in-progress-badge";
 import { TaskDoneButton } from "@/app/planner/task-done-button";
 import { formatDue, manilaToday, type StudyTask } from "@/lib/planner";
 import type { LearnTopic } from "@/lib/learntrack";
@@ -193,7 +195,7 @@ export default async function LearnerDashboard() {
 
       <div className="grid gap-3 sm:grid-cols-3">
         <StatCard label="Waiting for a tutor" value={bookingsRes.error ? "—" : sessions.pending.length} href="/sessions" />
-        <StatCard label="Upcoming sessions" value={bookingsRes.error ? "—" : sessions.upcoming.length} href="/sessions" />
+        <StatCard label="Upcoming sessions" value={bookingsRes.error ? "—" : sessions.upcoming.filter((s) => isUpcomingSession(s)).length} href="/sessions" />
         <StatCard label="Completed" value={bookingsRes.error ? "—" : completed} href="/sessions" />
       </div>
 
@@ -213,7 +215,10 @@ export default async function LearnerDashboard() {
                   className="flex items-center justify-between gap-3 rounded-[var(--radius)] bg-muted/60 px-3 py-2"
                 >
                   <span className="min-w-0">
-                    <span className="block truncate font-medium">{t.title}</span>
+                    <span className="block truncate font-medium">
+                      {t.status === "in_progress" && <InProgressBadge />}
+                      {t.title}
+                    </span>
                     <span className={t.due_date < today ? "text-destructive" : "text-muted-foreground"}>
                       {t.due_date < today ? "Overdue · " : ""}
                       {SUBJECTS[t.subject]} · {formatDue(t.due_date, t.due_time)}

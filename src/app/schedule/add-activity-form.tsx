@@ -64,9 +64,10 @@ function OpenForm({
           {state.error}
         </p>
       ) : state.saved ? (
-        <p role="status" className="text-sm text-green-800">
-          Activity added.
-        </p>
+        <div role="status" className="flex flex-col gap-1 text-sm">
+          <p className="text-green-800">Activity added.{state.note ? ` ${state.note}` : ""}</p>
+          {state.warning && <p className="text-amber-800">⚠ {state.warning}</p>}
+        </div>
       ) : null}
 
       <div className="flex flex-wrap gap-2">

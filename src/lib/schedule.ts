@@ -1,5 +1,6 @@
 // Schedule rules (SQL 017, ticket 24). The database checks the same limits
 // and refuses clashes; these give the learner friendly messages first.
+import { calendarDateError, hasLetterOrNumber } from "@/lib/dates";
 import { formValues } from "@/lib/form-values";
 import { addDays } from "@/lib/learning-space";
 import { SUBJECTS, type Subject } from "@/lib/tutormatch";
@@ -29,15 +30,11 @@ export function parseActivityForm(form: FormData): { activity: ActivityInput } |
   const end = text("end_time");
   const notes = text("notes");
 
-  if (!/[\p{L}\p{N}]/u.test(title)) return { error: "Give the activity a title." };
+  if (!hasLetterOrNumber(title)) return { error: "Give the activity a title." };
   if (title.length > 100) return { error: "Please keep the title under 100 characters." };
   if (!Object.hasOwn(SUBJECTS, subject)) return { error: "Choose a subject." };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(`${date}T00:00:00Z`)))
-    return { error: "Choose a date." };
-  // Reject impossible dates (Feb 30) and far-off years (a typo like 9999).
-  if (new Date(`${date}T00:00:00Z`).toISOString().slice(0, 10) !== date) return { error: "Choose a real date." };
-  const year = Number(date.slice(0, 4));
-  if (year < 2020 || year > 2100) return { error: "Choose a date between 2020 and 2100." };
+  const dateError = calendarDateError(date);
+  if (dateError) return { error: dateError };
   if (!TIME.test(start)) return { error: "Choose a start time." };
   if (!TIME.test(end)) return { error: "Choose an end time." };
   if (toMinutes(end) <= toMinutes(start)) return { error: "The end time must be after the start time." };
@@ -103,19 +100,31 @@ export function formatDay(date: string, today: string) {
   return date === today ? `Today · ${label}` : label;
 }
 
-// Does this activity overlap a tutoring session (1 hour long) on the same
-// day? That's allowed, but the Schedule shows a warning.
+// Minutes since 1970 for a Philippine date and time — so times on
+// different days (e.g. a session at 11:30 PM) compare correctly.
+function absoluteMinutes(date: string, time: string) {
+  const [y, m, d] = date.split("-").map(Number);
+  return Date.UTC(y, m - 1, d) / 60000 + toMinutes(time);
+}
+
+// Does this activity overlap a tutoring session (1 hour long)? That's
+// allowed, but the Schedule shows a warning. Works across midnight.
 export function overlapsSession(
   activity: Pick<StudyActivity, "activity_date" | "start_time" | "end_time">,
   sessions: { date: string; time: string }[],
 ) {
-  const start = toMinutes(activity.start_time);
-  const end = toMinutes(activity.end_time);
+  const start = absoluteMinutes(activity.activity_date, activity.start_time);
+  const end = absoluteMinutes(activity.activity_date, activity.end_time);
   return sessions.some((s) => {
-    if (s.date !== activity.activity_date) return false;
-    const sStart = toMinutes(s.time);
+    const sStart = absoluteMinutes(s.date, s.time);
     return sStart < end && start < sStart + 60;
   });
+}
+
+// The moment an activity starts or ends, as an ISO time (Philippine time
+// is UTC+8 all year — no daylight saving).
+export function activityInstant(date: string, time: string) {
+  return new Date(`${date}T${time.slice(0, 5)}:00+08:00`).toISOString();
 }
 
 // The next activity that hasn't finished yet, from a list sorted by date

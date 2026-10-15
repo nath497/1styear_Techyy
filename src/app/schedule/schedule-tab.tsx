@@ -116,7 +116,7 @@ export async function ScheduleTab({ learnerId, today }: { learnerId: string; tod
                     .map((item) =>
                       item.kind === "activity" ? (
                         <li key={`a-${item.a.id}`}>
-                          <ActivityItem activity={item.a} sessionClash={overlapsSession(item.a, daySessions)} />
+                          <ActivityItem activity={item.a} sessionClash={overlapsSession(item.a, sessions)} />
                         </li>
                       ) : (
                         <li key={`s-${item.s.id}`}>

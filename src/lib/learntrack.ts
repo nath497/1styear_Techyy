@@ -1,5 +1,6 @@
 // LearnTrack rules (SQL 016). The database checks the same limits; these
 // give the learner friendly messages before it has to.
+import { hasLetterOrNumber } from "@/lib/dates";
 import { SUBJECTS, type Subject } from "@/lib/tutormatch";
 
 export const TOPIC_STATUSES = {
@@ -37,7 +38,7 @@ export function parseTopicForm(form: FormData): { topic: TopicInput } | { error:
 
   // At least one letter or number — the database refuses names made only
   // of spaces, dashes or invisible characters.
-  if (!/[\p{L}\p{N}]/u.test(name)) return { error: "Give the topic a name." };
+  if (!hasLetterOrNumber(name)) return { error: "Give the topic a name." };
   if (name.length > 100) return { error: "Please keep the topic name under 100 characters." };
   if (!Object.hasOwn(SUBJECTS, subject)) return { error: "Choose a subject." };
   if (note.length > 300) return { error: "Please keep the note under 300 characters." };

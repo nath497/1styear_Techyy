@@ -1,11 +1,13 @@
 "use client";
 
 import { useActionState, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { addTask, type TaskFormState } from "./actions";
 import { TaskFields } from "./task-fields";
 import type { GoalOption } from "@/lib/goals";
+import { spaceHref } from "@/lib/learning-space";
 import { taskFormValues, type TaskFormValues } from "@/lib/planner";
 
 // "Add a task": a button that opens the form. After a successful add the
@@ -23,6 +25,7 @@ export function AddTaskForm({
 }) {
   const [open, setOpen] = useState(Boolean(prefill));
   const form = useRef<HTMLFormElement>(null);
+  const router = useRouter();
   const [state, formAction, pending] = useActionState<TaskFormState, FormData>(async (prev, formData) => {
     let result: TaskFormState;
     try {
@@ -32,6 +35,9 @@ export function AddTaskForm({
     }
     if (!result.error) {
       form.current?.reset();
+      // Came from "Create study task"? Clear it from the address, so a
+      // refresh or Back doesn't open the filled-in form again.
+      if (prefill) router.replace(spaceHref("tasks"), { scroll: false });
       return result;
     }
     // React empties a form after every submit, so hand back what was typed

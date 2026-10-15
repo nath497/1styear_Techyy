@@ -1,5 +1,6 @@
 // Study Planner rules (SQL 015). The database checks the same limits; these
 // give the learner friendly messages before it has to.
+import { calendarDateError, hasLetterOrNumber } from "@/lib/dates";
 import { formValues } from "@/lib/form-values";
 import { isUuid, SUBJECTS, type Subject } from "@/lib/tutormatch";
 
@@ -103,13 +104,11 @@ export function parseTaskForm(form: FormData): { task: TaskInput } | { error: st
   const minutes = text("estimated_minutes");
   const notes = text("notes");
 
-  if (!title) return { error: "Give the task a title." };
+  if (!hasLetterOrNumber(title)) return { error: "Give the task a title." };
   if (title.length > 100) return { error: "Please keep the title under 100 characters." };
   if (!Object.hasOwn(SUBJECTS, subject)) return { error: "Choose a subject." };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dueDate) || Number.isNaN(Date.parse(`${dueDate}T00:00:00Z`)))
-    return { error: "Choose a due date." };
-  // Reject impossible dates like Feb 30.
-  if (new Date(`${dueDate}T00:00:00Z`).toISOString().slice(0, 10) !== dueDate) return { error: "Choose a real date." };
+  const dateError = calendarDateError(dueDate, "a due date");
+  if (dateError) return { error: dateError };
   if (dueTime && !/^([01]\d|2[0-3]):[0-5]\d$/.test(dueTime)) return { error: "Choose a valid time, or leave it empty." };
   if (!Object.hasOwn(PRIORITIES, priority)) return { error: "Choose a priority." };
   let estimated: number | null = null;

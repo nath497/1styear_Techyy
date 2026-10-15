@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { TOPIC_STATUS_STYLE, TOPIC_STATUSES, type TopicStatus } from "@/lib/learntrack";
 import { setTopicStatus, type TopicFormState } from "./actions";
 
-// Three buttons — Need to Review, Learning, Understood. The current one is
+// Three buttons — Need to Review, Currently Learning, Understood. The current one is
 // coloured in; tapping another saves it straight away.
 export function TopicStatusButtons({ topicId, name, status }: { topicId: string; name: string; status: TopicStatus }) {
   const [state, formAction, pending] = useActionState<TopicFormState, FormData>(async (prev, formData) => {

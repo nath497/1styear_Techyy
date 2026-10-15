@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  BarChart3,
   CalendarCheck,
   CalendarDays,
   ChevronDown,
@@ -33,7 +32,6 @@ const ICONS = {
   help: HandHelping,
   sessions: CalendarCheck,
   planner: CalendarDays,
-  learntrack: BarChart3,
   subscription: CreditCard,
   profile: UserRound,
   join: UserPlus,
