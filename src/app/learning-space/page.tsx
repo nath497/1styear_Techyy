@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LearnTrackTab } from "@/app/learntrack/learntrack-tab";
 import { StudyTasksTab } from "@/app/planner/tasks-tab";
+import { ScheduleTab } from "@/app/schedule/schedule-tab";
 import { createClient } from "@/lib/supabase/server";
 import { parseTab, SPACE_TABS, type SpaceTab } from "@/lib/learning-space";
 import { manilaToday } from "@/lib/planner";
@@ -11,9 +12,8 @@ import { TabBar } from "./tab-bar";
 
 export const metadata: Metadata = { title: "My Learning Space · TutorMatch" };
 
-// Tabs whose tickets aren't built yet (24, 25, 26).
+// Tabs whose tickets aren't built yet (25, 26).
 const COMING_NEXT: Partial<Record<SpaceTab, string>> = {
-  schedule: "Plan study activities by day and time, without clashes.",
   goals: "Set learning goals and watch them fill up as you complete linked tasks.",
   notes: "Write questions before a tutoring session and a reflection after it.",
 };
@@ -61,6 +61,8 @@ export default async function LearningSpacePage({ searchParams }: PageProps<"/le
         <OverviewTab learnerId={user.id} today={manilaToday()} />
       ) : tab === "tasks" ? (
         <StudyTasksTab learnerId={user.id} params={params} />
+      ) : tab === "schedule" ? (
+        <ScheduleTab learnerId={user.id} today={manilaToday()} />
       ) : tab === "learntrack" ? (
         <LearnTrackTab params={params} />
       ) : (

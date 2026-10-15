@@ -6,6 +6,7 @@ import { TaskDoneButton } from "@/app/planner/task-done-button";
 import { createClient } from "@/lib/supabase/server";
 import { addDays, overallProgress, spaceHref } from "@/lib/learning-space";
 import { formatDue, type StudyTask } from "@/lib/planner";
+import { formatDay, formatTimeRange, manilaNowTime, nextActivity, type StudyActivity } from "@/lib/schedule";
 import { formatSessionTime, SUBJECTS, type Subject } from "@/lib/tutormatch";
 
 type NextSession = {
@@ -23,7 +24,8 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
 
   // Row Level Security only returns this learner's own rows (SQL 003, 015,
   // 016), so these counts are theirs alone.
-  const [dueSoon, completed, allTasks, review, understood, allTopics, sessions, todayTasks] = await Promise.all([
+  const [dueSoon, completed, allTasks, review, understood, allTopics, sessions, todayTasks, upcomingActivities] =
+    await Promise.all([
     supabase.from("study_tasks").select("id", count).neq("status", "done").gte("due_date", today).lte("due_date", weekEnd),
     supabase.from("study_tasks").select("id", count).eq("status", "done"),
     supabase.from("study_tasks").select("id", count),
@@ -48,8 +50,17 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
       .order("due_time", { ascending: true, nullsFirst: false })
       .limit(5)
       .returns<StudyTask[]>(),
+    // From today on; the first that hasn't finished yet is "next".
+    supabase
+      .from("study_activities")
+      .select("id, title, subject, activity_date, start_time, end_time, notes")
+      .gte("activity_date", today)
+      .order("activity_date", { ascending: true })
+      .order("start_time", { ascending: true })
+      .limit(10)
+      .returns<StudyActivity[]>(),
   ]);
-  const results = { dueSoon, completed, allTasks, review, understood, allTopics, sessions, todayTasks };
+  const results = { dueSoon, completed, allTasks, review, understood, allTopics, sessions, todayTasks, upcomingActivities };
   for (const [name, r] of Object.entries(results)) {
     if (r.error) console.error(`My Learning Space: could not load ${name}`, r.error);
   }
@@ -61,6 +72,7 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
     understood.error || allTopics.error ? null : overallProgress(understood.count ?? 0, allTopics.count ?? 0);
   const isNew = !allTasks.error && !allTopics.error && (allTasks.count ?? 0) === 0 && (allTopics.count ?? 0) === 0;
   const next = sessions.data?.[0];
+  const nextStudy = nextActivity(upcomingActivities.data ?? [], today, manilaNowTime());
 
   return (
     <div className="flex flex-col gap-6">
@@ -128,6 +140,16 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
           </ul>
         )}
       </Section>
+
+      {nextStudy && (
+        <Section title="Next study activity" action={{ href: spaceHref("schedule"), label: "Schedule" }}>
+          <p className="font-medium break-words">{nextStudy.title}</p>
+          <p className="text-muted-foreground">
+            {formatDay(nextStudy.activity_date, today)} · {formatTimeRange(nextStudy.start_time, nextStudy.end_time)} ·{" "}
+            {SUBJECTS[nextStudy.subject]}
+          </p>
+        </Section>
+      )}
 
       {next && (
         <Section title="Next tutoring session" action={{ href: "/sessions", label: "My sessions" }}>
