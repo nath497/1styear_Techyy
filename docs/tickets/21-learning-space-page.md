@@ -13,16 +13,16 @@ Understood), plus today's tasks. Schedule, Goals and Session Notes say
 
 **Blocked by:** None.
 
-**Status:** todo
+**Status:** done
 
-- [ ] One "My Learning Space" sidebar link replaces Study Planner and
+- [x] One "My Learning Space" sidebar link replaces Study Planner and
       LearnTrack, on desktop and in the phone menu
-- [ ] All six tabs open; the tab is kept in the address, so Back and
+- [x] All six tabs open; the tab is kept in the address, so Back and
       shared links work
-- [ ] Study Tasks and LearnTrack keep every feature they have today
-- [ ] Old Study Planner and LearnTrack links open the matching tab
-- [ ] Overview figures match the learner's real records; a new learner
+- [x] Study Tasks and LearnTrack keep every feature they have today
+- [x] Old Study Planner and LearnTrack links open the matching tab
+- [x] Overview figures match the learner's real records; a new learner
       sees zeros and a "start here" message
-- [ ] Dashboard cards link into My Learning Space
-- [ ] Tutors see a "for learners" note
-- [ ] Works on the live URL, on a phone
+- [x] Dashboard cards link into My Learning Space
+- [x] Tutors see a "for learners" note
+- [x] Works on the live URL, on a phone
