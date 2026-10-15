@@ -27,6 +27,7 @@ import {
 import { JoinCallLink } from "@/components/join-call-link";
 import { TaskDoneButton } from "@/app/planner/task-done-button";
 import { formatDue, manilaToday, type StudyTask } from "@/lib/planner";
+import type { LearnTopic } from "@/lib/learntrack";
 import { loadInbox } from "@/lib/chat";
 import { Empty, LoadError, RecentChats, Section, StatCard, Welcome } from "../parts";
 
@@ -156,6 +157,26 @@ export default async function LearnerDashboard() {
   const showTasks = tasksError || (anyRes.count ?? 0) > 0;
   if (inbox.error) console.error("Dashboard: could not load chats", inbox.error);
 
+  // LearnTrack: how many topics are at Need to Review (and up to 3 of
+  // them), and whether the learner has any topics at all — the card only
+  // appears once they do. Row Level Security only returns their own (SQL 016).
+  const [reviewRes, anyTopicRes] = await Promise.all([
+    supabase
+      .from("learn_topics")
+      .select("id, subject, name", { count: "exact" })
+      .eq("status", "need_review")
+      .order("updated_at", { ascending: false })
+      .limit(3)
+      .returns<Pick<LearnTopic, "id" | "subject" | "name">[]>(),
+    supabase.from("learn_topics").select("id", { count: "exact", head: true }),
+  ]);
+  if (reviewRes.error) console.error("Dashboard: could not load topics", reviewRes.error);
+  if (anyTopicRes.error) console.error("Dashboard: could not count topics", anyTopicRes.error);
+  const topicsError = Boolean(reviewRes.error || anyTopicRes.error);
+  // As with study tasks: when we can't tell, show the card with an error.
+  const showTopics = topicsError || (anyTopicRes.count ?? 0) > 0;
+  const toReview = reviewRes.count ?? 0;
+
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-4 py-8">
       <Welcome
@@ -202,6 +223,36 @@ export default async function LearnerDashboard() {
                 </li>
               ))}
             </ul>
+          )}
+        </Section>
+      )}
+
+      {showTopics && (
+        <Section title="LearnTrack" action={{ href: "/learntrack", label: "Open LearnTrack" }}>
+          {topicsError ? (
+            <LoadError what="your topics" />
+          ) : toReview === 0 ? (
+            <Empty>Nothing at Need to Review. Keep it up!</Empty>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <p>
+                <span className="font-semibold">{toReview}</span>{" "}
+                {toReview === 1 ? "topic needs" : "topics need"} review.
+              </p>
+              <ul className="flex flex-col gap-2">
+                {(reviewRes.data ?? []).map((t) => (
+                  <li key={t.id} className="rounded-[var(--radius)] bg-muted/60 px-3 py-2">
+                    <span className="block truncate font-medium">{t.name}</span>
+                    <span className="text-muted-foreground">{SUBJECTS[t.subject]}</span>
+                  </li>
+                ))}
+              </ul>
+              {toReview > 3 && (
+                <Link href="/learntrack?status=need_review" className="text-xs font-medium text-primary hover:underline">
+                  See all {toReview}
+                </Link>
+              )}
+            </div>
           )}
         </Section>
       )}

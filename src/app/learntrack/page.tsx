@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/server";
-import { groupBySubject, type LearnTopic } from "@/lib/learntrack";
+import { groupBySubject, parseTopicFilter, TOPIC_STATUSES, type LearnTopic, type TopicStatus } from "@/lib/learntrack";
 import { SUBJECTS } from "@/lib/tutormatch";
 import { AddTopicForm } from "./add-topic-form";
-import { TopicStatusButtons } from "./topic-status";
+import { TopicItem } from "./topic-item";
 
 export const metadata: Metadata = { title: "LearnTrack · TutorMatch" };
 
-export default async function LearnTrackPage() {
+export default async function LearnTrackPage({ searchParams }: PageProps<"/learntrack">) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -37,7 +41,14 @@ export default async function LearnTrackPage() {
     .select("id, subject, name, status, note")
     .returns<LearnTopic[]>();
   if (error) console.error("LearnTrack: could not load topics", error);
-  const groups = groupBySubject(data ?? []);
+  const filter = parseTopicFilter(await searchParams);
+  // Progress always counts every topic in the subject; the filter only
+  // changes which topics are listed underneath.
+  const groups = groupBySubject(data ?? []).map((g) => ({
+    ...g,
+    shown: filter === "all" ? g.topics : g.topics.filter((t) => t.status === filter),
+  }));
+  const nothingMatches = groups.length > 0 && groups.every((g) => g.shown.length === 0);
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8">
@@ -50,6 +61,33 @@ export default async function LearnTrackPage() {
       </header>
 
       <AddTopicForm />
+
+      {/* Filter: a plain GET form, so the choice is kept in the address. */}
+      {groups.length > 0 && (
+        <form method="get" action="/learntrack" className="flex flex-wrap items-end gap-3">
+          <div className="flex min-w-40 flex-1 flex-col gap-1.5 sm:flex-none">
+            <Label htmlFor="filter-status" className="text-xs text-muted-foreground">
+              Show
+            </Label>
+            <Select id="filter-status" name="status" defaultValue={filter}>
+              <option value="all">All topics</option>
+              {(Object.keys(TOPIC_STATUSES) as TopicStatus[]).map((key) => (
+                <option key={key} value={key}>
+                  {TOPIC_STATUSES[key]}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <Button type="submit" variant="outline">
+            Filter
+          </Button>
+          {filter !== "all" && (
+            <Link href="/learntrack" className={buttonVariants({ variant: "ghost" })}>
+              Reset
+            </Link>
+          )}
+        </form>
+      )}
 
       {error ? (
         <Card className="border-destructive">
@@ -67,8 +105,18 @@ export default async function LearnTrackPage() {
             </p>
           </CardContent>
         </Card>
+      ) : nothingMatches ? (
+        <Card>
+          <CardContent className="flex flex-col items-center gap-3 pt-6 text-center">
+            <p className="font-medium">No topics at {TOPIC_STATUSES[filter as TopicStatus]}.</p>
+            <Link href="/learntrack" className={buttonVariants({ variant: "outline", size: "sm" })}>
+              Show all topics
+            </Link>
+          </CardContent>
+        </Card>
       ) : (
         groups.map((g) => {
+          if (g.shown.length === 0) return null;
           const percent = Math.round((g.understood / g.total) * 100);
           return (
             <section key={g.subject} className="flex flex-col gap-3">
@@ -92,19 +140,9 @@ export default async function LearnTrackPage() {
                 </div>
               </div>
               <ul className="flex flex-col gap-2">
-                {g.topics.map((t) => (
+                {g.shown.map((t) => (
                   <li key={t.id}>
-                    <Card>
-                      <CardContent className="flex flex-col gap-3 pt-4 pb-4 text-sm sm:flex-row sm:items-start sm:justify-between">
-                        <div className="flex min-w-0 flex-col gap-1">
-                          <p className="font-medium break-words">{t.name}</p>
-                          {t.note && (
-                            <p className="whitespace-pre-line break-words text-muted-foreground">{t.note}</p>
-                          )}
-                        </div>
-                        <TopicStatusButtons topicId={t.id} name={t.name} status={t.status} />
-                      </CardContent>
-                    </Card>
+                    <TopicItem topic={t} />
                   </li>
                 ))}
               </ul>

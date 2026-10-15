@@ -48,6 +48,13 @@ export function isTopicStatus(value: unknown): value is TopicStatus {
   return typeof value === "string" && Object.hasOwn(TOPIC_STATUSES, value);
 }
 
+// Read ?status=… from the page address: one status, or everything. An
+// unknown value shows everything, so a bad link never breaks the page.
+export function parseTopicFilter(params: Record<string, string | string[] | undefined>): TopicStatus | "all" {
+  const v = params.status;
+  return isTopicStatus(v) ? v : "all";
+}
+
 // Topics grouped by subject (in the usual subject order), each group with
 // its progress: how many topics are Understood out of how many.
 export function groupBySubject(topics: LearnTopic[]) {

@@ -24,6 +24,54 @@ export async function addTopic(_prev: TopicFormState, formData: FormData): Promi
   }
 
   revalidatePath("/learntrack");
+  revalidatePath("/dashboard/learner");
+  return { saved: Date.now() };
+}
+
+// Edit a topic — same checks as adding, plus the status. Only the owner
+// can (SQL 016).
+export async function updateTopic(_prev: TopicFormState, formData: FormData): Promise<TopicFormState> {
+  const topicId = String(formData.get("topic_id") ?? "");
+  const status = formData.get("status");
+  if (!isUuid(topicId)) return { error: "Something went wrong. Please refresh." };
+  const parsed = parseTopicForm(formData);
+  if ("error" in parsed) return { error: parsed.error };
+  if (!isTopicStatus(status)) return { error: "Choose how well you know this topic." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("learn_topics")
+    .update({ ...parsed.topic, status })
+    .eq("id", topicId)
+    .select("id");
+  if (error) {
+    console.error("LearnTrack: edit failed", error.code, error.message);
+    if (error.code === "23505")
+      return { error: `You already have "${parsed.topic.name}" in ${SUBJECTS[parsed.topic.subject]}.` };
+    return { error: "We couldn't save your changes. Please try again." };
+  }
+  if (!data || data.length === 0) return { error: "You can't change this topic. Please refresh." };
+
+  revalidatePath("/learntrack");
+  revalidatePath("/dashboard/learner");
+  return { saved: Date.now() };
+}
+
+// Delete a topic. Only the owner can (SQL 016).
+export async function deleteTopic(_prev: TopicFormState, formData: FormData): Promise<TopicFormState> {
+  const topicId = String(formData.get("topic_id") ?? "");
+  if (!isUuid(topicId)) return { error: "Something went wrong. Please refresh." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("learn_topics").delete().eq("id", topicId).select("id");
+  if (error) {
+    console.error("LearnTrack: delete failed", error.code, error.message);
+    return { error: "We couldn't delete the topic. Please try again." };
+  }
+  if (!data || data.length === 0) return { error: "You can't delete this topic. Please refresh." };
+
+  revalidatePath("/learntrack");
+  revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }
 
@@ -43,5 +91,6 @@ export async function setTopicStatus(_prev: TopicFormState, formData: FormData):
   if (!data || data.length === 0) return { error: "You can't change this topic. Please refresh." };
 
   revalidatePath("/learntrack");
+  revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }
