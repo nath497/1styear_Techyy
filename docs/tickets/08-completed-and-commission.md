@@ -7,14 +7,14 @@ total labelled "Recorded, not collected — no real money has moved."
 
 **Blocked by:** 07
 
-**Status:** todo
+**Status:** done
 
-- [ ] Only the tutor can move a booking Accepted → Completed; a learner never can
+- [x] Only the tutor can move a booking Accepted → Completed; a learner never can
 - [x] `commission_records` is created from a numbered SQL file with RLS ON; nobody can insert, edit or delete rows through the app
 - [x] Commission is in whole centavos, and commission + tutor amount always equals the price
-- [ ] Completing the same booking twice never creates a second record
-- [ ] Only the tutor on the booking can see its commission record
-- [ ] Checked with a second learner account: they cannot see other people's bookings or any commission records
-- [ ] Every table shows RLS enabled in the Supabase Table Editor
-- [ ] The full 3-minute demo runs end to end on a phone, with real tutor profiles
-- [ ] Works on the live URL
+- [x] Completing the same booking twice never creates a second record
+- [x] Only the tutor on the booking can see its commission record
+- [x] Checked with a second learner account: they cannot see other people's bookings or any commission records
+- [x] Every table shows RLS enabled in the Supabase Table Editor
+- [x] The full 3-minute demo runs end to end on a phone, with real tutor profiles
+- [x] Works on the live URL
