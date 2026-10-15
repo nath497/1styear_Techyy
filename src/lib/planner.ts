@@ -160,6 +160,17 @@ export function parsePlannerFilters(params: Record<string, string | string[] | u
   };
 }
 
+// "Create study task" from a LearnTrack topic opens Study Tasks with
+// ?new_title=…&new_subject=…. Only a known subject and a title within the
+// limit are used; anything else is ignored. Nothing is saved until the
+// learner presses Add task.
+export function parseTaskPrefill(params: Record<string, string | string[] | undefined>): TaskFormValues | undefined {
+  const title = typeof params.new_title === "string" ? params.new_title.trim().slice(0, 100) : "";
+  const subject = typeof params.new_subject === "string" ? params.new_subject : "";
+  if (!title) return undefined;
+  return Object.hasOwn(SUBJECTS, subject) ? { title, subject } : { title };
+}
+
 // A tutoring session's start time as a Philippine date and time, so it can
 // sit in the planner next to tasks: "2026-10-20" and "16:00:00".
 export function toManilaDateTime(iso: string) {

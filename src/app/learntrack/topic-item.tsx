@@ -1,11 +1,13 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ListPlus, Pencil, Trash2 } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { formValues } from "@/lib/form-values";
-import type { LearnTopic } from "@/lib/learntrack";
+import { spaceHref } from "@/lib/learning-space";
+import { formatUpdated, reviewTaskTitle, type LearnTopic } from "@/lib/learntrack";
 import { deleteTopic, updateTopic, type TopicFormState } from "./actions";
 import { TOPIC_FIELDS, TopicFields, type TopicFieldValues } from "./topic-fields";
 import { TopicStatusButtons } from "./topic-status";
@@ -34,6 +36,7 @@ export function TopicItem({ topic }: { topic: LearnTopic }) {
         <div className="flex min-w-0 flex-col gap-1">
           <p className="font-medium break-words">{topic.name}</p>
           {topic.note && <p className="whitespace-pre-line break-words text-muted-foreground">{topic.note}</p>}
+          <p className="text-xs text-muted-foreground">Last updated {formatUpdated(topic.updated_at)}</p>
           {deleteState.error && (
             <p role="alert" className="text-xs text-destructive">
               {deleteState.error}
@@ -43,7 +46,16 @@ export function TopicItem({ topic }: { topic: LearnTopic }) {
 
         <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
           <TopicStatusButtons topicId={topic.id} name={topic.name} status={topic.status} />
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1 sm:justify-end">
+            {/* Opens Study Tasks with the add form filled in for this topic. */}
+            <Link
+              href={spaceHref("tasks", { new_title: reviewTaskTitle(topic.name), new_subject: topic.subject })}
+              className={buttonVariants({ size: "sm", variant: "outline" })}
+              aria-label={`Create a study task to review ${topic.name}`}
+            >
+              <ListPlus className="h-4 w-4" aria-hidden />
+              Create study task
+            </Link>
             <Button
               type="button"
               size="sm"

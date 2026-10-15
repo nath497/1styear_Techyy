@@ -5,12 +5,14 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { addTask, type TaskFormState } from "./actions";
 import { TaskFields } from "./task-fields";
-import { taskFormValues } from "@/lib/planner";
+import { taskFormValues, type TaskFormValues } from "@/lib/planner";
 
 // "Add a task": a button that opens the form. After a successful add the
 // form clears and stays open, so adding several tasks is quick.
-export function AddTaskForm({ today }: { today: string }) {
-  const [open, setOpen] = useState(false);
+// `prefill` (from LearnTrack's "Create study task") opens the form already
+// filled in.
+export function AddTaskForm({ today, prefill }: { today: string; prefill?: TaskFormValues }) {
+  const [open, setOpen] = useState(Boolean(prefill));
   const form = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState<TaskFormState, FormData>(async (prev, formData) => {
     let result: TaskFormState;
@@ -38,7 +40,14 @@ export function AddTaskForm({ today }: { today: string }) {
 
   return (
     <form ref={form} action={formAction} className="flex flex-col gap-4 rounded-[var(--radius)] border border-border bg-card p-4">
-      <TaskFields key={state.attempt} idPrefix="new-task" values={state.values} today={today} />
+      {/* After an error: what was typed. After a successful add: empty.
+          Otherwise: the prefill, if any. A new key re-fills the boxes. */}
+      <TaskFields
+        key={state.attempt ?? state.saved}
+        idPrefix="new-task"
+        values={state.values ?? (state.saved ? undefined : prefill)}
+        today={today}
+      />
 
       {state.error ? (
         <p role="alert" className="rounded-[var(--radius)] bg-destructive/10 px-3 py-2 text-sm text-destructive">

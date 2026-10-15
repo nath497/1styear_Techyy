@@ -5,8 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/server";
 import { spaceHref, SPACE_PATH } from "@/lib/learning-space";
-import { groupBySubject, parseTopicFilter, TOPIC_STATUSES, type LearnTopic, type TopicStatus } from "@/lib/learntrack";
-import { SUBJECTS } from "@/lib/tutormatch";
+import { groupBySubject, parseTopicFilters, TOPIC_STATUSES, type LearnTopic, type TopicStatus } from "@/lib/learntrack";
+import { SUBJECTS, type Subject } from "@/lib/tutormatch";
 import { AddTopicForm } from "./add-topic-form";
 import { TopicItem } from "./topic-item";
 
@@ -18,15 +18,21 @@ export async function LearnTrackTab({ params }: { params: Record<string, string 
   // Row Level Security only returns this learner's own topics (SQL 016).
   const { data, error } = await supabase
     .from("learn_topics")
-    .select("id, subject, name, status, note")
+    .select("id, subject, name, status, note, updated_at")
     .returns<LearnTopic[]>();
   if (error) console.error("LearnTrack: could not load topics", error);
-  const filter = parseTopicFilter(params);
-  // Progress always counts every topic in the subject; the filter only
-  // changes which topics are listed underneath.
+  const filters = parseTopicFilters(params);
+  const filtering = filters.status !== "all" || Boolean(filters.subject);
+  // Progress always counts every topic in the subject; the filters only
+  // change which subjects and topics are listed.
   const groups = groupBySubject(data ?? []).map((g) => ({
     ...g,
-    shown: filter === "all" ? g.topics : g.topics.filter((t) => t.status === filter),
+    shown:
+      filters.subject && g.subject !== filters.subject
+        ? []
+        : filters.status === "all"
+          ? g.topics
+          : g.topics.filter((t) => t.status === filters.status),
   }));
   const nothingMatches = groups.length > 0 && groups.every((g) => g.shown.length === 0);
 
@@ -44,10 +50,23 @@ export async function LearnTrackTab({ params }: { params: Record<string, string 
         <form method="get" action={SPACE_PATH} className="flex flex-wrap items-end gap-3">
           <input type="hidden" name="tab" value="learntrack" />
           <div className="flex min-w-40 flex-1 flex-col gap-1.5 sm:flex-none">
+            <Label htmlFor="filter-topic-subject" className="text-xs text-muted-foreground">
+              Subject
+            </Label>
+            <Select id="filter-topic-subject" name="subject" defaultValue={filters.subject ?? ""}>
+              <option value="">All subjects</option>
+              {(Object.keys(SUBJECTS) as Subject[]).map((key) => (
+                <option key={key} value={key}>
+                  {SUBJECTS[key]}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="flex min-w-40 flex-1 flex-col gap-1.5 sm:flex-none">
             <Label htmlFor="filter-status" className="text-xs text-muted-foreground">
               Show
             </Label>
-            <Select id="filter-status" name="status" defaultValue={filter}>
+            <Select id="filter-status" name="status" defaultValue={filters.status}>
               <option value="all">All topics</option>
               {(Object.keys(TOPIC_STATUSES) as TopicStatus[]).map((key) => (
                 <option key={key} value={key}>
@@ -59,7 +78,7 @@ export async function LearnTrackTab({ params }: { params: Record<string, string 
           <Button type="submit" variant="outline">
             Filter
           </Button>
-          {filter !== "all" && (
+          {filtering && (
             <Link href={spaceHref("learntrack")} className={buttonVariants({ variant: "ghost" })}>
               Reset
             </Link>
@@ -86,7 +105,7 @@ export async function LearnTrackTab({ params }: { params: Record<string, string 
       ) : nothingMatches ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-3 pt-6 text-center">
-            <p className="font-medium">No topics at {TOPIC_STATUSES[filter as TopicStatus]}.</p>
+            <p className="font-medium">No topics match these filters.</p>
             <Link href={spaceHref("learntrack")} className={buttonVariants({ variant: "outline", size: "sm" })}>
               Show all topics
             </Link>

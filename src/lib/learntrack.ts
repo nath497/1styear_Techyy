@@ -4,7 +4,7 @@ import { SUBJECTS, type Subject } from "@/lib/tutormatch";
 
 export const TOPIC_STATUSES = {
   need_review: "Need to Review",
-  learning: "Learning",
+  learning: "Currently Learning",
   understood: "Understood",
 } as const;
 export type TopicStatus = keyof typeof TOPIC_STATUSES;
@@ -22,6 +22,7 @@ export type LearnTopic = {
   name: string;
   status: TopicStatus;
   note: string;
+  updated_at: string; // when the topic was last changed
 };
 
 export type TopicInput = { subject: Subject; name: string; note: string };
@@ -48,11 +49,31 @@ export function isTopicStatus(value: unknown): value is TopicStatus {
   return typeof value === "string" && Object.hasOwn(TOPIC_STATUSES, value);
 }
 
-// Read ?status=… from the page address: one status, or everything. An
-// unknown value shows everything, so a bad link never breaks the page.
-export function parseTopicFilter(params: Record<string, string | string[] | undefined>): TopicStatus | "all" {
-  const v = params.status;
-  return isTopicStatus(v) ? v : "all";
+// Read ?status=…&subject=… from the page address. Unknown values show
+// everything, so a bad link never breaks the page.
+export function parseTopicFilters(params: Record<string, string | string[] | undefined>) {
+  const status = params.status;
+  const subject = params.subject;
+  return {
+    status: isTopicStatus(status) ? status : ("all" as const),
+    subject: typeof subject === "string" && Object.hasOwn(SUBJECTS, subject) ? (subject as Subject) : undefined,
+  };
+}
+
+// "Last updated Oct 16, 2026" — the date in Philippine time.
+export function formatUpdated(iso: string) {
+  return new Date(iso).toLocaleDateString("en-PH", {
+    timeZone: "Asia/Manila",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+// The title for a study task made from a topic, kept within the task
+// title limit (100 characters).
+export function reviewTaskTitle(topicName: string) {
+  return `Review: ${topicName}`.slice(0, 100);
 }
 
 // Topics grouped by subject (in the usual subject order), each group with

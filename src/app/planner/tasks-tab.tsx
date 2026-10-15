@@ -9,6 +9,7 @@ import {
   groupTasks,
   manilaToday,
   parsePlannerFilters,
+  parseTaskPrefill,
   PRIORITIES,
   STATUS_FILTERS,
   toManilaDateTime,
@@ -118,7 +119,7 @@ export async function StudyTasksTab({
         Plan what to study and when. Your accepted tutoring sessions show here too.
       </p>
 
-      <AddTaskForm today={today} />
+      <AddTaskForm today={today} prefill={parseTaskPrefill(params)} />
 
       {/* Filters: a plain GET form, so the choice is kept in the address. */}
       {showFilters && (
