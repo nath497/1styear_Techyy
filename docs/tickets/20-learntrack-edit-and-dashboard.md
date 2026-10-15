@@ -7,14 +7,14 @@ are at Need to Review and up to 3 of them, once they have topics.
 
 **Blocked by:** 19
 
-**Status:** todo
+**Status:** done
 
-- [ ] Editing a topic saves; mistakes keep what was typed and show a
+- [x] Editing a topic saves; mistakes keep what was typed and show a
       friendly error
-- [ ] Deleting a topic asks first, then removes it
-- [ ] The status filter shows only matching topics, with a way to reset
-- [ ] The dashboard card shows the Need to Review count and up to 3
+- [x] Deleting a topic asks first, then removes it
+- [x] The status filter shows only matching topics, with a way to reset
+- [x] The dashboard card shows the Need to Review count and up to 3
       topics, and only appears once the learner has topics
-- [ ] A second learner and a tutor still can't see, edit or delete the
+- [x] A second learner and a tutor still can't see, edit or delete the
       first learner's topics
-- [ ] Works on the live URL, on a phone
+- [x] Works on the live URL, on a phone

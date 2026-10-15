@@ -479,11 +479,11 @@ LearnTrack.
   and updated_at.
 
 ### LearnTrack: done for the demo
-- [ ] A learner adds topics in two subjects, changes a status in one
+- [x] A learner adds topics in two subjects, changes a status in one
       tap, and the progress bar updates.
-- [ ] Editing and deleting a topic work.
-- [ ] The dashboard card shows the topics to review.
-- [ ] A second learner and a tutor can't see the first learner's
+- [x] Editing and deleting a topic work.
+- [x] The dashboard card shows the topics to review.
+- [x] A second learner and a tutor can't see the first learner's
       topics; learn_topics shows RLS enabled.
 
 ## Stretch goal: Profile
