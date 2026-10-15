@@ -20,6 +20,8 @@ export async function addTask(_prev: TaskFormState, formData: FormData): Promise
   if (error) {
     console.error("Study Planner: add failed", error.code, error.message);
     if (error.code === "42501") return { error: "Only learner accounts can use the Study Planner." };
+    // P0001 = the goal isn't one of the learner's own (SQL 017).
+    if (error.code === "P0001") return { error: "Choose one of your own goals, or none." };
     return { error: "We couldn't add the task. Please try again." };
   }
 
@@ -59,6 +61,7 @@ export async function updateTask(_prev: TaskFormState, formData: FormData): Prom
   const { data, error } = await supabase.from("study_tasks").update(parsed.task).eq("id", taskId).select("id");
   if (error) {
     console.error("Study Planner: edit failed", error.code, error.message);
+    if (error.code === "P0001") return { error: "Choose one of your own goals, or none." };
     return { error: "We couldn't save your changes. Please try again." };
   }
   if (!data || data.length === 0) return { error: "You can't change this task. Please refresh." };

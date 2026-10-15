@@ -1,7 +1,7 @@
 // Study Planner rules (SQL 015). The database checks the same limits; these
 // give the learner friendly messages before it has to.
 import { formValues } from "@/lib/form-values";
-import { SUBJECTS, type Subject } from "@/lib/tutormatch";
+import { isUuid, SUBJECTS, type Subject } from "@/lib/tutormatch";
 
 export const PRIORITIES = { high: "High", medium: "Medium", low: "Low" } as const;
 export type Priority = keyof typeof PRIORITIES;
@@ -31,6 +31,7 @@ export type StudyTask = {
   notes: string; // shown as "Description"
   status: TaskStatus;
   completed_at: string | null;
+  goal_id?: string | null; // the goal this task counts towards, if any
 };
 
 // Today's date in the Philippines as "YYYY-MM-DD" (Vercel runs on UTC).
@@ -85,6 +86,9 @@ export type TaskInput = {
   priority: Priority;
   estimated_minutes: number | null;
   notes: string;
+  // null = not linked to a goal. Left out when the form had no goal box,
+  // so saving never unlinks a goal by accident.
+  goal_id?: string | null;
 };
 
 // Read and check the add / edit form. Returns the clean values, or the
@@ -115,6 +119,10 @@ export function parseTaskForm(form: FormData): { task: TaskInput } | { error: st
     if (estimated < 5 || estimated > 600) return { error: "Estimated time should be between 5 and 600 minutes." };
   }
   if (notes.length > 500) return { error: "Please keep the description under 500 characters." };
+  // The goal must be one of the learner's own — the database checks that;
+  // here we only check it looks like an id.
+  const goal = text("goal_id");
+  if (goal && !isUuid(goal)) return { error: "Choose one of your goals, or none." };
 
   return {
     task: {
@@ -125,13 +133,23 @@ export function parseTaskForm(form: FormData): { task: TaskInput } | { error: st
       priority: priority as Priority,
       estimated_minutes: estimated,
       notes,
+      ...(form.has("goal_id") ? { goal_id: goal || null } : {}),
     },
   };
 }
 
 // What the learner typed into the add / edit form, as text, so the form can
 // be refilled after an error instead of losing their work.
-const TASK_FIELDS = ["title", "subject", "due_date", "due_time", "priority", "estimated_minutes", "notes"] as const;
+const TASK_FIELDS = [
+  "title",
+  "subject",
+  "due_date",
+  "due_time",
+  "priority",
+  "estimated_minutes",
+  "notes",
+  "goal_id",
+] as const;
 export type TaskFormValues = Partial<Record<(typeof TASK_FIELDS)[number], string>>;
 
 export function taskFormValues(form: FormData): TaskFormValues {

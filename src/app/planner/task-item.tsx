@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Clock, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import type { GoalOption } from "@/lib/goals";
 import { formatDue, PRIORITIES, PRIORITY_STYLE, taskFormValues, type StudyTask } from "@/lib/planner";
 import { SUBJECTS } from "@/lib/tutormatch";
 import { deleteTask, updateTask, type TaskFormState } from "./actions";
@@ -12,7 +13,7 @@ import { TaskFields } from "./task-fields";
 
 // One study task: shown as a card with Start / Mark done / Edit / Delete,
 // or as an edit form.
-export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
+export function TaskItem({ task, today, goals = [] }: { task: StudyTask; today: string; goals?: GoalOption[] }) {
   const [editing, setEditing] = useState(false);
   const done = task.status === "done";
 
@@ -26,7 +27,8 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
 
   // The edit form is its own component, so Cancel throws away a failed
   // attempt — the next Edit always starts from the saved task.
-  if (editing) return <EditTaskForm task={task} today={today} onDone={() => setEditing(false)} />;
+  if (editing) return <EditTaskForm task={task} today={today} goals={goals} onDone={() => setEditing(false)} />;
+  const goal = goals.find((g) => g.id === task.goal_id);
 
   return (
     <Card>
@@ -53,6 +55,7 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
               {PRIORITIES[task.priority]}
             </span>
           </p>
+          {goal && <p className="text-xs text-primary">Goal: {goal.title}</p>}
           {task.notes && <p className="whitespace-pre-line break-words text-muted-foreground">{task.notes}</p>}
           {deleteState.error && (
             <p role="alert" className="text-xs text-destructive">
@@ -109,7 +112,17 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
   );
 }
 
-function EditTaskForm({ task, today, onDone }: { task: StudyTask; today: string; onDone: () => void }) {
+function EditTaskForm({
+  task,
+  today,
+  goals,
+  onDone,
+}: {
+  task: StudyTask;
+  today: string;
+  goals: GoalOption[];
+  onDone: () => void;
+}) {
   const [state, formAction, saving] = useActionState<TaskFormState, FormData>(async (prev, formData) => {
     let result: TaskFormState;
     try {
@@ -130,7 +143,14 @@ function EditTaskForm({ task, today, onDone }: { task: StudyTask; today: string;
       <CardContent className="pt-4 pb-4">
         <form action={formAction} className="flex flex-col gap-4">
           <input type="hidden" name="task_id" value={task.id} />
-          <TaskFields key={state.attempt} idPrefix={`edit-${task.id}`} task={task} values={state.values} today={today} />
+          <TaskFields
+            key={state.attempt}
+            idPrefix={`edit-${task.id}`}
+            task={task}
+            values={state.values}
+            today={today}
+            goals={goals}
+          />
           {state.error && (
             <p role="alert" className="rounded-[var(--radius)] bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {state.error}

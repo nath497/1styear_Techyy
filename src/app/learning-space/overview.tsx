@@ -6,6 +6,7 @@ import { TaskDoneButton } from "@/app/planner/task-done-button";
 import { createClient } from "@/lib/supabase/server";
 import { addDays, overallProgress, spaceHref } from "@/lib/learning-space";
 import { formatDue, type StudyTask } from "@/lib/planner";
+import { formatTargetDate, goalProgress, type LearningGoal } from "@/lib/goals";
 import { formatDay, formatTimeRange, manilaNowTime, nextActivity, type StudyActivity } from "@/lib/schedule";
 import { formatSessionTime, SUBJECTS, type Subject } from "@/lib/tutormatch";
 
@@ -24,7 +25,7 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
 
   // Row Level Security only returns this learner's own rows (SQL 003, 015,
   // 016), so these counts are theirs alone.
-  const [dueSoon, completed, allTasks, review, understood, allTopics, sessions, todayTasks, upcomingActivities] =
+  const [dueSoon, completed, allTasks, review, understood, allTopics, sessions, todayTasks, upcomingActivities, goals, linked] =
     await Promise.all([
     supabase.from("study_tasks").select("id", count).neq("status", "done").gte("due_date", today).lte("due_date", weekEnd),
     supabase.from("study_tasks").select("id", count).eq("status", "done"),
@@ -59,8 +60,33 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
       .order("start_time", { ascending: true })
       .limit(10)
       .returns<StudyActivity[]>(),
+    // Active goals (soonest target first) and the tasks linked to goals.
+    supabase
+      .from("learning_goals")
+      .select("id, title, description, target_date, status")
+      .eq("status", "active")
+      .order("target_date", { ascending: true })
+      .limit(3)
+      .returns<LearningGoal[]>(),
+    supabase
+      .from("study_tasks")
+      .select("goal_id, status")
+      .not("goal_id", "is", null)
+      .returns<{ goal_id: string; status: string }[]>(),
   ]);
-  const results = { dueSoon, completed, allTasks, review, understood, allTopics, sessions, todayTasks, upcomingActivities };
+  const results = {
+    dueSoon,
+    completed,
+    allTasks,
+    review,
+    understood,
+    allTopics,
+    sessions,
+    todayTasks,
+    upcomingActivities,
+    goals,
+    linked,
+  };
   for (const [name, r] of Object.entries(results)) {
     if (r.error) console.error(`My Learning Space: could not load ${name}`, r.error);
   }
@@ -140,6 +166,36 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
           </ul>
         )}
       </Section>
+
+      {!goals.error && !linked.error && (goals.data?.length ?? 0) > 0 && (
+        <Section title="Active goals" action={{ href: spaceHref("goals"), label: "All goals" }}>
+          <ul className="flex flex-col gap-3">
+            {goals.data!.map((g) => {
+              const p = goalProgress((linked.data ?? []).filter((t) => t.goal_id === g.id));
+              return (
+                <li key={g.id} className="flex flex-col gap-1">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="min-w-0 truncate font-medium">{g.title}</span>
+                    <span className="shrink-0 text-xs text-muted-foreground">by {formatTargetDate(g.target_date)}</span>
+                  </div>
+                  {p.total === 0 ? (
+                    <span className="text-xs text-muted-foreground">No linked tasks yet</span>
+                  ) : (
+                    <>
+                      <div className="h-2 overflow-hidden rounded-full bg-muted" aria-hidden>
+                        <div className="h-full rounded-full bg-primary" style={{ width: `${p.percent}%` }} />
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {p.done} of {p.total} linked tasks completed
+                      </span>
+                    </>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </Section>
+      )}
 
       {nextStudy && (
         <Section title="Next study activity" action={{ href: spaceHref("schedule"), label: "Schedule" }}>

@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import type { GoalOption } from "@/lib/goals";
 import { PRIORITIES, type Priority, type StudyTask, type TaskFormValues } from "@/lib/planner";
 import { SUBJECTS, type Subject } from "@/lib/tutormatch";
 
@@ -13,13 +14,18 @@ export function TaskFields({
   task,
   values = {},
   today,
+  goals = [],
 }: {
   idPrefix: string;
   task?: StudyTask;
   values?: TaskFormValues;
   today: string;
+  goals?: GoalOption[];
 }) {
   const id = (name: string) => `${idPrefix}-${name}`;
+  // Goals to offer: the active ones, plus the task's current goal even if
+  // it's already achieved (so editing doesn't hide it).
+  const goalChoices = goals.filter((g) => g.status === "active" || g.id === task?.goal_id);
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -92,6 +98,21 @@ export function TaskFields({
           />
         </div>
       </div>
+
+      {goalChoices.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={id("goal")}>Counts towards a goal (optional)</Label>
+          <Select id={id("goal")} name="goal_id" defaultValue={values.goal_id ?? task?.goal_id ?? ""}>
+            <option value="">No goal</option>
+            {goalChoices.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.title}
+                {g.status === "achieved" ? " (achieved)" : ""}
+              </option>
+            ))}
+          </Select>
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         <Label htmlFor={id("notes")}>Description (optional)</Label>

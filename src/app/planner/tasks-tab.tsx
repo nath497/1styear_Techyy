@@ -19,6 +19,7 @@ import {
 } from "@/lib/planner";
 import { SUBJECTS, type Subject } from "@/lib/tutormatch";
 import { AddTaskForm } from "./add-task-form";
+import type { GoalOption } from "@/lib/goals";
 import { SessionRow, type PlannerSession } from "./session-row";
 import { TaskItem } from "./task-item";
 
@@ -51,10 +52,10 @@ export async function StudyTasksTab({
 
   // Row Level Security only returns this learner's own tasks (SQL 015) and
   // own bookings (SQL 003).
-  const [tasksRes, sessionsRes] = await Promise.all([
+  const [tasksRes, sessionsRes, goalsRes] = await Promise.all([
     supabase
       .from("study_tasks")
-      .select("id, title, subject, due_date, due_time, priority, estimated_minutes, notes, status, completed_at")
+      .select("id, title, subject, due_date, due_time, priority, estimated_minutes, notes, status, completed_at, goal_id")
       .order("due_date", { ascending: true })
       .returns<StudyTask[]>(),
     supabase
@@ -63,7 +64,12 @@ export async function StudyTasksTab({
       .eq("learner_id", learnerId)
       .eq("status", "accepted")
       .returns<BookingRow[]>(),
+    // The learner's goals, for "Counts towards a goal" (SQL 017).
+    supabase.from("learning_goals").select("id, title, status").order("target_date").returns<GoalOption[]>(),
   ]);
+  // Without goals the task form just hides the goal box.
+  if (goalsRes.error) console.error("Study Planner: could not load goals", goalsRes.error);
+  const goals = goalsRes.data ?? [];
   if (tasksRes.error) console.error("Study Planner: could not load tasks", tasksRes.error);
   if (sessionsRes.error) console.error("Study Planner: could not load sessions", sessionsRes.error);
 
@@ -119,7 +125,7 @@ export async function StudyTasksTab({
         Plan what to study and when. Your accepted tutoring sessions show here too.
       </p>
 
-      <AddTaskForm today={today} prefill={parseTaskPrefill(params)} />
+      <AddTaskForm today={today} prefill={parseTaskPrefill(params)} goals={goals} />
 
       {/* Filters: a plain GET form, so the choice is kept in the address. */}
       {showFilters && (
@@ -213,7 +219,7 @@ export async function StudyTasksTab({
               <ul className="flex flex-col gap-2">
                 {s.items.map((item) => (
                   <li key={`${item.kind}-${item.id}`}>
-                    {item.kind === "task" ? <TaskItem task={item} today={today} /> : <SessionRow session={item} />}
+                    {item.kind === "task" ? <TaskItem task={item} today={today} goals={goals} /> : <SessionRow session={item} />}
                   </li>
                 ))}
               </ul>

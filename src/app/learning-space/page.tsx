@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GoalsTab } from "@/app/goals/goals-tab";
 import { LearnTrackTab } from "@/app/learntrack/learntrack-tab";
 import { StudyTasksTab } from "@/app/planner/tasks-tab";
 import { ScheduleTab } from "@/app/schedule/schedule-tab";
@@ -12,9 +13,8 @@ import { TabBar } from "./tab-bar";
 
 export const metadata: Metadata = { title: "My Learning Space · TutorMatch" };
 
-// Tabs whose tickets aren't built yet (25, 26).
+// Tabs whose tickets aren't built yet (26).
 const COMING_NEXT: Partial<Record<SpaceTab, string>> = {
-  goals: "Set learning goals and watch them fill up as you complete linked tasks.",
   notes: "Write questions before a tutoring session and a reflection after it.",
 };
 
@@ -65,6 +65,8 @@ export default async function LearningSpacePage({ searchParams }: PageProps<"/le
         <ScheduleTab learnerId={user.id} today={manilaToday()} />
       ) : tab === "learntrack" ? (
         <LearnTrackTab params={params} />
+      ) : tab === "goals" ? (
+        <GoalsTab today={manilaToday()} />
       ) : (
         <Card>
           <CardContent className="flex flex-col items-center gap-2 pt-6 text-center">

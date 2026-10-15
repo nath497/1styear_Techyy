@@ -5,13 +5,22 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { addTask, type TaskFormState } from "./actions";
 import { TaskFields } from "./task-fields";
+import type { GoalOption } from "@/lib/goals";
 import { taskFormValues, type TaskFormValues } from "@/lib/planner";
 
 // "Add a task": a button that opens the form. After a successful add the
 // form clears and stays open, so adding several tasks is quick.
 // `prefill` (from LearnTrack's "Create study task") opens the form already
 // filled in.
-export function AddTaskForm({ today, prefill }: { today: string; prefill?: TaskFormValues }) {
+export function AddTaskForm({
+  today,
+  prefill,
+  goals,
+}: {
+  today: string;
+  prefill?: TaskFormValues;
+  goals?: GoalOption[];
+}) {
   const [open, setOpen] = useState(Boolean(prefill));
   const form = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState<TaskFormState, FormData>(async (prev, formData) => {
@@ -47,6 +56,7 @@ export function AddTaskForm({ today, prefill }: { today: string; prefill?: TaskF
         idPrefix="new-task"
         values={state.values ?? (state.saved ? undefined : prefill)}
         today={today}
+        goals={goals}
       />
 
       {state.error ? (
