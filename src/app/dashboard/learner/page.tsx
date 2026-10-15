@@ -141,7 +141,7 @@ export default async function LearnerDashboard() {
     supabase
       .from("study_tasks")
       .select("id, title, subject, due_date, due_time, priority, estimated_minutes, notes, status, completed_at")
-      .eq("status", "todo")
+      .neq("status", "done")
       .lte("due_date", today)
       .order("due_date", { ascending: true })
       .order("due_time", { ascending: true, nullsFirst: false })

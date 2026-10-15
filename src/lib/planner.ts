@@ -12,6 +12,14 @@ export const PRIORITY_STYLE: Record<Priority, string> = {
   low: "bg-muted text-muted-foreground",
 };
 
+// To Do → In Progress → Completed (SQL 017 added In Progress).
+export const TASK_STATUSES = { todo: "To Do", in_progress: "In Progress", done: "Completed" } as const;
+export type TaskStatus = keyof typeof TASK_STATUSES;
+
+export function isTaskStatus(value: unknown): value is TaskStatus {
+  return typeof value === "string" && Object.hasOwn(TASK_STATUSES, value);
+}
+
 export type StudyTask = {
   id: string;
   title: string;
@@ -20,8 +28,8 @@ export type StudyTask = {
   due_time: string | null; // "16:00:00"
   priority: Priority;
   estimated_minutes: number | null;
-  notes: string;
-  status: "todo" | "done";
+  notes: string; // shown as "Description"
+  status: TaskStatus;
   completed_at: string | null;
 };
 
@@ -30,15 +38,16 @@ export function manilaToday(now = new Date()) {
   return now.toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
 }
 
-// Overdue (before today), Today, Upcoming (later) and Done. To-do tasks
-// are soonest first; Done is most recently finished first.
+// Overdue (before today), Today, Upcoming (later) and Done. Unfinished
+// tasks (To Do or In Progress) are soonest first; Done is most recently
+// finished first.
 export function groupTasks<T extends Pick<StudyTask, "due_date" | "due_time" | "status" | "completed_at">>(
   tasks: T[],
   today = manilaToday(),
 ) {
   const key = (t: T) => `${t.due_date} ${t.due_time ?? "99:99"}`;
   const soonest = (a: T, b: T) => key(a).localeCompare(key(b));
-  const todo = tasks.filter((t) => t.status === "todo").sort(soonest);
+  const todo = tasks.filter((t) => t.status !== "done").sort(soonest);
   return {
     overdue: todo.filter((t) => t.due_date < today),
     today: todo.filter((t) => t.due_date === today),
@@ -105,7 +114,7 @@ export function parseTaskForm(form: FormData): { task: TaskInput } | { error: st
     estimated = Number(minutes);
     if (estimated < 5 || estimated > 600) return { error: "Estimated time should be between 5 and 600 minutes." };
   }
-  if (notes.length > 500) return { error: "Please keep notes under 500 characters." };
+  if (notes.length > 500) return { error: "Please keep the description under 500 characters." };
 
   return {
     task: {
@@ -131,11 +140,11 @@ export function taskFormValues(form: FormData): TaskFormValues {
 
 // ---- Filters and sessions in the planner (ticket 17) ----------------------
 
-export const STATUS_FILTERS = { all: "All", todo: "To do", done: "Done" } as const;
+export const STATUS_FILTERS = { all: "All", ...TASK_STATUSES } as const;
 export type StatusFilter = keyof typeof STATUS_FILTERS;
 
-// Read ?subject=…&status=… from the page address. Unknown values are
-// ignored, so a bad link never breaks the page.
+// Read ?subject=…&status=…&priority=… from the page address. Unknown
+// values are ignored, so a bad link never breaks the page.
 export function parsePlannerFilters(params: Record<string, string | string[] | undefined>) {
   const one = (k: string) => {
     const v = params[k];
@@ -143,9 +152,11 @@ export function parsePlannerFilters(params: Record<string, string | string[] | u
   };
   const subject = one("subject");
   const status = one("status");
+  const priority = one("priority");
   return {
     subject: Object.hasOwn(SUBJECTS, subject) ? (subject as Subject) : undefined,
     status: (Object.hasOwn(STATUS_FILTERS, status) ? status : "all") as StatusFilter,
+    priority: Object.hasOwn(PRIORITIES, priority) ? (priority as Priority) : undefined,
   };
 }
 

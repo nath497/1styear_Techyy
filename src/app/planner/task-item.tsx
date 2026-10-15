@@ -7,11 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatDue, PRIORITIES, PRIORITY_STYLE, taskFormValues, type StudyTask } from "@/lib/planner";
 import { SUBJECTS } from "@/lib/tutormatch";
 import { deleteTask, updateTask, type TaskFormState } from "./actions";
-import { TaskDoneButton } from "./task-done-button";
+import { TaskDoneButton, TaskStatusButton } from "./task-done-button";
 import { TaskFields } from "./task-fields";
 
-// One study task: shown as a card with Mark done / Edit / Delete, or as
-// an edit form.
+// One study task: shown as a card with Start / Mark done / Edit / Delete,
+// or as an edit form.
 export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
   const [editing, setEditing] = useState(false);
   const done = task.status === "done";
@@ -32,7 +32,14 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
     <Card>
       <CardContent className="flex flex-col gap-3 pt-4 pb-4 text-sm sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 flex-col gap-1">
-          <p className={`font-medium break-words ${done ? "text-muted-foreground line-through" : ""}`}>{task.title}</p>
+          <p className={`font-medium break-words ${done ? "text-muted-foreground line-through" : ""}`}>
+            {task.status === "in_progress" && (
+              <span className="mr-2 inline-block rounded-full bg-primary/15 px-2 py-0.5 align-middle text-xs font-medium text-primary">
+                In Progress
+              </span>
+            )}
+            {task.title}
+          </p>
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
             <span>{SUBJECTS[task.subject]}</span>
             <span aria-hidden>·</span>
@@ -55,6 +62,24 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
         </div>
 
         <div className="flex shrink-0 flex-wrap items-start gap-1 sm:justify-end">
+          {task.status === "todo" && (
+            <TaskStatusButton
+              taskId={task.id}
+              to="in_progress"
+              label="Start"
+              ariaLabel={`Start "${task.title}" (mark it In Progress)`}
+              variant="ghost"
+            />
+          )}
+          {task.status === "in_progress" && (
+            <TaskStatusButton
+              taskId={task.id}
+              to="todo"
+              label="Not started"
+              ariaLabel={`Move "${task.title}" back to To Do`}
+              variant="ghost"
+            />
+          )}
           <TaskDoneButton taskId={task.id} title={task.title} done={done} />
           <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(true)} aria-label={`Edit ${task.title}`}>
             <Pencil className="h-4 w-4" aria-hidden />

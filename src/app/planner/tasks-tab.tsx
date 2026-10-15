@@ -9,8 +9,10 @@ import {
   groupTasks,
   manilaToday,
   parsePlannerFilters,
+  PRIORITIES,
   STATUS_FILTERS,
   toManilaDateTime,
+  type Priority,
   type StatusFilter,
   type StudyTask,
 } from "@/lib/planner";
@@ -68,6 +70,7 @@ export async function StudyTasksTab({
   const tasks: Item[] = allTasks
     .filter((t) => !filters.subject || t.subject === filters.subject)
     .filter((t) => filters.status === "all" || t.status === filters.status)
+    .filter((t) => !filters.priority || t.priority === filters.priority)
     .map((t) => ({ ...t, kind: "task" as const }));
 
   // Accepted sessions from today on, on their Philippine date. (Past ones
@@ -89,9 +92,12 @@ export async function StudyTasksTab({
       };
     })
     .filter((s) => s.due_date >= today);
-  // Sessions count as "to do", so the Done filter hides them.
-  const sessions: Item[] =
-    filters.status === "done" ? [] : allSessions.filter((s) => !filters.subject || s.subject === filters.subject);
+  // Sessions count as "To Do" and have no priority, so they only show for
+  // All / To Do with no priority filter.
+  const showSessions = (filters.status === "all" || filters.status === "todo") && !filters.priority;
+  const sessions: Item[] = showSessions
+    ? allSessions.filter((s) => !filters.subject || s.subject === filters.subject)
+    : [];
 
   const groups = groupTasks<Item>([...tasks, ...sessions], today);
   const sections = [
@@ -100,7 +106,7 @@ export async function StudyTasksTab({
     { title: "Upcoming", items: groups.upcoming, tone: "" },
     { title: "Done", items: groups.done, tone: "text-muted-foreground" },
   ];
-  const filtering = Boolean(filters.subject) || filters.status !== "all";
+  const filtering = Boolean(filters.subject) || filters.status !== "all" || Boolean(filters.priority);
   const nothing = tasks.length + sessions.length === 0;
   // Filters are worth showing once there's anything to filter — or when
   // tasks failed to load, so the learner isn't stuck on a filtered view.
@@ -139,6 +145,19 @@ export async function StudyTasksTab({
               {(Object.keys(STATUS_FILTERS) as StatusFilter[]).map((key) => (
                 <option key={key} value={key}>
                   {STATUS_FILTERS[key]}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="flex min-w-32 flex-1 flex-col gap-1.5 sm:flex-none">
+            <Label htmlFor="filter-priority" className="text-xs text-muted-foreground">
+              Priority
+            </Label>
+            <Select id="filter-priority" name="priority" defaultValue={filters.priority ?? ""}>
+              <option value="">Any priority</option>
+              {(Object.keys(PRIORITIES) as Priority[]).map((key) => (
+                <option key={key} value={key}>
+                  {PRIORITIES[key]}
                 </option>
               ))}
             </Select>

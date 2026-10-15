@@ -24,7 +24,7 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
   // Row Level Security only returns this learner's own rows (SQL 003, 015,
   // 016), so these counts are theirs alone.
   const [dueSoon, completed, allTasks, review, understood, allTopics, sessions, todayTasks] = await Promise.all([
-    supabase.from("study_tasks").select("id", count).eq("status", "todo").gte("due_date", today).lte("due_date", weekEnd),
+    supabase.from("study_tasks").select("id", count).neq("status", "done").gte("due_date", today).lte("due_date", weekEnd),
     supabase.from("study_tasks").select("id", count).eq("status", "done"),
     supabase.from("study_tasks").select("id", count),
     supabase.from("learn_topics").select("id", count).eq("status", "need_review"),
@@ -42,7 +42,7 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
     supabase
       .from("study_tasks")
       .select("id, title, subject, due_date, due_time, priority, estimated_minutes, notes, status, completed_at")
-      .eq("status", "todo")
+      .neq("status", "done")
       .lte("due_date", today)
       .order("due_date", { ascending: true })
       .order("due_time", { ascending: true, nullsFirst: false })
@@ -85,7 +85,7 @@ export async function OverviewTab({ learnerId, today }: { learnerId: string; tod
       )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <StatCard label="Due in the next 7 days" value={shown(dueSoon)} href={spaceHref("tasks", { status: "todo" })} />
+        <StatCard label="Due in the next 7 days" value={shown(dueSoon)} href={spaceHref("tasks")} />
         <StatCard label="Completed tasks" value={shown(completed)} href={spaceHref("tasks", { status: "done" })} />
         <StatCard
           label="Topics to review"

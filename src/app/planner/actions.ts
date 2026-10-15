@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { parseTaskForm, type TaskFormValues } from "@/lib/planner";
+import { isTaskStatus, parseTaskForm, type TaskFormValues } from "@/lib/planner";
 import { isUuid } from "@/lib/tutormatch";
 
 // `values` and `attempt` are filled in by the forms after an error, so the
@@ -28,12 +28,12 @@ export async function addTask(_prev: TaskFormState, formData: FormData): Promise
   return { saved: Date.now() };
 }
 
-// Mark a task done, or move it back to "to do". Row Level Security means a
-// learner can only change their own tasks.
+// Move a task between To Do, In Progress and Completed. Row Level Security
+// means a learner can only change their own tasks.
 export async function setTaskStatus(_prev: TaskFormState, formData: FormData): Promise<TaskFormState> {
   const taskId = String(formData.get("task_id") ?? "");
-  const status = formData.get("status") === "done" ? "done" : "todo";
-  if (!isUuid(taskId)) return { error: "Something went wrong. Please refresh." };
+  const status = formData.get("status");
+  if (!isUuid(taskId) || !isTaskStatus(status)) return { error: "Something went wrong. Please refresh." };
 
   const supabase = await createClient();
   const { data, error } = await supabase.from("study_tasks").update({ status }).eq("id", taskId).select("id");

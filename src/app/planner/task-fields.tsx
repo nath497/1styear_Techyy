@@ -94,7 +94,7 @@ export function TaskFields({
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor={id("notes")}>Notes (optional)</Label>
+        <Label htmlFor={id("notes")}>Description (optional)</Label>
         <Textarea
           id={id("notes")}
           name="notes"
