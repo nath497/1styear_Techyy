@@ -13,8 +13,8 @@ search on Find a Tutor.
 
 ## Parked from the TutorMatch MVP (grill session, 2026-10-15)
 
-- **Subscriptions** — pricing page, TutorMatch Plus (₱99/month) and
-  Tutor Pro (₱149/month), demo entitlements. (A preview page for one
+- **Subscriptions** — pricing page, TutorMatch Plus (₱49/month) and
+  Tutor Pro (₱99/month), demo entitlements. (A preview page for one
   account is now in the spec as a prototype.)
 - **Real payments** — payment collection and tutor payouts need a
   payment provider.

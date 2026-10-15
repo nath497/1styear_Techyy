@@ -2,8 +2,8 @@
 
 **What to build:** accounts on a private preview list (a Vercel setting,
 starting with the team's preview account) can open a Subscription page
-with three plan cards — Free (₱0), TutorMatch Plus (₱99/month, learners)
-and Tutor Pro (₱149/month, tutors) — each listing its planned benefits,
+with three plan cards — Free (₱0), TutorMatch Plus (₱49/month, learners)
+and Tutor Pro (₱99/month, tutors) — each listing its planned benefits,
 with a clear "Prototype" label and the plan for their role highlighted.
 Subscribe only shows "This is a prototype. Payments aren't live yet, and
 nothing was charged." Everyone else still sees "Soon" in the sidebar and

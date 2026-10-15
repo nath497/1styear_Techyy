@@ -102,7 +102,7 @@ the 10% — was live first. Everything else came after it worked, one
 small piece at a time, each checked on a phone. If we had to cut, we'd
 keep the core and the chat, because that's what gets Josh a tutor."
 
-### Q3 — "Your learners won't even pay a tutor today. Why would anyone pay ₱99 a month for Plus?"
+### Q3 — "Your learners won't even pay a tutor today. Why would anyone pay ₱49 a month for Plus?"
 
 *Honest answer:* "Fair — we don't know yet, and that's why it's a
 prototype and nothing is charged. Our first income is the 10% on

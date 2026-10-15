@@ -661,7 +661,7 @@ no one else sees it yet.
 36. **Subscription** (preview accounts only — the team's preview account
     to start with). For them, the "Subscription" sidebar item stops being
     greyed out. Three plan cards: **Free** (₱0), **TutorMatch Plus**
-    (₱99/month, for learners) and **Tutor Pro** (₱149/month, for tutors),
+    (₱49/month, for learners) and **Tutor Pro** (₱99/month, for tutors),
     each listing what it includes. The plan that fits the account's role
     is highlighted, with a clear "Prototype" label. **Subscribe** only
     shows "This is a prototype. Payments aren't live yet, and nothing was

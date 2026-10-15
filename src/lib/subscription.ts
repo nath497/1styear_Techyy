@@ -5,7 +5,7 @@
 export type Plan = {
   id: "free" | "plus" | "pro";
   name: string;
-  price: string; // shown as-is, e.g. "₱99"
+  price: string; // shown as-is, e.g. "₱49"
   per: string; // "/month", or "" for free
   forWhom: string;
   role: "learner" | "tutor" | null; // whose plan it is (null = everyone)
@@ -30,7 +30,7 @@ export const PLANS: Plan[] = [
   {
     id: "plus",
     name: "TutorMatch Plus",
-    price: "₱99",
+    price: "₱49",
     per: "/month",
     forWhom: "For learners",
     role: "learner",
@@ -44,7 +44,7 @@ export const PLANS: Plan[] = [
   {
     id: "pro",
     name: "Tutor Pro",
-    price: "₱149",
+    price: "₱99",
     per: "/month",
     forWhom: "For tutors",
     role: "tutor",
