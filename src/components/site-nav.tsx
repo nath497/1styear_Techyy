@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GraduationCap } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
 import { logOut } from "@/app/auth-actions";
 
@@ -35,21 +36,24 @@ export async function SiteNav() {
           <span className="hidden text-lg tracking-tight sm:inline">TutorMatch</span>
         </Link>
 
-        <Link href="/tutors" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+        {/* Tutors have one more link, so on narrow phones they skip this one. */}
+        <Link
+          href="/tutors"
+          className={cn(buttonVariants({ variant: "ghost", size: "sm" }), isTutor && "hidden sm:inline-flex")}
+        >
           Find a Tutor
         </Link>
 
         {user ? (
           <>
-            {isTutor ? (
+            {isTutor && (
               <Link href="/tutor-profile" className={buttonVariants({ variant: "ghost", size: "sm" })}>
                 My profile
               </Link>
-            ) : (
-              <Link href="/sessions" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                My sessions
-              </Link>
             )}
+            <Link href="/sessions" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+              My sessions
+            </Link>
             <span className="hidden max-w-40 truncate text-sm text-muted-foreground sm:inline">
               {displayName ?? user.email}
             </span>

@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 import { formatPeso, formatSessionTime, STATUSES, SUBJECTS, type Status, type Subject } from "@/lib/tutormatch";
+import { StatusButtons } from "./status-buttons";
 
 export const metadata: Metadata = { title: "My sessions · TutorMatch" };
 
@@ -15,7 +16,9 @@ type BookingRow = {
   starts_at: string;
   price_centavos: number;
   status: Status;
-  // bookings → tutor_profiles → profiles, to get the tutor's name.
+  // The other person's name: bookings → profiles for the learner, and
+  // bookings → tutor_profiles → profiles for the tutor.
+  learner: { display_name: string } | null;
   tutor: { profiles: { display_name: string } | null } | null;
 };
 
@@ -35,29 +38,16 @@ export default async function MySessionsPage() {
   if (!user) redirect("/login?next=/sessions");
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-
-  // The tutor's side of My sessions arrives in ticket 07.
-  if (profile?.role === "tutor") {
-    return (
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-10">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">My sessions</CardTitle>
-            <CardDescription>
-              Incoming session requests will show here in the next update.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </main>
-    );
-  }
+  const isTutor = profile?.role === "tutor";
 
   // Row Level Security only returns bookings this user is part of; the
-  // filter just makes that explicit.
+  // filter just picks which side of the booking they are on.
   const { data, error } = await supabase
     .from("bookings")
-    .select("id, subject, topic, starts_at, price_centavos, status, tutor:tutor_profiles(profiles(display_name))")
-    .eq("learner_id", user.id)
+    .select(
+      "id, subject, topic, starts_at, price_centavos, status, learner:profiles(display_name), tutor:tutor_profiles(profiles(display_name))",
+    )
+    .eq(isTutor ? "tutor_id" : "learner_id", user.id)
     .order("starts_at", { ascending: true })
     .returns<BookingRow[]>();
 
@@ -67,7 +57,11 @@ export default async function MySessionsPage() {
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-10">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">My sessions</h1>
-        <p className="text-muted-foreground">Your session requests and their status.</p>
+        <p className="text-muted-foreground">
+          {isTutor
+            ? "Session requests from learners. Accept the ones you can do."
+            : "Your session requests and their status."}
+        </p>
       </header>
 
       {error ? (
@@ -80,39 +74,75 @@ export default async function MySessionsPage() {
       ) : data.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-4 pt-6 text-center">
-            <div>
-              <p className="font-medium">No session requests yet.</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Find a tutor who fits your budget and send your first request.
-              </p>
-            </div>
-            <Link href="/tutors" className={buttonVariants()}>
-              Find a Tutor
-            </Link>
+            {isTutor ? (
+              <div>
+                <p className="font-medium">No session requests yet.</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  When a learner requests a session with you, it will show here.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div>
+                  <p className="font-medium">No session requests yet.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Find a tutor who fits your budget and send your first request.
+                  </p>
+                </div>
+                <Link href="/tutors" className={buttonVariants()}>
+                  Find a Tutor
+                </Link>
+              </>
+            )}
           </CardContent>
         </Card>
       ) : (
         <ul className="flex flex-col gap-3">
-          {data.map((b) => (
-            <li key={b.id}>
-              <Card>
-                <CardContent className="flex flex-col gap-2 pt-6 text-sm sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex min-w-0 flex-col gap-1">
-                    <p className="text-base font-semibold">
-                      {SUBJECTS[b.subject]} with {b.tutor?.profiles?.display_name ?? "your tutor"}
-                    </p>
-                    <p className="break-words">{b.topic}</p>
-                    <p className="text-muted-foreground">
-                      {formatSessionTime(b.starts_at)} · {formatPeso(b.price_centavos)}
-                    </p>
-                  </div>
-                  <span className={`self-start rounded-full px-3 py-1 text-xs font-medium ${statusStyle[b.status]}`}>
-                    {STATUSES[b.status]}
-                  </span>
-                </CardContent>
-              </Card>
-            </li>
-          ))}
+          {data.map((b) => {
+            const other = isTutor
+              ? (b.learner?.display_name ?? "A learner")
+              : (b.tutor?.profiles?.display_name ?? "your tutor");
+            return (
+              <li key={b.id}>
+                <Card>
+                  <CardContent className="flex flex-col gap-3 pt-6 text-sm">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 flex-col gap-1">
+                        <p className="text-base font-semibold">
+                          {SUBJECTS[b.subject]} {isTutor ? "for" : "with"} {other}
+                        </p>
+                        <p className="break-words">{b.topic}</p>
+                        <p className="text-muted-foreground">
+                          {formatSessionTime(b.starts_at)} · {formatPeso(b.price_centavos)}
+                        </p>
+                      </div>
+                      <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${statusStyle[b.status]}`}>
+                        {STATUSES[b.status]}
+                      </span>
+                    </div>
+
+                    {isTutor && b.status === "pending" && (
+                      <StatusButtons
+                        bookingId={b.id}
+                        choices={[
+                          { status: "accepted", label: "Accept" },
+                          { status: "declined", label: "Decline", confirm: `Decline ${other}'s request? This can't be undone.` },
+                        ]}
+                      />
+                    )}
+                    {!isTutor && (b.status === "pending" || b.status === "accepted") && (
+                      <StatusButtons
+                        bookingId={b.id}
+                        choices={[
+                          { status: "cancelled", label: "Cancel request", confirm: "Cancel this session? This can't be undone." },
+                        ]}
+                      />
+                    )}
+                  </CardContent>
+                </Card>
+              </li>
+            );
+          })}
         </ul>
       )}
     </main>
