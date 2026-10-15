@@ -152,11 +152,18 @@ export function MobileMenu({ items, account }: { items: NavItem[]; account: Acco
           </nav>
           <div className="mt-3 flex gap-2 border-t border-border pt-3">
             {account ? (
-              <form action={logOut} className="w-full">
-                <button type="submit" className={buttonVariants({ variant: "outline", className: "w-full" })}>
-                  <LogOut className="h-4 w-4" aria-hidden /> Log out
-                </button>
-              </form>
+              <>
+                {/* Same name as the desktop account menu. */}
+                <Link href="/profile" className={buttonVariants({ variant: "outline", className: "flex-1" })}>
+                  <UserRound className="h-4 w-4" aria-hidden />
+                  {account.role === "tutor" ? "Account details" : "Profile"}
+                </Link>
+                <form action={logOut} className="flex-1">
+                  <button type="submit" className={buttonVariants({ variant: "outline", className: "w-full" })}>
+                    <LogOut className="h-4 w-4" aria-hidden /> Log out
+                  </button>
+                </form>
+              </>
             ) : (
               <>
                 <Link href="/login" className={buttonVariants({ variant: "outline", className: "flex-1" })}>

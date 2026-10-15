@@ -4,38 +4,18 @@ import { useActionState, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { formValues } from "@/lib/form-values";
-import { TOPIC_STATUSES, type LearnTopic, type TopicStatus } from "@/lib/learntrack";
-import { SUBJECTS, type Subject } from "@/lib/tutormatch";
+import type { LearnTopic } from "@/lib/learntrack";
 import { deleteTopic, updateTopic, type TopicFormState } from "./actions";
+import { TOPIC_FIELDS, TopicFields, type TopicFieldValues } from "./topic-fields";
 import { TopicStatusButtons } from "./topic-status";
 
-const FIELDS = ["name", "subject", "status", "note"] as const;
-type EditState = TopicFormState & { values?: Partial<Record<(typeof FIELDS)[number], string>>; attempt?: number };
+type EditState = TopicFormState & { values?: TopicFieldValues; attempt?: number };
 
 // One topic: shown as a card with the status buttons, Edit and Delete, or
 // as an edit form.
 export function TopicItem({ topic }: { topic: LearnTopic }) {
   const [editing, setEditing] = useState(false);
-
-  const [editState, editAction, saving] = useActionState<EditState, FormData>(async (prev, formData) => {
-    let result: TopicFormState;
-    try {
-      result = await updateTopic(prev, formData);
-    } catch {
-      result = { error: "We couldn't save your changes — check your connection and try again." };
-    }
-    if (!result.error) {
-      setEditing(false);
-      return result;
-    }
-    // React empties a form after every submit, so hand back what was typed.
-    return { ...result, values: formValues(formData, FIELDS), attempt: Date.now() };
-  }, {});
   const [deleteState, deleteAction, deleting] = useActionState<TopicFormState, FormData>(async (prev, formData) => {
     try {
       return await deleteTopic(prev, formData);
@@ -44,72 +24,9 @@ export function TopicItem({ topic }: { topic: LearnTopic }) {
     }
   }, {});
 
-  if (editing) {
-    const v = editState.values ?? {};
-    const id = (name: string) => `edit-${topic.id}-${name}`;
-    return (
-      <Card>
-        <CardContent className="pt-4 pb-4">
-          <form action={editAction} className="flex flex-col gap-4">
-            <input type="hidden" name="topic_id" value={topic.id} />
-            {/* Re-mounting the fields (new key) is what puts the values back. */}
-            <div key={editState.attempt} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor={id("name")}>Topic</Label>
-                <Input
-                  id={id("name")}
-                  name="name"
-                  required
-                  maxLength={100}
-                  defaultValue={v.name ?? topic.name}
-                  autoFocus
-                />
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor={id("subject")}>Subject</Label>
-                  <Select id={id("subject")} name="subject" required defaultValue={v.subject ?? topic.subject}>
-                    {(Object.keys(SUBJECTS) as Subject[]).map((key) => (
-                      <option key={key} value={key}>
-                        {SUBJECTS[key]}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor={id("status")}>How well you know it</Label>
-                  <Select id={id("status")} name="status" defaultValue={v.status ?? topic.status}>
-                    {(Object.keys(TOPIC_STATUSES) as TopicStatus[]).map((key) => (
-                      <option key={key} value={key}>
-                        {TOPIC_STATUSES[key]}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor={id("note")}>Note (optional)</Label>
-                <Textarea id={id("note")} name="note" maxLength={300} rows={2} defaultValue={v.note ?? topic.note} />
-              </div>
-            </div>
-            {editState.error && (
-              <p role="alert" className="rounded-[var(--radius)] bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {editState.error}
-              </p>
-            )}
-            <div className="flex flex-wrap gap-2">
-              <Button type="submit" disabled={saving}>
-                {saving ? "Saving…" : "Save changes"}
-              </Button>
-              <Button type="button" variant="ghost" onClick={() => setEditing(false)}>
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    );
-  }
+  // The edit form is its own component, so Cancel throws away a failed
+  // attempt — the next Edit always starts from the saved topic.
+  if (editing) return <EditTopicForm topic={topic} onDone={() => setEditing(false)} />;
 
   return (
     <Card>
@@ -157,6 +74,50 @@ export function TopicItem({ topic }: { topic: LearnTopic }) {
             </form>
           </div>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function EditTopicForm({ topic, onDone }: { topic: LearnTopic; onDone: () => void }) {
+  const [state, formAction, saving] = useActionState<EditState, FormData>(async (prev, formData) => {
+    let result: TopicFormState;
+    try {
+      result = await updateTopic(prev, formData);
+    } catch {
+      result = { error: "We couldn't save your changes — check your connection and try again." };
+    }
+    if (!result.error) {
+      onDone();
+      return result;
+    }
+    // React empties a form after every submit, so hand back what was typed.
+    return { ...result, values: formValues(formData, TOPIC_FIELDS), attempt: Date.now() };
+  }, {});
+
+  return (
+    <Card>
+      <CardContent className="pt-4 pb-4">
+        <form action={formAction} className="flex flex-col gap-4">
+          <input type="hidden" name="topic_id" value={topic.id} />
+          {/* Re-mounting the fields (new key) is what puts the values back. */}
+          <div key={state.attempt} className="flex flex-col gap-4">
+            <TopicFields idPrefix={`edit-${topic.id}`} values={state.values ?? topic} withStatus />
+          </div>
+          {state.error && (
+            <p role="alert" className="rounded-[var(--radius)] bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {state.error}
+            </p>
+          )}
+          <div className="flex flex-wrap gap-2">
+            <Button type="submit" disabled={saving}>
+              {saving ? "Saving…" : "Save changes"}
+            </Button>
+            <Button type="button" variant="ghost" onClick={onDone}>
+              Cancel
+            </Button>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );

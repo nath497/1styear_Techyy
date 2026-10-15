@@ -16,20 +16,6 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
   const [editing, setEditing] = useState(false);
   const done = task.status === "done";
 
-  const [editState, editAction, saving] = useActionState<TaskFormState, FormData>(async (prev, formData) => {
-    let result: TaskFormState;
-    try {
-      result = await updateTask(prev, formData);
-    } catch {
-      result = { error: "We couldn't save your changes — check your connection and try again." };
-    }
-    if (!result.error) {
-      setEditing(false);
-      return result;
-    }
-    // React empties a form after every submit, so hand back what was typed.
-    return { ...result, values: taskFormValues(formData), attempt: Date.now() };
-  }, {});
   const [deleteState, deleteAction, deleting] = useActionState<TaskFormState, FormData>(async (prev, formData) => {
     try {
       return await deleteTask(prev, formData);
@@ -38,37 +24,9 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
     }
   }, {});
 
-  if (editing) {
-    return (
-      <Card>
-        <CardContent className="pt-4 pb-4">
-          <form action={editAction} className="flex flex-col gap-4">
-            <input type="hidden" name="task_id" value={task.id} />
-            <TaskFields
-              key={editState.attempt}
-              idPrefix={`edit-${task.id}`}
-              task={task}
-              values={editState.values}
-              today={today}
-            />
-            {editState.error && (
-              <p role="alert" className="rounded-[var(--radius)] bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {editState.error}
-              </p>
-            )}
-            <div className="flex flex-wrap gap-2">
-              <Button type="submit" disabled={saving}>
-                {saving ? "Saving…" : "Save changes"}
-              </Button>
-              <Button type="button" variant="ghost" onClick={() => setEditing(false)}>
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    );
-  }
+  // The edit form is its own component, so Cancel throws away a failed
+  // attempt — the next Edit always starts from the saved task.
+  if (editing) return <EditTaskForm task={task} today={today} onDone={() => setEditing(false)} />;
 
   return (
     <Card>
@@ -121,6 +79,47 @@ export function TaskItem({ task, today }: { task: StudyTask; today: string }) {
             </Button>
           </form>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function EditTaskForm({ task, today, onDone }: { task: StudyTask; today: string; onDone: () => void }) {
+  const [state, formAction, saving] = useActionState<TaskFormState, FormData>(async (prev, formData) => {
+    let result: TaskFormState;
+    try {
+      result = await updateTask(prev, formData);
+    } catch {
+      result = { error: "We couldn't save your changes — check your connection and try again." };
+    }
+    if (!result.error) {
+      onDone();
+      return result;
+    }
+    // React empties a form after every submit, so hand back what was typed.
+    return { ...result, values: taskFormValues(formData), attempt: Date.now() };
+  }, {});
+
+  return (
+    <Card>
+      <CardContent className="pt-4 pb-4">
+        <form action={formAction} className="flex flex-col gap-4">
+          <input type="hidden" name="task_id" value={task.id} />
+          <TaskFields key={state.attempt} idPrefix={`edit-${task.id}`} task={task} values={state.values} today={today} />
+          {state.error && (
+            <p role="alert" className="rounded-[var(--radius)] bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {state.error}
+            </p>
+          )}
+          <div className="flex flex-wrap gap-2">
+            <Button type="submit" disabled={saving}>
+              {saving ? "Saving…" : "Save changes"}
+            </Button>
+            <Button type="button" variant="ghost" onClick={onDone}>
+              Cancel
+            </Button>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );

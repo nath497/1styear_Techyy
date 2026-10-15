@@ -3,16 +3,11 @@
 import { useActionState, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { formValues } from "@/lib/form-values";
-import { SUBJECTS, type Subject } from "@/lib/tutormatch";
 import { addTopic, type TopicFormState } from "./actions";
+import { TOPIC_FIELDS, TopicFields, type TopicFieldValues } from "./topic-fields";
 
-const FIELDS = ["name", "subject", "note"] as const;
-type State = TopicFormState & { values?: Partial<Record<(typeof FIELDS)[number], string>>; attempt?: number };
+type State = TopicFormState & { values?: TopicFieldValues; attempt?: number };
 
 // "Add a topic": a button that opens the form. After a successful add the
 // form clears and stays open, so adding several topics is quick. The
@@ -20,20 +15,6 @@ type State = TopicFormState & { values?: Partial<Record<(typeof FIELDS)[number],
 export function AddTopicForm() {
   const [open, setOpen] = useState(false);
   const [lastSubject, setLastSubject] = useState("");
-  const [state, formAction, pending] = useActionState<State, FormData>(async (prev, formData) => {
-    let result: TopicFormState;
-    try {
-      result = await addTopic(prev, formData);
-    } catch {
-      result = { error: "We couldn't add the topic — check your connection and try again." };
-    }
-    if (!result.error) {
-      setLastSubject(String(formData.get("subject") ?? ""));
-      return result;
-    }
-    // React empties a form after every submit, so refill what was typed.
-    return { ...result, values: formValues(formData, FIELDS), attempt: Date.now() };
-  }, {});
 
   if (!open) {
     return (
@@ -42,53 +23,40 @@ export function AddTopicForm() {
       </Button>
     );
   }
+  // The form is its own component, so closing it throws away its messages
+  // and typing — reopening always starts fresh.
+  return <OpenForm lastSubject={lastSubject} onAdded={setLastSubject} onClose={() => setOpen(false)} />;
+}
 
-  const v = state.values ?? {};
+function OpenForm({
+  lastSubject,
+  onAdded,
+  onClose,
+}: {
+  lastSubject: string;
+  onAdded: (subject: string) => void;
+  onClose: () => void;
+}) {
+  const [state, formAction, pending] = useActionState<State, FormData>(async (prev, formData) => {
+    let result: TopicFormState;
+    try {
+      result = await addTopic(prev, formData);
+    } catch {
+      result = { error: "We couldn't add the topic — check your connection and try again." };
+    }
+    if (!result.error) {
+      onAdded(String(formData.get("subject") ?? ""));
+      return result;
+    }
+    // React empties a form after every submit, so refill what was typed.
+    return { ...result, values: formValues(formData, TOPIC_FIELDS), attempt: Date.now() };
+  }, {});
+
   return (
-    <form
-      action={formAction}
-      className="flex flex-col gap-4 rounded-[var(--radius)] border border-border bg-card p-4"
-    >
+    <form action={formAction} className="flex flex-col gap-4 rounded-[var(--radius)] border border-border bg-card p-4">
       {/* Re-mounting the fields (new key) is what puts the values back. */}
       <div key={state.attempt ?? state.saved} className="flex flex-col gap-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="topic-name">Topic</Label>
-            <Input
-              id="topic-name"
-              name="name"
-              required
-              maxLength={100}
-              placeholder="e.g. Fractions"
-              defaultValue={v.name ?? ""}
-              autoFocus
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="topic-subject">Subject</Label>
-            <Select id="topic-subject" name="subject" required defaultValue={v.subject ?? lastSubject}>
-              <option value="" disabled>
-                Choose a subject
-              </option>
-              {(Object.keys(SUBJECTS) as Subject[]).map((key) => (
-                <option key={key} value={key}>
-                  {SUBJECTS[key]}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="topic-note">Note (optional)</Label>
-          <Textarea
-            id="topic-note"
-            name="note"
-            maxLength={300}
-            rows={2}
-            placeholder="What's tricky about it, pages to reread…"
-            defaultValue={v.note ?? ""}
-          />
-        </div>
+        <TopicFields idPrefix="new-topic" values={state.values ?? { subject: lastSubject }} />
       </div>
 
       {state.error ? (
@@ -105,7 +73,7 @@ export function AddTopicForm() {
         <Button type="submit" disabled={pending}>
           {pending ? "Adding…" : "Add topic"}
         </Button>
-        <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+        <Button type="button" variant="ghost" onClick={onClose}>
           Close
         </Button>
       </div>
