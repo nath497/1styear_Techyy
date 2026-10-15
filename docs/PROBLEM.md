@@ -37,10 +37,11 @@ Two more learners we asked, both struggling with Math:
 their own or from someone they know, and every one is still struggling
 to understand the lesson.
 
-**What we don't know yet:** whether Jamaica and Angel would pay a
-tutor. They pay nothing today because they study on their own, which is
-not the same as "would never pay". Josh is the only one who told us a
-budget (₱100).
+**Would they pay? 3 of 3 said yes.** Jamaica and Angel pay nothing
+today because they study on their own, but both said they would pay a
+tutor, up to **₱150 per session**. Josh would pay up to **₱100**. So
+budgets differ from learner to learner, which is why BudgetMatch
+filters by each learner's own budget.
 
 Background (not our own observation): a Philippine study (September
 2026) lists barriers to online tutoring such as unstable internet,

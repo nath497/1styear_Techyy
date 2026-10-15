@@ -64,11 +64,10 @@ come back and tell you what got in the way.
 
 ## The three hardest questions
 
-**Honest warning first:** your evidence is now three real learners with
-the same struggle, which is a pattern. The open gap is willingness to
-pay: only Josh gave a number. Before Session 3, ask Jamaica and Angel:
-*"If a classmate who's good at Math tutored you, would you pay anything
-per session? If yes, how much?"*
+**Where your evidence stands:** three real learners with the same
+struggle, and all three would pay (₱100–₱150 a session). That is three
+people saying yes, not proof that a market exists. The real test is
+whether they actually send a request on the live site before Session 3.
 
 ### Q1 — "Why doesn't Josh just keep asking his senior? That's free."
 
@@ -82,16 +81,15 @@ he can afford."
 *Honest answer:* "We asked three learners, all struggling with Math.
 Josh asks a senior who's always busy. Jamaica studies with her notes,
 and it works a little bit. Angel reviews with a friend but is still
-stuck. All three are still struggling. What we don't know yet is
-whether all of them would pay. Josh would, up to ₱100. That's what our
-demo will test."
+stuck. All three are still struggling, and all three told us they
+would pay a tutor: Josh up to ₱100, Jamaica and Angel up to ₱150."
 
-### Q2b — Follow-up you may get: "Two of them pay nothing. Why would they pay you?"
+### Q2b — Follow-up you may get: "Two of them pay nothing today. Why would they pay you?"
 
 *Honest answer:* "They pay nothing today because they study on their
-own, not because they said they'd never pay. We'll ask them before
-Session 3. Tutors set their own rate, so a classmate can choose a
-low price."
+own, and it isn't working well enough. When we asked, both said they
+would pay a tutor up to ₱150 a session. Tutors set their own rate, and
+BudgetMatch only shows each learner tutors within their own budget."
 
 ### Q3 — "Why would a good student tutor for ₱100 minus your 10%?"
 
