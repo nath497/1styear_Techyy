@@ -38,7 +38,7 @@ export default async function NewHelpRequestPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Post a help request</CardTitle>
-          <CardDescription>Tutors who teach your subject can see it and offer to help.</CardDescription>
+          <CardDescription>Tutors on TutorMatch can see it and offer to help.</CardDescription>
         </CardHeader>
         <CardContent>
           <PostHelpRequestForm defaultLevel={profile.level ?? ""} />

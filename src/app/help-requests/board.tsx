@@ -4,7 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/server";
-import { formatPeso, formatSessionTime, LEVELS, SUBJECTS, type Level, type Subject } from "@/lib/tutormatch";
+import {
+  firstName,
+  formatPeso,
+  formatSessionTime,
+  HELP_STATUSES,
+  HELP_STATUS_STYLE,
+  LEVELS,
+  SUBJECTS,
+  type HelpStatus,
+  type Level,
+  type Subject,
+} from "@/lib/tutormatch";
 
 type BoardRow = {
   id: string;
@@ -20,8 +31,14 @@ type BoardRow = {
   learner: { display_name: string } | null;
 };
 
-// "Mika Santos" → "Mika": tutors see only the learner's first name.
-const firstName = (name: string | undefined) => name?.trim().split(/\s+/)[0] || "A learner";
+type ClosedRow = {
+  id: string;
+  title: string;
+  subject: Subject;
+  status: HelpStatus;
+  chosen_offer_id: string | null;
+  learner: { display_name: string } | null;
+};
 
 // The tutors' Help Request Board: Open requests, newest first, with
 // subject and level filters. Row Level Security only lets tutors read
@@ -41,12 +58,24 @@ export async function HelpBoard({ tutorId, subject, level }: { tutorId: string; 
   if (pickedSubject) query = query.eq("subject", pickedSubject);
   if (pickedLevel) query = query.eq("level", pickedLevel);
 
-  const [{ data, error }, { data: mine }] = await Promise.all([
+  const [{ data, error }, { data: mine, error: mineError }, { data: closed, error: closedError }] = await Promise.all([
     query.returns<BoardRow[]>(),
-    supabase.from("help_offers").select("request_id").eq("tutor_id", tutorId),
+    supabase.from("help_offers").select("id, request_id").eq("tutor_id", tutorId),
+    // Closed requests: Row Level Security only returns the ones this tutor
+    // offered on (SQL 008), so these are "my offers".
+    supabase
+      .from("help_requests")
+      .select("id, title, subject, status, chosen_offer_id, learner:profiles(display_name)")
+      .in("status", ["matched", "cancelled"])
+      .order("updated_at", { ascending: false })
+      .returns<ClosedRow[]>(),
   ]);
   if (error) console.error("Help Request Board: could not load", error);
-  const offered = new Set((mine ?? []).map((o) => o.request_id as string));
+  if (mineError) console.error("Help Request Board: could not load my offers", mineError);
+  if (closedError) console.error("Help Request Board: could not load closed requests", closedError);
+  // request id → my offer id
+  const myOfferOn = new Map((mine ?? []).map((o) => [o.request_id as string, o.id as string]));
+  const offered = new Set(myOfferOn.keys());
   const filtering = Boolean(pickedSubject || pickedLevel);
 
   return (
@@ -159,6 +188,48 @@ export async function HelpBoard({ tutorId, subject, level }: { tutorId: string; 
           ))}
         </ul>
       )}
+
+      {/* Requests this tutor offered on that have since closed. */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold tracking-tight">My offers on closed requests</h2>
+        {closedError || mineError ? (
+          <p className="text-sm text-destructive">We couldn&apos;t load your past offers right now. Please refresh.</p>
+        ) : !closed || closed.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            None yet. When a learner chooses a tutor or cancels a request you offered on, it shows here.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {closed.map((r) => {
+              const chosenMe = r.status === "matched" && r.chosen_offer_id === myOfferOn.get(r.id);
+              const outcome =
+                r.status === "cancelled"
+                  ? { text: HELP_STATUSES.cancelled, style: HELP_STATUS_STYLE.cancelled }
+                  : chosenMe
+                    ? { text: "Chosen — you", style: "bg-success/15 text-green-800" }
+                    : { text: "Another tutor chosen", style: HELP_STATUS_STYLE.cancelled };
+              return (
+                <li key={r.id}>
+                  <Link
+                    href={`/help-requests/${r.id}`}
+                    className="flex items-center justify-between gap-3 rounded-[var(--radius)] border border-border bg-card px-4 py-3 text-sm hover:border-primary"
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium">{r.title}</span>
+                      <span className="text-muted-foreground">
+                        {SUBJECTS[r.subject]} · {firstName(r.learner?.display_name)}
+                      </span>
+                    </span>
+                    <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${outcome.style}`}>
+                      {outcome.text}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
     </main>
   );
 }

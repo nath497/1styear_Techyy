@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   budgetBreakdown,
   formatPeso,
+  isUuid,
   LEVELS,
   MODES,
   SUBJECTS,
@@ -29,12 +30,9 @@ type Tutor = {
   profiles: { display_name: string } | null;
 };
 
-// Supabase ids look like 3f2b...-...; anything else can't be a tutor.
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export default async function TutorPage({ params }: PageProps<"/tutors/[id]">) {
   const { id } = await params;
-  if (!UUID.test(id)) notFound();
+  if (!isUuid(id)) notFound();
 
   const supabase = await createClient();
   const [{ data: tutor, error }, { data: auth }] = await Promise.all([

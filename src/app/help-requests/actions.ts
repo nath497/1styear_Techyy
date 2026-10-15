@@ -113,8 +113,10 @@ export async function sendHelpOffer(_prev: HelpFormState, formData: FormData): P
     if (error.code === "23505") return { error: "You've already made an offer on this request." };
     // 23503 = no tutor profile yet (an offer must belong to one).
     if (error.code === "23503") return { error: "Create your tutor profile first, then you can make offers." };
-    // 42501 = blocked by Row Level Security (request no longer Open, or not a tutor).
-    if (error.code === "42501") return { error: "This request isn't open for offers any more." };
+    // 42501 = blocked by Row Level Security: the request has closed, or
+    // this isn't a tutor account.
+    if (error.code === "42501")
+      return { error: "You can't make an offer on this request — it may have closed, or this isn't a tutor account." };
     return { error: "We couldn't send your offer. Please try again." };
   }
 

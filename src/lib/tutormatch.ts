@@ -284,6 +284,13 @@ export const HELP_STATUSES = {
 
 export type HelpStatus = keyof typeof HELP_STATUSES;
 
+// The colour of each help request status tag.
+export const HELP_STATUS_STYLE: Record<HelpStatus, string> = {
+  open: "bg-green-100 text-green-900",
+  matched: "bg-secondary text-secondary-foreground",
+  cancelled: "bg-muted text-muted-foreground",
+};
+
 // The honest budget tag on an offer: the tutor's listed rate against the
 // learner's budget. Never says "within budget" when it isn't.
 export function budgetTag(rateCentavos: number, budgetCentavos: number) {
@@ -291,4 +298,17 @@ export function budgetTag(rateCentavos: number, budgetCentavos: number) {
   return over > 0
     ? { within: false, text: `${formatPeso(over)} over your budget` }
     : { within: true, text: "Within your budget" };
+}
+
+// ---- Small shared helpers -------------------------------------------------
+
+// Supabase ids look like 3f2b…-…; anything else can't be a real row, so
+// pages can show "not found" without asking the database.
+export function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
+// "Mika Santos" → "Mika". Used where only a first name should show.
+export function firstName(name: string | null | undefined, fallback = "A learner") {
+  return name?.trim().split(/\s+/)[0] || fallback;
 }

@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   formatPeso,
   formatSessionTime,
+  HELP_STATUS_STYLE,
   HELP_STATUSES,
   LEVELS,
   SUBJECTS,
@@ -32,12 +33,6 @@ type HelpRequestRow = {
   status: HelpStatus;
   offer_count: number;
   created_at: string;
-};
-
-const statusStyle: Record<HelpStatus, string> = {
-  open: "bg-green-100 text-green-900",
-  matched: "bg-secondary text-secondary-foreground",
-  cancelled: "bg-muted text-muted-foreground",
 };
 
 export default async function HelpRequestsPage({ searchParams }: PageProps<"/help-requests">) {
@@ -113,7 +108,7 @@ export default async function HelpRequestsPage({ searchParams }: PageProps<"/hel
                         {r.mode === "online" ? "Online" : "Face-to-face"}
                       </p>
                     </div>
-                    <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${statusStyle[r.status]}`}>
+                    <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${HELP_STATUS_STYLE[r.status]}`}>
                       {HELP_STATUSES[r.status]}
                     </span>
                   </div>

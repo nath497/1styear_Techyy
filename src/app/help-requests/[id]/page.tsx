@@ -7,8 +7,11 @@ import { createClient } from "@/lib/supabase/server";
 import {
   budgetTag,
   formatPeso,
+  firstName,
   formatSessionTime,
+  HELP_STATUS_STYLE,
   HELP_STATUSES,
+  isUuid,
   LEVELS,
   SUBJECTS,
   type HelpStatus,
@@ -37,12 +40,9 @@ type HelpRequest = {
   learner: { display_name: string } | null;
 };
 
-// Supabase ids look like 3f2b...-...; anything else can't be a request.
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export default async function HelpRequestPage({ params }: PageProps<"/help-requests/[id]">) {
   const { id } = await params;
-  if (!UUID.test(id)) notFound();
+  if (!isUuid(id)) notFound();
 
   const supabase = await createClient();
   const {
@@ -76,19 +76,19 @@ export default async function HelpRequestPage({ params }: PageProps<"/help-reque
   if (!r) notFound();
 
   const isOwner = r.learner_id === user.id;
-  const learnerFirstName = r.learner?.display_name?.trim().split(/\s+/)[0] || "A learner";
+  const learnerFirstName = firstName(r.learner?.display_name);
 
   return (
     <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-4 px-4 py-10">
       <Link href="/help-requests" className="text-sm font-medium text-primary hover:underline">
-        ← Back to {isOwner ? "my help requests" : "the Help Request Board"}
+        ← Back to {isOwner ? "my help requests" : "Help Requests"}
       </Link>
 
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
             <CardTitle className="text-2xl break-words">{r.title}</CardTitle>
-            <span className="shrink-0 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
+            <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${HELP_STATUS_STYLE[r.status]}`}>
               {HELP_STATUSES[r.status]}
             </span>
           </div>
@@ -251,7 +251,7 @@ async function LearnerOffers({ request: r }: { request: HelpRequest }) {
           <p className="text-destructive">We couldn&apos;t load the offers right now. Please refresh.</p>
         ) : !offers || offers.length === 0 ? (
           <p className="text-muted-foreground">
-            No offers yet. Tutors who teach {SUBJECTS[r.subject]} can see your request.
+            No offers yet. Tutors can see your request on the Help Request Board.
           </p>
         ) : (
           <ul className="flex flex-col gap-3">
