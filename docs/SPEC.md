@@ -626,18 +626,18 @@ widens one allowed list; no data is deleted. Every new table has Row
 Level Security with explicit policies.
 
 ### My Learning Space: done for the demo
-- [ ] One "My Learning Space" link opens the page; all six tabs work on
+- [x] One "My Learning Space" link opens the page; all six tabs work on
       a phone; old Study Planner and LearnTrack links still work.
-- [ ] The Overview figures match the learner's real records (and show
+- [x] The Overview figures match the learner's real records (and show
       zeros for a new learner).
-- [ ] A task moves To Do → In Progress → Completed; the priority filter
+- [x] A task moves To Do → In Progress → Completed; the priority filter
       works.
-- [ ] A study activity is added; a clashing one is refused.
-- [ ] "Create study task" from a Need to Review topic works.
-- [ ] A goal's progress bar moves when a linked task is completed.
-- [ ] Session notes are saved on a real booking and the tutor and a
+- [x] A study activity is added; a clashing one is refused.
+- [x] "Create study task" from a Need to Review topic works.
+- [x] A goal's progress bar moves when a linked task is completed.
+- [x] Session notes are saved on a real booking and the tutor and a
       second learner can't see them.
-- [ ] study_activities, learning_goals and session_notes show RLS
+- [x] study_activities, learning_goals and session_notes show RLS
       enabled.
 
 ## Out of scope
