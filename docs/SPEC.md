@@ -506,9 +506,9 @@ everything else, including changing your role. The email comes from the
 login account and is shown, not edited.
 
 ### Profile: done for the demo
-- [ ] A learner changes their name on Profile and the new name shows in
+- [x] A learner changes their name on Profile and the new name shows in
       the header and to their tutor.
-- [ ] Changing level works; role can't be changed (checked on the
+- [x] Changing level works; role can't be changed (checked on the
       database, not just the screen).
 
 ## Out of scope
