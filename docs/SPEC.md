@@ -376,6 +376,9 @@ Cancelled or Completed ones.
 
 ## Stretch goal: Study Planner
 
+> **Now part of My Learning Space** (below). This section records what was
+> built first; My Learning Space describes how it works today.
+
 Learners plan their own study around their **session requests**: a
 private to-do list of study tasks with due dates and priorities, with
 their accepted tutoring sessions shown alongside. Learners only — tutors
@@ -436,6 +439,9 @@ Accepted ones only). Nothing new is stored for them.
       study_tasks shows RLS enabled.
 
 ## Stretch goal: LearnTrack
+
+> **Now part of My Learning Space** (below). This section records what was
+> built first; My Learning Space describes how it works today.
 
 Learners keep a list of the topics they're studying in each subject and
 mark how well they understand each one, so they can see where they're
@@ -510,6 +516,129 @@ login account and is shown, not edited.
       the header and to their tutor.
 - [x] Changing level works; role can't be changed (checked on the
       database, not just the screen).
+
+## Stretch goal: My Learning Space ♡
+
+*"Plan your study time, organize your tasks, and track how much you're
+learning."*
+
+One place for a learner's own studying, built around their **session
+requests**: the Study Planner and LearnTrack move into one page with
+tabs, plus a study schedule, learning goals and notes for their tutoring
+sessions. The parts work together — a LearnTrack topic becomes a study
+task, tasks count towards a goal, and notes sit on real bookings.
+Learners only. Built over several tickets; each one goes live on its
+own.
+
+### My Learning Space user stories
+22. As a learner, I want one page for my tasks, schedule, topics, goals
+    and session notes, so that I don't jump between tools.
+23. As a learner, I want an overview of what's due, what's done and what
+    I still need to review, so that I know where I stand.
+24. As a learner, I want to mark tasks In Progress and filter them by
+    priority, so that I focus on what matters.
+25. As a learner, I want to plan study activities by day and time without
+    clashes, so that my week is realistic.
+26. As a learner, I want to turn a difficult topic into a study task, so
+    that reviewing it actually gets planned.
+27. As a learner, I want goals whose progress comes from my completed
+    tasks, so that I can see how close I am.
+28. As a learner, I want to write questions before a tutoring session and
+    a reflection after it, so that I get more out of each session.
+
+### My Learning Space screens
+28. **My Learning Space ♡** (learners only) — one sidebar link replaces
+    Study Planner and LearnTrack. Tabs: **Overview**, **Study Tasks**,
+    **Schedule**, **LearnTrack**, **Goals**, **Session Notes** (they
+    scroll sideways on phones). The old Study Planner and LearnTrack
+    addresses open the matching tab; dashboard cards link here. Tutors
+    see a "for learners" note.
+29. **Overview** — five figures counted from real records: tasks due in
+    the next 7 days, completed tasks, topics at Need to Review, upcoming
+    tutoring sessions, and overall progress (% of LearnTrack topics
+    Understood). Below: today's tasks, the next scheduled activity, and
+    active goals with their progress. A new learner sees zeros and a
+    "start here" message — never invented numbers.
+30. **Study Tasks** — everything the Study Planner does, plus: statuses
+    **To Do / In Progress / Completed**; "Notes" becomes **Description**;
+    filters by subject, status and **priority**; an optional link to a
+    **goal**.
+31. **Schedule** — study activities (title, subject, date, start and end
+    time, optional notes) listed for this week and next, grouped by day,
+    with accepted tutoring sessions shown read-only. Add, edit, delete.
+    Two of the learner's own activities can't overlap (the database
+    refuses, with a friendly "clashes with …"); overlapping a tutoring
+    session is allowed with a warning.
+32. **LearnTrack** — everything LearnTrack does, plus: "Learning" becomes
+    **Currently Learning**; each topic shows **Last updated**; a
+    **subject filter**; a **Create study task** button that opens the
+    add-task form filled in ("Review: <topic>", same subject).
+33. **Goals** — title, optional description, target date, status
+    **Active** or **Achieved**. Progress: "X of Y linked tasks completed"
+    as a bar; with no linked tasks it says "Link study tasks to track
+    progress". The learner taps **Mark achieved**. Add, edit, delete.
+34. **Session Notes** — the learner's real Accepted and Completed
+    bookings (date and time, tutor, subject). For each: **Questions to
+    ask**, **Topics I need help with** (with "add from LearnTrack", which
+    inserts their Need to Review topic names in that subject), and a
+    **Reflection** once the session time has passed. Private to the
+    learner.
+35. **Learner dashboard** — the existing cards stay and link into My
+    Learning Space.
+
+### My Learning Space data
+**study_tasks** (existing — changed)
+- status may now be `todo`, `in_progress` or `done`; completed_at is
+  filled only when done.
+- New: goal_id — optional link to one of the learner's own goals. The
+  database refuses a link to someone else's goal; deleting the goal
+  clears the link and keeps the task.
+- Read, edit, delete: only the owner (unchanged).
+
+**learn_topics** (existing — unchanged). "Last updated" uses updated_at.
+
+**study_activities** (new) — a learner's planned study time.
+- Columns: id, learner_id, title (up to 100 characters), subject,
+  activity_date, start_time, end_time (after start), notes (up to 500),
+  created_at, updated_at.
+- A learner's activities can't overlap on the same date.
+- Read, edit, delete: only the owner. Create: learners only, for
+  themselves. The database sets learner_id and the dates.
+
+**learning_goals** (new) — a learner's personal goals.
+- Columns: id, learner_id, title (up to 100 characters), description (up
+  to 500), target_date, status (`active` or `achieved`), achieved_at,
+  created_at, updated_at.
+- Read, edit, delete: only the owner. Create: learners only, for
+  themselves. The database sets learner_id, achieved_at and the dates.
+
+**session_notes** (new) — a learner's private notes on one booking.
+- Columns: id, booking_id (one note per booking), learner_id, questions
+  (up to 1000 characters), help_topics (up to 500), reflection (up to
+  1000), created_at, updated_at.
+- Create and edit: only the learner of that booking, and only while it
+  is Accepted or Completed. Read: only that learner — tutors, other
+  learners and logged-out visitors can't see notes.
+- No deleting; clearing the text does the same job.
+
+All database changes are one file (SQL 017). It only adds things and
+widens one allowed list; no data is deleted. Every new table has Row
+Level Security with explicit policies.
+
+### My Learning Space: done for the demo
+- [ ] One "My Learning Space" link opens the page; all six tabs work on
+      a phone; old Study Planner and LearnTrack links still work.
+- [ ] The Overview figures match the learner's real records (and show
+      zeros for a new learner).
+- [ ] A task moves To Do → In Progress → Completed; the priority filter
+      works.
+- [ ] A study activity is added; a clashing one is refused.
+- [ ] "Create study task" from a Need to Review topic works.
+- [ ] A goal's progress bar moves when a linked task is completed.
+- [ ] Session notes are saved on a real booking and the tutor and a
+      second learner can't see them.
+- [ ] study_activities, learning_goals and session_notes show RLS
+      enabled.
 
 ## Out of scope
 - Subscriptions, pricing page, TutorMatch Plus / Tutor Pro

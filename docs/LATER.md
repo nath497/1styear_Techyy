@@ -113,3 +113,17 @@ stretch goal, has since been built.)
 - **Deleting your account.**
 - **A bio or school for learners.**
 - **Profile photos** — already parked above.
+
+## Parked from the My Learning Space spec (2026-10-16)
+
+- **Tutors seeing a learner's session questions** — notes stay private
+  to the learner for now.
+- **Time-based goals** ("study English 30 minutes a day") — goals count
+  linked tasks only.
+- **Reminders and notifications** for tasks, activities and sessions.
+- **Calendar sync** (Google Calendar etc.) and a **drag-and-drop
+  calendar** — the Schedule is a simple two-week list.
+- **Recurring activities** ("every Monday").
+- **Achievements and badges.**
+- **Linking a session note to specific LearnTrack topics** (beyond
+  inserting their names as text).
