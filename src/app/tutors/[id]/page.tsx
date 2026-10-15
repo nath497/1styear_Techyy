@@ -4,7 +4,16 @@ import { notFound } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
-import { formatPeso, LEVELS, MODES, SUBJECTS, type Level, type Mode, type Subject } from "@/lib/tutormatch";
+import {
+  budgetBreakdown,
+  formatPeso,
+  LEVELS,
+  MODES,
+  SUBJECTS,
+  type Level,
+  type Mode,
+  type Subject,
+} from "@/lib/tutormatch";
 import { RequestForm } from "./request-form";
 
 export const metadata: Metadata = { title: "Tutor · TutorMatch" };
@@ -76,7 +85,7 @@ export default async function TutorPage({ params }: PageProps<"/tutors/[id]">) {
         <CardContent className="flex flex-col gap-4 text-sm">
           <p className="text-2xl font-semibold">
             {formatPeso(tutor.rate_centavos)}{" "}
-            <span className="text-sm font-normal text-muted-foreground">per session</span>
+            <span className="text-sm font-normal text-muted-foreground">per session (1 hour)</span>
           </p>
 
           {tutor.bio && <p className="whitespace-pre-line break-words">{tutor.bio}</p>}
@@ -91,6 +100,8 @@ export default async function TutorPage({ params }: PageProps<"/tutors/[id]">) {
           </dl>
         </CardContent>
       </Card>
+
+      <BudgetBreakdown rateCentavos={tutor.rate_centavos} />
 
       <Card>
         <CardHeader>
@@ -123,5 +134,34 @@ export default async function TutorPage({ params }: PageProps<"/tutors/[id]">) {
         </CardContent>
       </Card>
     </main>
+  );
+}
+
+// What a session costs, before you request it. The learner pays exactly
+// the listed price; TutorMatch's 10% comes out of the tutor's side and is
+// only recorded, never collected (see SQL 005).
+function BudgetBreakdown({ rateCentavos }: { rateCentavos: number }) {
+  const b = budgetBreakdown(rateCentavos);
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Budget breakdown</CardTitle>
+        <CardDescription>What one 1-hour session costs, before you request it.</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3 text-sm">
+        <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-2">
+          <dt>Session price</dt>
+          <dd className="text-right">{formatPeso(b.youPay)}</dd>
+          <dt>Extra fees for you</dt>
+          <dd className="text-right">₱0</dd>
+          <dt className="font-semibold">You pay</dt>
+          <dd className="text-right font-semibold">{formatPeso(b.youPay)}</dd>
+        </dl>
+        <p className="rounded-[var(--radius)] bg-secondary px-3 py-2 text-secondary-foreground">
+          TutorMatch&apos;s 10% ({formatPeso(b.commission)}) comes from the tutor&apos;s side, so the tutor keeps{" "}
+          {formatPeso(b.tutorGets)}. It&apos;s recorded, not collected — no real money moves in this demo.
+        </p>
+      </CardContent>
+    </Card>
   );
 }

@@ -44,3 +44,29 @@ have yet, so showing them now would mean fake numbers.
 - **Help Request Board** and **LearnTrack** screens — already parked above.
 - **Text search box** ("e.g. Mathematics, Programming") — the home
   search uses the subject list instead, which BudgetMatch understands.
+
+## Parked from the "master prompt" (2026-10-15)
+
+The team approved Phase 1 + 2 only (phone menu, marketplace search,
+filters, sorting, Budget Breakdown, smarter empty states — no SQL).
+Everything below needs new tables and a spec update first
+(`/to-spec`, then `/to-tickets`). The Help Request Board is the first
+stretch goal if there is time.
+
+- **Help Request Board + tutor offers + Help Request Match Score.**
+- **Chatbox / messaging** — needs Supabase Realtime and careful RLS.
+- **LearnTrack** — goals, topics, confidence, Learning Gap Finder,
+  Next Best Study Step, progress over time.
+- **Study Planner** — tasks, due dates, priorities, Smart Study
+  Suggestions; connect to LearnTrack.
+- **Trust Score + Trust Breakdown** — only from real data (profile
+  completeness, completed sessions); "Not enough data yet" otherwise.
+- **Learner and tutor dashboards** — wait until there's more to show
+  than My sessions already does.
+- **Sidebar navigation** — the top bar + phone menu covers today's pages;
+  revisit when the new pages above exist.
+- **Subscription page** — information only, no payments (pitch slide).
+- **Availability filter** — needs structured availability (days/times),
+  not today's free text.
+- **Session Preparation Notes, Post-Session Reflection, Study Buddy
+  Path, Achievement Milestones.**
