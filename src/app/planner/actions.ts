@@ -23,7 +23,7 @@ export async function addTask(_prev: TaskFormState, formData: FormData): Promise
     return { error: "We couldn't add the task. Please try again." };
   }
 
-  revalidatePath("/planner");
+  revalidatePath("/learning-space");
   revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }
@@ -43,7 +43,7 @@ export async function setTaskStatus(_prev: TaskFormState, formData: FormData): P
   }
   if (!data || data.length === 0) return { error: "You can't change this task. Please refresh." };
 
-  revalidatePath("/planner");
+  revalidatePath("/learning-space");
   revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }
@@ -63,7 +63,7 @@ export async function updateTask(_prev: TaskFormState, formData: FormData): Prom
   }
   if (!data || data.length === 0) return { error: "You can't change this task. Please refresh." };
 
-  revalidatePath("/planner");
+  revalidatePath("/learning-space");
   revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }
@@ -82,7 +82,7 @@ export async function deleteTask(_prev: TaskFormState, formData: FormData): Prom
   }
   if (!data || data.length === 0) return { error: "You can't delete this task. Please refresh." };
 
-  revalidatePath("/planner");
+  revalidatePath("/learning-space");
   revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }

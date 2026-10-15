@@ -200,7 +200,7 @@ export default async function LearnerDashboard() {
       {inbox.items.length > 0 && <RecentChats items={inbox.items} />}
 
       {showTasks && (
-        <Section title="Today's study tasks" action={{ href: "/planner", label: "Open Study Planner" }}>
+        <Section title="Today's study tasks" action={{ href: "/learning-space?tab=tasks", label: "Open Study Tasks" }}>
           {tasksError ? (
             <LoadError what="your study tasks" />
           ) : !dueRes.data?.length ? (
@@ -228,7 +228,7 @@ export default async function LearnerDashboard() {
       )}
 
       {showTopics && (
-        <Section title="LearnTrack" action={{ href: "/learntrack", label: "Open LearnTrack" }}>
+        <Section title="LearnTrack" action={{ href: "/learning-space?tab=learntrack", label: "Open LearnTrack" }}>
           {topicsError ? (
             <LoadError what="your topics" />
           ) : toReview === 0 ? (
@@ -248,7 +248,7 @@ export default async function LearnerDashboard() {
                 ))}
               </ul>
               {toReview > 3 && (
-                <Link href="/learntrack?status=need_review" className="text-xs font-medium text-primary hover:underline">
+                <Link href="/learning-space?tab=learntrack&status=need_review" className="text-xs font-medium text-primary hover:underline">
                   See all {toReview}
                 </Link>
               )}

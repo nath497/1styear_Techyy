@@ -23,7 +23,7 @@ export async function addTopic(_prev: TopicFormState, formData: FormData): Promi
     return { error: "We couldn't add the topic. Please try again." };
   }
 
-  revalidatePath("/learntrack");
+  revalidatePath("/learning-space");
   revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }
@@ -52,7 +52,7 @@ export async function updateTopic(_prev: TopicFormState, formData: FormData): Pr
   }
   if (!data || data.length === 0) return { error: "You can't change this topic. Please refresh." };
 
-  revalidatePath("/learntrack");
+  revalidatePath("/learning-space");
   revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }
@@ -70,7 +70,7 @@ export async function deleteTopic(_prev: TopicFormState, formData: FormData): Pr
   }
   if (!data || data.length === 0) return { error: "You can't delete this topic. Please refresh." };
 
-  revalidatePath("/learntrack");
+  revalidatePath("/learning-space");
   revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }
@@ -90,7 +90,7 @@ export async function setTopicStatus(_prev: TopicFormState, formData: FormData):
   }
   if (!data || data.length === 0) return { error: "You can't change this topic. Please refresh." };
 
-  revalidatePath("/learntrack");
+  revalidatePath("/learning-space");
   revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }
