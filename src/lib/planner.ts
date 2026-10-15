@@ -1,5 +1,6 @@
 // Study Planner rules (SQL 015). The database checks the same limits; these
 // give the learner friendly messages before it has to.
+import { formValues } from "@/lib/form-values";
 import { SUBJECTS, type Subject } from "@/lib/tutormatch";
 
 export const PRIORITIES = { high: "High", medium: "Medium", low: "Low" } as const;
@@ -125,12 +126,7 @@ const TASK_FIELDS = ["title", "subject", "due_date", "due_time", "priority", "es
 export type TaskFormValues = Partial<Record<(typeof TASK_FIELDS)[number], string>>;
 
 export function taskFormValues(form: FormData): TaskFormValues {
-  const values: TaskFormValues = {};
-  for (const k of TASK_FIELDS) {
-    const v = form.get(k);
-    if (typeof v === "string") values[k] = v;
-  }
-  return values;
+  return formValues(form, TASK_FIELDS);
 }
 
 // ---- Filters and sessions in the planner (ticket 17) ----------------------

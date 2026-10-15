@@ -5,21 +5,30 @@ import { Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { formValues } from "@/lib/form-values";
 import { saveMeetingLink, type LinkFormState } from "./actions";
+
+type MeetingLinkState = LinkFormState & { values?: { meeting_link?: string }; attempt?: number };
 
 // The tutor's video call link box on an Accepted session: add a link, or
 // change / remove the saved one.
 export function MeetingLinkForm({ bookingId, current }: { bookingId: string; current: string | null }) {
   const [editing, setEditing] = useState(!current);
-  const [state, formAction, pending] = useActionState<LinkFormState, FormData>(async (prev, formData) => {
+  const [state, formAction, pending] = useActionState<MeetingLinkState, FormData>(async (prev, formData) => {
+    let result: LinkFormState;
     try {
-      const result = await saveMeetingLink(prev, formData);
-      if (!result.error) setEditing(false);
-      return result;
+      result = await saveMeetingLink(prev, formData);
     } catch {
       const from = formData.get("intent") === "remove" ? "remove" : "save";
-      return { error: "We couldn't save the link — check your connection and try again.", from };
+      result = { error: "We couldn't save the link — check your connection and try again.", from };
     }
+    if (!result.error) {
+      setEditing(false);
+      return result;
+    }
+    // React empties a form after every submit, so hand back the link that
+    // was typed and refill the box with it.
+    return { ...result, values: formValues(formData, ["meeting_link"]), attempt: Date.now() };
   }, {});
 
   if (current && !editing) {
@@ -58,6 +67,8 @@ export function MeetingLinkForm({ bookingId, current }: { bookingId: string; cur
       <Label htmlFor={`link-${bookingId}`}>Video call link (for online sessions)</Label>
       <div className="flex flex-col gap-2 sm:flex-row">
         <Input
+          // A new `key` after an error re-creates the box, so it picks up the refilled link.
+          key={state.attempt}
           id={`link-${bookingId}`}
           name="meeting_link"
           // A plain text box (not type="url"), so our own clear message
@@ -68,7 +79,7 @@ export function MeetingLinkForm({ bookingId, current }: { bookingId: string; cur
           spellCheck={false}
           maxLength={300}
           required
-          defaultValue={current ?? ""}
+          defaultValue={state.values?.meeting_link ?? current ?? ""}
           placeholder="https://meet.google.com/abc-defg-hij"
           className="flex-1"
         />
