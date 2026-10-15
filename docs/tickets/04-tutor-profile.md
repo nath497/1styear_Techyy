@@ -9,9 +9,9 @@ and availability as text.
 
 **Status:** todo
 
-- [ ] Only users with the tutor role can reach the My tutor profile screen; learners are told it is for tutors
-- [ ] A tutor can create the profile and edit it later; the form validates (rate above ₱0, at least one subject and level)
-- [ ] The rate is entered in pesos and saved as whole centavos
-- [ ] A tutor cannot edit someone else's tutor profile (blocked by the database, not just the screen)
+- [x] Only users with the tutor role can reach the My tutor profile screen; learners are told it is for tutors
+- [x] A tutor can create the profile and edit it later; the form validates (rate above ₱0, at least one subject and level)
+- [x] The rate is entered in pesos and saved as whole centavos
+- [x] A tutor cannot edit someone else's tutor profile (blocked by the database, not just the screen)
 - [ ] 2–3 real classmates have created tutor profiles (no fake data)
 - [ ] Works on the live URL

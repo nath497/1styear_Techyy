@@ -13,13 +13,15 @@ export async function SiteNav() {
   } = await supabase.auth.getUser();
 
   let displayName: string | null = null;
+  let isTutor = false;
   if (user) {
     const { data } = await supabase
       .from("profiles")
-      .select("display_name")
+      .select("display_name, role")
       .eq("id", user.id)
       .maybeSingle();
     displayName = data?.display_name ?? null;
+    isTutor = data?.role === "tutor";
   }
 
   return (
@@ -38,6 +40,11 @@ export async function SiteNav() {
 
         {user ? (
           <>
+            {isTutor && (
+              <Link href="/tutor-profile" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                My profile
+              </Link>
+            )}
             <span className="hidden max-w-40 truncate text-sm text-muted-foreground sm:inline">
               {displayName ?? user.email}
             </span>
