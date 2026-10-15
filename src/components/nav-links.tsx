@@ -204,7 +204,7 @@ export function ProfileMenu({ account }: { account: NonNullable<Account> }) {
       <button
         type="button"
         aria-expanded={open}
-        aria-haspopup="menu"
+        aria-controls="profile-menu"
         onClick={() => setOpenedOn(open ? null : pathname)}
         className="flex items-center gap-2 rounded-full py-1 pr-2 pl-1 text-sm hover:bg-muted"
       >
@@ -217,7 +217,7 @@ export function ProfileMenu({ account }: { account: NonNullable<Account> }) {
 
       {open && (
         <div
-          role="menu"
+          id="profile-menu"
           className="absolute right-0 mt-2 w-56 rounded-[var(--radius)] border border-border bg-card p-2 shadow-lg"
         >
           <p className="px-2 py-1.5 text-xs text-muted-foreground">
@@ -225,7 +225,6 @@ export function ProfileMenu({ account }: { account: NonNullable<Account> }) {
           </p>
           {account.role === "tutor" && (
             <Link
-              role="menuitem"
               href="/tutor-profile"
               onClick={() => setOpenedOn(null)}
               className="flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-muted"
@@ -234,7 +233,6 @@ export function ProfileMenu({ account }: { account: NonNullable<Account> }) {
             </Link>
           )}
           <Link
-            role="menuitem"
             href="/sessions"
             onClick={() => setOpenedOn(null)}
             className="flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-muted"
@@ -243,7 +241,6 @@ export function ProfileMenu({ account }: { account: NonNullable<Account> }) {
           </Link>
           <form action={logOut}>
             <button
-              role="menuitem"
               type="submit"
               className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-destructive hover:bg-destructive/10"
             >

@@ -43,23 +43,35 @@ the learner from "stuck" to "session accepted".
 
 ## Screens
 1. **Home** — hero ("Learn from fellow students. Affordable. Flexible.
-   Made for you."), how it works in 3 steps, the subject list, and
+   Made for you.") with an icon illustration, how it works in 3 steps,
+   an "I'm looking for help with…" search card (subject, budget, level,
+   mode) that opens Find a Tutor filled in, the subject list, and
    **Find a Tutor** / **Become a Tutor** buttons. No pricing or FAQ.
 2. **Sign up** — display name, email, password, "I am a Learner /
    Tutor", level (Senior High or College).
-3. **Log in** — email and password. **Log out** is in the top
-   navigation on every page.
+3. **Log in** — email and password; you land on your own dashboard.
+   **Log out** is one tap away on every page: in the profile menu (your
+   initials, top right) on desktop, and in the Menu on phones.
 4. **My tutor profile** (tutors only) — bio, subjects taught, levels
    taught, rate per session in ₱, mode (online / face-to-face / both),
    availability as text (e.g. "Weekdays after 4pm"). Create and edit.
-5. **Find a Tutor (BudgetMatch)** — learner picks subject, level,
-   budget per session and mode; matching tutor cards each show a "why
-   it matches" line (e.g. "₱100 ≤ your ₱100 budget · teaches
-   Mathematics · face-to-face"). Empty state: "No tutors within ₱X yet —
-   try raising your budget." Browsing works without logging in.
-6. **Tutor page** — full tutor profile plus a **Request a Session**
-   form (subject from the tutor's list, topic, date and time). Asks the
-   visitor to log in first if they are not.
+5. **Find a Tutor (BudgetMatch)** — search by tutor name or keyword,
+   plus optional subject, level, mode, minimum price and budget per
+   session (the maximum); sort by best match, lowest price or newest;
+   **Reset filters**. Every filter you fill in applies together, and a
+   tutor over your budget is never shown. Tutor cards show initials,
+   subjects, levels, mode, intro, availability, price, a "Within budget"
+   tag and a "why it matches" line (e.g. "₱100 ≤ your ₱120 budget (₱20
+   to spare) · teaches Mathematics · face-to-face"). Empty state: "No
+   tutors within ₱X yet — try raising your budget." when the budget is
+   what's in the way, otherwise "No tutors match all your filters yet.",
+   plus which filter is limiting results (from real listings). Browsing
+   works without logging in.
+6. **Tutor page** — full tutor profile, a **Budget breakdown** (you
+   pay the listed price, ₱0 extra; TutorMatch's 10% comes from the
+   tutor's side and is recorded, not collected), and a **Request a
+   Session** form (subject from the tutor's list, topic, date and time).
+   Asks the visitor to log in first if they are not.
 7. **My sessions (learner)** — my requests with status (Pending /
    Accepted / Declined / Completed / Cancelled); **Cancel** while
    Pending or Accepted.
@@ -72,6 +84,14 @@ the learner from "stuck" to "session accepted".
 Both My sessions screens group sessions under **Pending**, **Upcoming**
 (Accepted) and **History** (Declined / Cancelled / Completed). Pending
 and Upcoming are soonest first; History is most recent first.
+
+**Navigation:** a sidebar on desktop and a Menu button on phones,
+built per role on the server — logged-out visitors see Home, Find a
+Tutor and Become a Tutor; learners and tutors see their own Dashboard
+first and only their own tools. Planned features from LATER.md
+(Study Planner, LearnTrack, Subscription, account Profile) show greyed
+out with a "Soon" tag and can't be clicked. Hiding a link is only
+tidiness; pages and the database do the real permission checks.
 
 Every screen has loading, empty and error states, works on a phone, and
 uses the TutorMatch colours (primary purple #6D40F4, lavender #EDE9FE,

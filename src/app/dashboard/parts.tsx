@@ -17,7 +17,9 @@ export function Welcome({
   return (
     <section className="rounded-[calc(var(--radius)*1.5)] bg-gradient-to-br from-secondary to-background p-6 sm:p-8">
       <p className="text-sm text-muted-foreground">{todayInManila()}</p>
-      <h1 className="mt-1 text-3xl font-semibold tracking-tight">Hi, {name} 👋</h1>
+      <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+        Hi, {name} <span aria-hidden>👋</span>
+      </h1>
       <p className="mt-2 max-w-xl text-muted-foreground">{message}</p>
       <div className="mt-5 flex flex-wrap gap-3">{children}</div>
     </section>

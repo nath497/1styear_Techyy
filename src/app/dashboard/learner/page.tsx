@@ -73,7 +73,7 @@ export default async function LearnerDashboard() {
 
   // Row Level Security only returns this learner's own bookings and help
   // requests; tutor listings are public.
-  const [bookingsRes, helpRes, tutorsRes] = await Promise.all([
+  const [bookingsRes, helpRes, openHelpRes, tutorsRes] = await Promise.all([
     supabase
       .from("bookings")
       .select("id, subject, topic, starts_at, price_centavos, status, tutor:tutor_profiles(profiles(display_name))")
@@ -86,21 +86,38 @@ export default async function LearnerDashboard() {
       .order("created_at", { ascending: false })
       .limit(3)
       .returns<HelpRow[]>(),
+    // The newest request that's still Open — the best clue to what the
+    // learner needs now.
+    supabase
+      .from("help_requests")
+      .select("id, title, subject, level, budget_centavos, mode, status, offer_count")
+      .eq("learner_id", user.id)
+      .eq("status", "open")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .returns<HelpRow[]>(),
     supabase
       .from("tutor_profiles")
       .select("tutor_id, bio, subjects, levels, rate_centavos, mode, created_at, profiles(display_name)")
       .returns<TutorRow[]>(),
   ]);
-  for (const [what, res] of [["bookings", bookingsRes], ["help requests", helpRes], ["tutors", tutorsRes]] as const) {
+  for (const [what, res] of [
+    ["bookings", bookingsRes],
+    ["help requests", helpRes],
+    ["open help request", openHelpRes],
+    ["tutors", tutorsRes],
+  ] as const) {
     if (res.error) console.error(`Learner dashboard: could not load ${what}`, res.error);
   }
 
   const sessions = groupSessions(bookingsRes.data ?? []);
   const completed = sessions.history.filter((b) => b.status === "completed").length;
 
-  // BudgetMatch suggestions, based on the learner's latest help request
-  // (the only saved preferences we have). Never over budget.
-  const latest = helpRes.data?.[0];
+  // BudgetMatch suggestions, based on the learner's latest OPEN help
+  // request (or, if none is open, their latest one) — the only saved
+  // preferences we have. Never over budget.
+  const openLatest = openHelpRes.data?.[0];
+  const latest = openLatest ?? helpRes.data?.[0];
   const filters: MarketFilters | null = latest
     ? { q: "", subject: latest.subject, level: latest.level, maxCentavos: latest.budget_centavos, mode: latest.mode, sort: "relevance" }
     : null;
@@ -121,7 +138,7 @@ export default async function LearnerDashboard() {
         </Link>
       </Welcome>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid gap-3 sm:grid-cols-3">
         <StatCard label="Waiting for a tutor" value={bookingsRes.error ? "—" : sessions.pending.length} href="/sessions" />
         <StatCard label="Upcoming sessions" value={bookingsRes.error ? "—" : sessions.upcoming.length} href="/sessions" />
         <StatCard label="Completed" value={bookingsRes.error ? "—" : completed} href="/sessions" />
@@ -202,7 +219,7 @@ export default async function LearnerDashboard() {
         ) : (
           <>
             <p className="text-muted-foreground">
-              Based on your latest help request: {SUBJECTS[latest.subject]}, {LEVELS[latest.level]}, up to{" "}
+              Based on your {openLatest ? "open" : "latest"} help request: {SUBJECTS[latest.subject]}, {LEVELS[latest.level]}, up to{" "}
               {formatPeso(latest.budget_centavos)}, {latest.mode === "online" ? "online" : "face-to-face"}.
             </p>
             {suggestions.length === 0 ? (
