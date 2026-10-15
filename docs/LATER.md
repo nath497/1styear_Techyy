@@ -17,7 +17,7 @@ search on Find a Tutor.
   Tutor Pro (₱149/month), demo entitlements. Show as a pitch slide.
 - **Real payments** — payment collection and tutor payouts need a
   payment provider.
-- **LearnTrack** — topics marked Need to Review / Learning / Understood.
+- **LearnTrack** — topics marked Need to Review / Learning / Understood. (Now in the spec as a stretch goal.)
 - **Reviews and ratings** — only for completed sessions, one per session.
 - **Favourite tutors.**
 - **Admin dashboard** — counts, commission totals, reports, moderation.
@@ -43,7 +43,7 @@ have yet, so showing them now would mean fake numbers.
 - **Average rating** on the learner dashboard — needs Reviews first.
 - **Send a Message** button and notification bell — need Chat (above).
 - **Mon–Fri availability grid** — availability is free text today.
-- **LearnTrack** screens — already parked above.
+- **LearnTrack** screens — now in the spec as a stretch goal.
 
 ## Parked from the "master prompt" (2026-10-15)
 
@@ -54,7 +54,7 @@ Everything below needs new tables and a spec update first
 stretch goal, has since been built.)
 
 - **Help Request Match Score** (the board itself is built).
-- **LearnTrack** — goals, topics, confidence, Learning Gap Finder,
+- **LearnTrack** (the topic list is now in the spec) — goals, confidence, Learning Gap Finder,
   Next Best Study Step, progress over time.
 - **Smart Study Suggestions** for the Study Planner (the planner itself
   is in the spec as a stretch goal).
@@ -98,5 +98,18 @@ stretch goal, has since been built.)
 - **Smart Study Suggestions** — breaking a big goal into smaller tasks.
 - **Reminders and notifications** for tasks that are due.
 - **Recurring tasks** (e.g. "every Monday").
-- **Linking tasks to LearnTrack** — LearnTrack doesn't exist yet.
+- **Linking tasks to LearnTrack topics** (LearnTrack itself is now in
+  the spec).
 - **A planner for tutors.**
+
+## Parked from the LearnTrack and Profile spec (2026-10-15)
+
+- **Learning goals** (e.g. "finish Algebra by November").
+- **Learning Gap Finder** and **Next Best Study Step** suggestions.
+- **Progress-over-time charts** — LearnTrack shows today's progress bar
+  per subject only.
+- **Tutors seeing a learner's LearnTrack** — it stays private for now.
+- **Changing your email or password** from the Profile page.
+- **Deleting your account.**
+- **A bio or school for learners.**
+- **Profile photos** — already parked above.

@@ -435,10 +435,87 @@ Accepted ones only). Nothing new is stored for them.
 - [x] A second learner and a tutor can't see the first learner's tasks;
       study_tasks shows RLS enabled.
 
+## Stretch goal: LearnTrack
+
+Learners keep a list of the topics they're studying in each subject and
+mark how well they understand each one, so they can see where they're
+weak before booking a **session request**. A progress bar shows how far
+they've got in each subject. Learners only — tutors don't have
+LearnTrack.
+
+### LearnTrack user stories
+18. As a learner, I want to list the topics I'm studying under each
+    subject, so that I can see everything I need to learn.
+19. As a learner, I want to mark each topic Need to Review, Learning or
+    Understood, so that I can see where I'm weak.
+20. As a learner, I want a progress bar for each subject, so that I can
+    see how far I've come.
+
+### LearnTrack screens
+24. **LearnTrack** (learners only; the sidebar link stops being greyed
+    out) — topics grouped by subject, each subject with a progress bar
+    ("3 of 5 understood"). Each topic shows its name and status —
+    **Need to Review** (red), **Learning** (amber) or **Understood**
+    (green) — changeable in one tap. A status filter. Empty state: "No
+    topics yet — add the first topic you're studying." Plus loading and
+    error states.
+25. **Add / edit a topic** — topic name (required, up to 100
+    characters), subject (fixed list), status (starts at Need to
+    Review), note (optional, up to 300 characters). **Delete** asks
+    "are you sure?".
+26. **Learner dashboard** — a **LearnTrack** card with the number of
+    topics at Need to Review and up to 3 of them; only shown once the
+    learner has topics.
+
+### LearnTrack data
+**learn_topics** — one row per topic a learner is studying.
+- Columns: id, learner_id, subject, name, status (`need_review`,
+  `learning` or `understood`), note, created_at, updated_at.
+- A learner can't add the same topic name twice in one subject.
+- Read, edit, delete: only the learner who added the topic. Tutors,
+  other learners and logged-out visitors can't see anyone's LearnTrack.
+- Create: a logged-in learner, for themselves only (tutors can't).
+- The database sets learner_id (always the logged-in user), created_at
+  and updated_at.
+
+### LearnTrack: done for the demo
+- [ ] A learner adds topics in two subjects, changes a status in one
+      tap, and the progress bar updates.
+- [ ] Editing and deleting a topic work.
+- [ ] The dashboard card shows the topics to review.
+- [ ] A second learner and a tutor can't see the first learner's
+      topics; learn_topics shows RLS enabled.
+
+## Stretch goal: Profile
+
+### Profile user story
+21. As a learner, I want to see and change my name and level, so that
+    tutors see the right name and my matches fit my level.
+
+### Profile screens
+27. **Profile** (any logged-in user; in the learner sidebar — which
+    stops greying it out — and the header's profile menu) — shows
+    display name, level (SHS or College), email, role and the date they
+    joined. They can change their name and level and press **Save**.
+    Tutors keep **My Profile** for their tutor listing.
+
+### Profile data
+No new table. The page edits the user's own row in **profiles**: only
+`display_name` and `level` can change — the database already blocks
+everything else, including changing your role. The email comes from the
+login account and is shown, not edited.
+
+### Profile: done for the demo
+- [ ] A learner changes their name on Profile and the new name shows in
+      the header and to their tutor.
+- [ ] Changing level works; role can't be changed (checked on the
+      database, not just the screen).
+
 ## Out of scope
 - Subscriptions, pricing page, TutorMatch Plus / Tutor Pro
 - Real payments, collection and payouts
-- LearnTrack
+- LearnTrack goals, Learning Gap Finder, Next Best Study Step and
+  progress-over-time charts
 - Reviews and ratings, favourite tutors
 - Admin dashboard, reports, moderation
 - Profile photos
