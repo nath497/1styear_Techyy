@@ -355,3 +355,23 @@ export function profileChecklist(
 export function todayInManila(now = new Date()) {
   return now.toLocaleDateString("en-PH", { timeZone: "Asia/Manila", weekday: "long", month: "long", day: "numeric" });
 }
+
+// ---- Video call links (SQL 014) -------------------------------------------
+
+// Same rule as the database: https, and really one of these apps (so a
+// look-alike such as "meet.google.com.evil.com" is refused).
+const MEETING_LINK = /^https:\/\/(meet\.google\.com|([a-z0-9-]+\.)?zoom\.us|teams\.microsoft\.com|teams\.live\.com|meet\.jit\.si)(\/\S*)?$/i;
+
+export function isAllowedMeetingLink(link: string) {
+  return link.length <= 300 && MEETING_LINK.test(link);
+}
+
+// "https://school.zoom.us/j/1" → "Zoom", for the "Opens Zoom" note.
+export function meetingAppName(link: string) {
+  const host = link.replace(/^https:\/\//i, "").split("/")[0].toLowerCase();
+  if (host === "meet.google.com") return "Google Meet";
+  if (host === "zoom.us" || host.endsWith(".zoom.us")) return "Zoom";
+  if (host.startsWith("teams.")) return "Microsoft Teams";
+  if (host === "meet.jit.si") return "Jitsi";
+  return "the video call";
+}

@@ -19,6 +19,7 @@ import {
   type Subject,
   type WantedMode,
 } from "@/lib/tutormatch";
+import { JoinCallLink } from "@/components/join-call-link";
 import { loadInbox } from "@/lib/chat";
 import { Empty, LoadError, RecentChats, Section, StatCard, Welcome } from "../parts";
 
@@ -31,6 +32,7 @@ type BookingRow = {
   starts_at: string;
   price_centavos: number;
   status: Status;
+  meeting_link: string | null;
   learner: { display_name: string } | null;
 };
 
@@ -60,7 +62,7 @@ export default async function TutorDashboard() {
   const [bookingsRes, commissionRes, listingRes, openRes, myOffersRes] = await Promise.all([
     supabase
       .from("bookings")
-      .select("id, subject, topic, starts_at, price_centavos, status, learner:profiles(display_name)")
+      .select("id, subject, topic, starts_at, price_centavos, status, meeting_link, learner:profiles(display_name)")
       .eq("tutor_id", user.id)
       .returns<BookingRow[]>(),
     supabase.from("commission_records").select("price_centavos, commission_centavos, tutor_amount_centavos").eq("tutor_id", user.id),
@@ -186,13 +188,22 @@ export default async function TutorDashboard() {
           ) : (
             <ul className="flex flex-col gap-2">
               {sessions.upcoming.slice(0, 4).map((b) => (
-                <li key={b.id} className="rounded-[var(--radius)] bg-muted/60 px-3 py-2">
-                  <span className="block font-medium">
-                    {SUBJECTS[b.subject]} for {b.learner?.display_name ?? "a learner"}
+                <li key={b.id} className="flex flex-col gap-2 rounded-[var(--radius)] bg-muted/60 px-3 py-2">
+                  <span>
+                    <span className="block font-medium">
+                      {SUBJECTS[b.subject]} for {b.learner?.display_name ?? "a learner"}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {formatSessionTime(b.starts_at)} · {formatPeso(b.price_centavos)}
+                    </span>
                   </span>
-                  <span className="text-muted-foreground">
-                    {formatSessionTime(b.starts_at)} · {formatPeso(b.price_centavos)}
-                  </span>
+                  {b.meeting_link ? (
+                    <JoinCallLink link={b.meeting_link} />
+                  ) : (
+                    <Link href="/sessions" className="text-xs font-medium text-primary hover:underline">
+                      Add a video call link
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

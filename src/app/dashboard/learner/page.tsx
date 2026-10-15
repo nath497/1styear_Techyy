@@ -24,6 +24,7 @@ import {
   type Status,
   type Subject,
 } from "@/lib/tutormatch";
+import { JoinCallLink } from "@/components/join-call-link";
 import { loadInbox } from "@/lib/chat";
 import { Empty, LoadError, RecentChats, Section, StatCard, Welcome } from "../parts";
 
@@ -36,6 +37,7 @@ type BookingRow = {
   starts_at: string;
   price_centavos: number;
   status: Status;
+  meeting_link: string | null;
   tutor: { profiles: { display_name: string } | null } | null;
 };
 
@@ -77,7 +79,7 @@ export default async function LearnerDashboard() {
   const [bookingsRes, helpRes, openHelpRes, tutorsRes] = await Promise.all([
     supabase
       .from("bookings")
-      .select("id, subject, topic, starts_at, price_centavos, status, tutor:tutor_profiles(profiles(display_name))")
+      .select("id, subject, topic, starts_at, price_centavos, status, meeting_link, tutor:tutor_profiles(profiles(display_name))")
       .eq("learner_id", user.id)
       .returns<BookingRow[]>(),
     supabase
@@ -160,7 +162,7 @@ export default async function LearnerDashboard() {
           ) : (
             <ul className="flex flex-col gap-2">
               {[...sessions.upcoming, ...sessions.pending].slice(0, 4).map((b) => (
-                <li key={b.id} className="flex items-start justify-between gap-3 rounded-[var(--radius)] bg-muted/60 px-3 py-2">
+                <li key={b.id} className="flex flex-wrap items-start justify-between gap-3 rounded-[var(--radius)] bg-muted/60 px-3 py-2">
                   <span className="min-w-0">
                     <span className="block font-medium">
                       {SUBJECTS[b.subject]} with {b.tutor?.profiles?.display_name ?? "your tutor"}
@@ -174,6 +176,11 @@ export default async function LearnerDashboard() {
                   >
                     {b.status === "accepted" ? "Confirmed" : "Waiting"}
                   </span>
+                  {b.status === "accepted" && b.meeting_link && (
+                    <div className="w-full">
+                      <JoinCallLink link={b.meeting_link} />
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

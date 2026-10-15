@@ -13,6 +13,8 @@ import {
   type Status,
   type Subject,
 } from "@/lib/tutormatch";
+import { JoinCallLink } from "@/components/join-call-link";
+import { MeetingLinkForm } from "./meeting-link-form";
 import { StatusButtons } from "./status-buttons";
 
 export const metadata: Metadata = { title: "My sessions · TutorMatch" };
@@ -24,6 +26,7 @@ type BookingRow = {
   starts_at: string;
   price_centavos: number;
   status: Status;
+  meeting_link: string | null;
   // The other person's name: bookings → profiles for the learner, and
   // bookings → tutor_profiles → profiles for the tutor.
   learner: { display_name: string } | null;
@@ -60,7 +63,7 @@ export default async function MySessionsPage() {
   const { data, error } = await supabase
     .from("bookings")
     .select(
-      "id, subject, topic, starts_at, price_centavos, status, learner:profiles(display_name), tutor:tutor_profiles(profiles(display_name))",
+      "id, subject, topic, starts_at, price_centavos, status, meeting_link, learner:profiles(display_name), tutor:tutor_profiles(profiles(display_name))",
     )
     .eq(isTutor ? "tutor_id" : "learner_id", user.id)
     .order("starts_at", { ascending: true })
@@ -229,6 +232,15 @@ function BookingCard({
             (10%) → {formatPeso(commission.tutor_amount_centavos)} you
           </p>
         )}
+        {/* Video call link: the tutor sets it, the learner joins (SQL 014). */}
+        {isTutor && b.status === "accepted" && <MeetingLinkForm bookingId={b.id} current={b.meeting_link} />}
+        {!isTutor &&
+          b.status === "accepted" &&
+          (b.meeting_link ? (
+            <JoinCallLink link={b.meeting_link} />
+          ) : (
+            <p className="text-muted-foreground">Your tutor hasn&apos;t added a video link yet.</p>
+          ))}
         {isTutor && b.status === "accepted" && (
           <StatusButtons
             bookingId={b.id}
