@@ -3,24 +3,29 @@
 *Find Your Match. Learn Together. Grow Together.*
 
 ## Who
-A Senior High School or college **learner** in the Philippines who is
-stuck on a subject (for example Gen Math, Gen Chem, programming) and
-has a tight budget for tutoring.
+A college **learner** like **Josh Lavado**, a real student we know who
+is struggling with **Mathematics in the Modern World** this school
+year and has a tight budget for tutoring. The app also accepts Senior
+High learners, but Josh is the person we design and demo for.
 
 Tutors are fellow students, but for the MVP they are supporting
 characters: they need a simple profile so learners have someone to
 find, and they need to accept or decline requests.
 
 ## The struggle
-> **TODO (team):** one real example from a teammate — name, subject,
-> when it happened, and what they actually did step by step.
-> Example shape: "Nath, Gen Chem, before the midterm: asked two
-> classmates, both were busy, watched YouTube until 2am, still got 68%."
+What Josh told us (interview, October 2026):
+- He has trouble understanding some Mathematics in the Modern World
+  lessons and needs someone to explain the concepts more clearly.
+- When he got stuck, he **researched the topic online** and **asked a
+  senior** he knows for help.
+- He would accept **paid** tutoring, but his budget is only
+  **₱100 per session**.
+- He has **not** asked for Math help in a group chat. We do not claim
+  group chats failed him.
 
-What we know from our own experience as students: when a lesson is
-hard, we ask classmates, search online, or study alone. Asking a
-classmate depends on who is free; online explanations do not answer
-*our* specific question.
+> **Still to ask Josh:** did the senior's help work, how long did it
+> take to get help, and was the senior ever busy or unavailable? His
+> answer is the evidence for why one senior is not enough.
 
 Background (not our own observation): a Philippine study (September
 2026) lists barriers to online tutoring such as unstable internet,
@@ -28,6 +33,11 @@ lack of devices, and inflexible schedules. This is why TutorMatch
 supports **face-to-face** sessions, not just online ones.
 
 ## Today's workaround
+- **Ask a senior** — what Josh does. It only works if you already know
+  a senior who is good at the subject and free when you need them.
+  This is TutorMatch's real competitor, not the group chat.
+- Search online — what Josh also does. Generic, not about your exact
+  lesson.
 - Ask a classmate for free — depends on who is available and willing.
 - Watch YouTube / search online — generic, not about your exact problem.
 - Pay a tutoring provider — one Philippine provider lists Senior High
@@ -45,15 +55,17 @@ commission recorded when the session is completed.
 
 ## How we'll know it worked
 **The 3-minute demo:**
+The demo uses Josh's real numbers: Mathematics, College, ₱100 budget.
 1. A learner signs up and opens BudgetMatch (subject, level, budget,
-   online/face-to-face).
+   online/face-to-face): Mathematics · College · ₱100.
 2. They see real tutors who fit, each with a line explaining *why* it
-   matches (e.g. "₱150 ≤ your ₱200 budget · teaches Gen Math ·
-   face-to-face").
-3. They send a session request (topic, date, time) — status **Pending**.
+   matches (e.g. "₱100 ≤ your ₱100 budget · teaches Mathematics ·
+   face-to-face"). A ₱150 tutor does **not** appear.
+3. They send a session request (topic "Mathematics in the Modern
+   World", date, time) — status **Pending**.
 4. Switch to the tutor account: the tutor **accepts**, later marks it
-   **Completed**, and a commission record appears: ₱200 session →
-   ₱20 TutorMatch, ₱180 tutor — labelled "recorded, not collected".
+   **Completed**, and a commission record appears: ₱100 session →
+   ₱10 TutorMatch, ₱90 tutor — labelled "recorded, not collected".
 
 **Who will try it:** 2–3 real classmates who are good at a subject sign
 up as tutors (real profiles, not fake data), and at least one teammate
