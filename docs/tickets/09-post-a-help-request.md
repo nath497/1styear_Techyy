@@ -8,13 +8,13 @@ Open. The learners' Request Help link in the navigation goes live.
 
 **Blocked by:** None
 
-**Status:** todo
+**Status:** done
 
-- [ ] `help_requests` is created from a numbered SQL file with RLS ON and no delete
-- [ ] Only learners can post, only for themselves, always as Open; the budget is saved as whole centavos and must be above ₱0
-- [ ] The form checks every field and shows friendly errors
-- [ ] My help requests shows title, subject, level, budget, mode, preferred time and status, with loading, empty and error states (the offer count arrives with offers in ticket 10)
-- [ ] The learner can Cancel an Open request (with a confirmation); the database allows only Open → Cancelled by its owner here
-- [ ] Request Help is no longer greyed out for learners
-- [ ] Works on a phone
-- [ ] Works on the live URL
+- [x] `help_requests` is created from a numbered SQL file with RLS ON and no delete
+- [x] Only learners can post, only for themselves, always as Open; the budget is saved as whole centavos and must be above ₱0
+- [x] The form checks every field and shows friendly errors
+- [x] My help requests shows title, subject, level, budget, mode, preferred time and status, with loading, empty and error states (the offer count arrives with offers in ticket 10)
+- [x] The learner can Cancel an Open request (with a confirmation); the database allows only Open → Cancelled by its owner here
+- [x] Request Help is no longer greyed out for learners
+- [x] Works on a phone
+- [x] Works on the live URL
