@@ -14,7 +14,8 @@ search on Find a Tutor.
 ## Parked from the TutorMatch MVP (grill session, 2026-10-15)
 
 - **Subscriptions** — pricing page, TutorMatch Plus (₱99/month) and
-  Tutor Pro (₱149/month), demo entitlements. Show as a pitch slide.
+  Tutor Pro (₱149/month), demo entitlements. (A preview page for one
+  account is now in the spec as a prototype.)
 - **Real payments** — payment collection and tutor payouts need a
   payment provider.
 - **LearnTrack** — topics marked Need to Review / Learning / Understood. (Now in the spec as a stretch goal.)
@@ -60,7 +61,7 @@ stretch goal, has since been built.)
   is in the spec as a stretch goal).
 - **Trust Score + Trust Breakdown** — only from real data (profile
   completeness, completed sessions); "Not enough data yet" otherwise.
-- **Subscription page** — information only, no payments (pitch slide).
+- **Subscription page** — now in the spec as a preview prototype.
 - **Availability filter** — needs structured availability (days/times),
   not today's free text.
 - **Session Preparation Notes, Post-Session Reflection, Study Buddy
@@ -127,3 +128,13 @@ stretch goal, has since been built.)
 - **Achievements and badges.**
 - **Linking a session note to specific LearnTrack topics** (beyond
   inserting their names as text).
+
+## Parked from the Subscription preview spec (2026-10-16)
+
+- **Real payments** (GCash, cards) — needs a payment provider.
+- **Switching plan benefits on** (priority help requests, featured
+  tutors, badges, reminders, earnings reports).
+- **Invoices and receipts.**
+- **Cancelling or changing a plan.**
+- **An admin screen to manage preview accounts** — for now they're a
+  Vercel setting.

@@ -644,8 +644,51 @@ two saves arrive at once.
 - [x] study_activities, learning_goals and session_notes show RLS
       enabled.
 
+## Stretch goal: Subscription preview (prototype)
+
+Shows TutorMatch's business model inside the app for the demo: preview
+accounts open a Subscription page with the plans. Nothing is charged, and
+no one else sees it yet.
+
+### Subscription user stories
+29. As the team presenting TutorMatch, I want one account to open a real
+    Subscription page, so that the demo shows how TutorMatch could earn
+    money.
+30. As a learner or tutor, I want to compare the free plan with the paid
+    plan, so that I know what upgrading would give me.
+
+### Subscription screens
+36. **Subscription** (preview accounts only — the team's preview account
+    to start with). For them, the "Subscription" sidebar item stops being
+    greyed out. Three plan cards: **Free** (₱0), **TutorMatch Plus**
+    (₱99/month, for learners) and **Tutor Pro** (₱149/month, for tutors),
+    each listing what it includes. The plan that fits the account's role
+    is highlighted, with a clear "Prototype" label. **Subscribe** only
+    shows "This is a prototype. Payments aren't live yet, and nothing was
+    charged." Everyone else still sees "Soon" in the sidebar, and the
+    address shows a "Subscriptions are coming soon" page.
+37. **Plan benefits** are written as planned features, not live ones —
+    TutorMatch Plus: priority on Help Requests, unlimited LearnTrack
+    topics, session reminders. Tutor Pro: a featured spot on Find a
+    Tutor, a profile badge, earnings reports.
+
+### Subscription data
+No new tables and no database changes. The preview list is a private
+setting in Vercel (allowed emails, separated by commas), checked on the
+server against the logged-in account's email. It is never sent to the
+browser or written in the code, so no email is published. Nothing is
+saved when someone presses Subscribe.
+
+### Subscription: done for the demo
+- [ ] Logged in as the preview account: Subscription is unlocked in the
+      sidebar and the page shows all three plans.
+- [ ] Subscribe shows the prototype message; nothing is charged or saved.
+- [ ] Any other account still sees "Soon"; the address shows "coming
+      soon".
+
 ## Out of scope
-- Subscriptions, pricing page, TutorMatch Plus / Tutor Pro
+- Real subscriptions: payments, switching plan benefits on, invoices,
+  cancelling (the Subscription page is a preview prototype)
 - Real payments, collection and payouts
 - LearnTrack goals, Learning Gap Finder, Next Best Study Step and
   progress-over-time charts
