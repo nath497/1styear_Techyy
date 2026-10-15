@@ -8,12 +8,12 @@ task" button that opens the add-task form already filled in ("Review:
 
 **Blocked by:** 21
 
-**Status:** todo
+**Status:** done
 
-- [ ] Every place that showed "Learning" now shows "Currently Learning"
-- [ ] Each topic shows its last-updated date (Philippine time)
-- [ ] The subject filter works with the status filter, with a way to
+- [x] Every place that showed "Learning" now shows "Currently Learning"
+- [x] Each topic shows its last-updated date (Philippine time)
+- [x] The subject filter works with the status filter, with a way to
       reset
-- [ ] "Create study task" opens the add-task form filled in; saving it
+- [x] "Create study task" opens the add-task form filled in; saving it
       adds the task to Study Tasks
-- [ ] Works on the live URL, on a phone
+- [x] Works on the live URL, on a phone
