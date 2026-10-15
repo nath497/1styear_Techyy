@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/server";
 import {
   formatPeso,
@@ -30,8 +31,6 @@ type TutorRow = {
   profiles: { display_name: string } | null;
 };
 
-const select =
-  "flex h-10 w-full rounded-[var(--radius)] border border-input bg-background px-3 py-2 text-base md:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 const choice =
   "flex cursor-pointer items-center gap-2 rounded-[var(--radius)] border border-input bg-card px-3 py-2.5 text-sm has-[:checked]:border-primary has-[:checked]:bg-secondary has-[:checked]:text-secondary-foreground";
 
@@ -70,7 +69,7 @@ export default async function FindATutorPage({ searchParams }: PageProps<"/tutor
           <form method="get" action="/tutors" className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
               <Label htmlFor="subject">Subject</Label>
-              <select id="subject" name="subject" required defaultValue={picked("subject")} className={select}>
+              <Select id="subject" name="subject" required defaultValue={picked("subject")}>
                 <option value="" disabled>
                   Choose a subject
                 </option>
@@ -79,12 +78,12 @@ export default async function FindATutorPage({ searchParams }: PageProps<"/tutor
                     {SUBJECTS[key]}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
 
             <div className="flex flex-col gap-2">
               <Label htmlFor="level">My level</Label>
-              <select id="level" name="level" required defaultValue={picked("level")} className={select}>
+              <Select id="level" name="level" required defaultValue={picked("level")}>
                 <option value="" disabled>
                   Choose your level
                 </option>
@@ -93,7 +92,7 @@ export default async function FindATutorPage({ searchParams }: PageProps<"/tutor
                     {LEVELS[key]}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
 
             <div className="flex flex-col gap-2">

@@ -4,11 +4,9 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { SUBJECTS, type Subject } from "@/lib/tutormatch";
 import { requestSession, type RequestFormState } from "./actions";
-
-const select =
-  "flex h-10 w-full rounded-[var(--radius)] border border-input bg-background px-3 py-2 text-base md:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
 export function RequestForm({
   tutorId,
@@ -27,7 +25,7 @@ export function RequestForm({
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="subject">Subject</Label>
-        <select id="subject" name="subject" required defaultValue={subjects.length === 1 ? subjects[0] : ""} className={select}>
+        <Select id="subject" name="subject" required defaultValue={subjects.length === 1 ? subjects[0] : ""}>
           <option value="" disabled>
             Choose a subject
           </option>
@@ -36,7 +34,7 @@ export function RequestForm({
               {SUBJECTS[key]}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="flex flex-col gap-2">
