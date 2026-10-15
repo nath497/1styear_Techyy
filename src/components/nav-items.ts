@@ -31,7 +31,7 @@ export function navFor(account: Account): NavItem[] {
     { href: "/sessions", label: "My Sessions", icon: "sessions" },
     { href: "/messages", label: "Messages", icon: "chat" },
     { href: "/planner", label: "Study Planner", icon: "planner" },
-    { href: "/learntrack", label: "LearnTrack", icon: "learntrack", soon: true },
+    { href: "/learntrack", label: "LearnTrack", icon: "learntrack" },
     { href: "/subscription", label: "Subscription", icon: "subscription", soon: true },
     { href: "/profile", label: "Profile", icon: "profile" },
   ];
