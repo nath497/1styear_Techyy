@@ -7,12 +7,12 @@ conversations with learners they haven't offered to help.
 
 **Blocked by:** 13
 
-**Status:** todo
+**Status:** done
 
-- [ ] A tutor can start a conversation only with a learner whose help request they made an offer on (enforced by the database)
-- [ ] The button opens the existing conversation if there already is one
-- [ ] Checked with a third account: they can't open, read or send to someone else's conversation
-- [ ] `conversations` and `messages` show RLS enabled in the Supabase Table Editor
-- [ ] The spec's chat demo checks pass on the live URL
-- [ ] Works on a phone
-- [ ] Works on the live URL
+- [x] A tutor can start a conversation only with a learner whose help request they made an offer on (enforced by the database)
+- [x] The button opens the existing conversation if there already is one
+- [x] Checked with a third account: they can't open, read or send to someone else's conversation
+- [x] `conversations` and `messages` show RLS enabled in the Supabase Table Editor
+- [x] The spec's chat demo checks pass on the live URL
+- [x] Works on a phone
+- [x] Works on the live URL

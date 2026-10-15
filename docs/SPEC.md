@@ -319,11 +319,11 @@ Only display names are shown — never emails or phone numbers.
   refreshing; Row Level Security still decides who receives each one.
 
 ### Chat: done for the demo
-- [ ] A learner messages a tutor from the tutor page; the tutor replies;
+- [x] A learner messages a tutor from the tutor page; the tutor replies;
       both see the messages appear without refreshing.
-- [ ] A tutor who offered on a help request messages that learner.
-- [ ] A third account cannot open or send to their conversation.
-- [ ] No one can send a message as someone else; conversations and
+- [x] A tutor who offered on a help request messages that learner.
+- [x] A third account cannot open or send to their conversation.
+- [x] No one can send a message as someone else; conversations and
       messages show RLS enabled.
 
 ## Out of scope
