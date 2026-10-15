@@ -360,7 +360,9 @@ export function todayInManila(now = new Date()) {
 
 // Same rule as the database: https, and really one of these apps (so a
 // look-alike such as "meet.google.com.evil.com" is refused).
-const MEETING_LINK = /^https:\/\/(meet\.google\.com|([a-z0-9-]+\.)?zoom\.us|teams\.microsoft\.com|teams\.live\.com|meet\.jit\.si)(\/\S*)?$/i;
+// ("No whitespace" means space, tab and line breaks — exactly like the
+// database's [[:space:]] — so the two rules agree; a test checks that.)
+const MEETING_LINK = /^https:\/\/(meet\.google\.com|([a-z0-9-]+\.)?zoom\.us|teams\.microsoft\.com|teams\.live\.com|meet\.jit\.si)(\/[^ \t\n\r\f\v]*)?$/i;
 
 export function isAllowedMeetingLink(link: string) {
   return link.length <= 300 && MEETING_LINK.test(link);

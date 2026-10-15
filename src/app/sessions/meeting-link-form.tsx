@@ -17,7 +17,8 @@ export function MeetingLinkForm({ bookingId, current }: { bookingId: string; cur
       if (!result.error) setEditing(false);
       return result;
     } catch {
-      return { error: "We couldn't save the link — check your connection and try again." };
+      const from = formData.get("intent") === "remove" ? "remove" : "save";
+      return { error: "We couldn't save the link — check your connection and try again.", from };
     }
   }, {});
 
@@ -35,12 +36,13 @@ export function MeetingLinkForm({ bookingId, current }: { bookingId: string; cur
           <form action={formAction}>
             <input type="hidden" name="booking_id" value={bookingId} />
             <input type="hidden" name="meeting_link" value="" />
+            <input type="hidden" name="intent" value="remove" />
             <Button type="submit" size="sm" variant="ghost" disabled={pending}>
               {pending ? "Removing…" : "Remove"}
             </Button>
           </form>
         </div>
-        {state.error && (
+        {state.error && state.from === "remove" && (
           <p role="alert" className="text-sm text-destructive">
             {state.error}
           </p>
@@ -52,13 +54,18 @@ export function MeetingLinkForm({ bookingId, current }: { bookingId: string; cur
   return (
     <form action={formAction} className="flex flex-col gap-2">
       <input type="hidden" name="booking_id" value={bookingId} />
+      <input type="hidden" name="intent" value="save" />
       <Label htmlFor={`link-${bookingId}`}>Video call link (for online sessions)</Label>
       <div className="flex flex-col gap-2 sm:flex-row">
         <Input
           id={`link-${bookingId}`}
           name="meeting_link"
-          type="url"
+          // A plain text box (not type="url"), so our own clear message
+          // shows instead of the browser's generic "Please enter a URL".
+          type="text"
           inputMode="url"
+          autoComplete="off"
+          spellCheck={false}
           maxLength={300}
           required
           defaultValue={current ?? ""}
@@ -76,7 +83,7 @@ export function MeetingLinkForm({ bookingId, current }: { bookingId: string; cur
           )}
         </div>
       </div>
-      {state.error ? (
+      {state.error && state.from === "save" ? (
         <p role="alert" className="text-sm text-destructive">
           {state.error}
         </p>

@@ -15,10 +15,11 @@ export default async function MessagesHome() {
   if (!user) redirect("/login?next=/messages");
 
   // Any chats yet? (Row Level Security only counts mine.)
-  const { count } = await supabase
+  const { count, error } = await supabase
     .from("conversations")
     .select("id", { count: "exact", head: true })
     .not("last_message_at", "is", null);
+  if (error) console.error("Messages: could not count chats", error);
   const hasChats = (count ?? 0) > 0;
 
   return (
@@ -26,11 +27,15 @@ export default async function MessagesHome() {
       <span className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-primary">
         <MessageCircle className="h-7 w-7" aria-hidden />
       </span>
-      <p className="font-medium text-foreground">{hasChats ? "Your messages" : "No chats yet"}</p>
+      {/* The list on the left already says if loading failed or there are
+          no chats, so this side never contradicts or repeats it. */}
+      <p className="font-medium text-foreground">{error || hasChats ? "Your messages" : "Start a conversation"}</p>
       <p className="max-w-xs text-sm">
-        {hasChats
-          ? "Choose a chat on the left. New messages appear here without refreshing."
-          : "When you message a tutor — or a learner whose help request you offered on — the chat shows up here."}
+        {error
+          ? "Your chats will show on the left."
+          : hasChats
+            ? "Choose a chat on the left. New messages appear here without refreshing."
+            : "Message a tutor from their page — or, as a tutor, a learner whose help request you offered on."}
       </p>
     </div>
   );
