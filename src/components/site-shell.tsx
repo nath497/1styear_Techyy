@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
 import { MobileMenu, ProfileMenu, Sidebar, type Account } from "@/components/nav-links";
 import { navFor } from "@/components/nav-items";
+import { canPreviewSubscription } from "@/lib/subscription-access";
 
 // The frame around every page: top bar, sidebar (desktop) or menu
 // (phones), then the page itself. It checks who is logged in once, on
@@ -23,7 +24,8 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
       role: data?.role === "tutor" ? "tutor" : "learner",
     };
   }
-  const items = navFor(account);
+  // Only the yes/no answer goes to the menus — never the email or the list.
+  const items = navFor(account, { subscriptionPreview: Boolean(user) && canPreviewSubscription(user?.email) });
 
   return (
     <>

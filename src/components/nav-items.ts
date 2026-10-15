@@ -5,7 +5,9 @@ import type { Account, NavItem } from "@/components/nav-links";
 // out, so the menu never leads to a missing page.
 // Hiding a link is only tidiness: each page and the database do the real
 // permission checks.
-export function navFor(account: Account): NavItem[] {
+// `subscriptionPreview`: the server decided this account is on the private
+// preview list (ticket 27), so Subscription isn't greyed out for them.
+export function navFor(account: Account, { subscriptionPreview = false } = {}): NavItem[] {
   if (!account) {
     return [
       { href: "/", label: "Home", icon: "home" },
@@ -21,7 +23,7 @@ export function navFor(account: Account): NavItem[] {
       { href: "/sessions", label: "My Sessions", icon: "sessions" },
       { href: "/messages", label: "Messages", icon: "chat" },
       { href: "/tutor-profile", label: "My Profile", icon: "profile" },
-      { href: "/subscription", label: "Subscription", icon: "subscription", soon: true },
+      { href: "/subscription", label: "Subscription", icon: "subscription", soon: !subscriptionPreview },
     ];
   }
   return [
@@ -31,7 +33,7 @@ export function navFor(account: Account): NavItem[] {
     { href: "/sessions", label: "My Sessions", icon: "sessions" },
     { href: "/messages", label: "Messages", icon: "chat" },
     { href: "/learning-space", label: "My Learning Space ♡", icon: "planner" },
-    { href: "/subscription", label: "Subscription", icon: "subscription", soon: true },
+    { href: "/subscription", label: "Subscription", icon: "subscription", soon: !subscriptionPreview },
     { href: "/profile", label: "Profile", icon: "profile" },
   ];
 }
