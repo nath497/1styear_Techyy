@@ -1,5 +1,9 @@
 -- 006 — no double-booking a tutor
 --
+-- NOTE: this needs the btree_gist add-on, which the live Supabase project
+-- doesn't have, so this rule never took effect there. 018 enforces the
+-- same rule without add-ons — run 018 instead.
+--
 -- Run in: Supabase -> SQL Editor -> New query -> paste -> Run
 -- Needs 003 first. It only ADDS a rule; it does not change or delete any
 -- booking. Safe to run more than once.
