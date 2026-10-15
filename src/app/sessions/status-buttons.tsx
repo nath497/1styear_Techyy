@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { changeBookingStatus, type StatusFormState } from "./actions";
 
-type Choice = { status: "accepted" | "declined" | "cancelled"; label: string; confirm?: string };
+type Choice = { status: "accepted" | "declined" | "cancelled" | "completed"; label: string; confirm?: string };
 
 // One small form per booking. Each button sends the status it stands for.
 export function StatusButtons({ bookingId, choices }: { bookingId: string; choices: Choice[] }) {
@@ -21,7 +21,7 @@ export function StatusButtons({ bookingId, choices }: { bookingId: string; choic
             name="status"
             value={c.status}
             size="sm"
-            variant={c.status === "accepted" ? "default" : "outline"}
+            variant={c.status === "accepted" || c.status === "completed" ? "default" : "outline"}
             disabled={pending}
             // Declining or cancelling can't be undone, so ask first.
             onClick={(e) => {

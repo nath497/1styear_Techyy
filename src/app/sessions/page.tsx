@@ -22,6 +22,13 @@ type BookingRow = {
   tutor: { profiles: { display_name: string } | null } | null;
 };
 
+type CommissionRow = {
+  booking_id: string;
+  price_centavos: number;
+  commission_centavos: number;
+  tutor_amount_centavos: number;
+};
+
 const statusStyle: Record<Status, string> = {
   pending: "bg-amber-100 text-amber-900",
   accepted: "bg-green-100 text-green-900",
@@ -53,6 +60,28 @@ export default async function MySessionsPage() {
 
   if (error) console.error("My sessions: could not load bookings", error);
 
+  // Tutors also see the 10% commission the database recorded for each
+  // completed session. (Learners can't read these — RLS, SQL 005.)
+  let commissions: CommissionRow[] = [];
+  if (isTutor) {
+    const { data: rows, error: commissionError } = await supabase
+      .from("commission_records")
+      .select("booking_id, price_centavos, commission_centavos, tutor_amount_centavos")
+      .eq("tutor_id", user.id)
+      .returns<CommissionRow[]>();
+    if (commissionError) console.error("My sessions: could not load commission records", commissionError);
+    commissions = rows ?? [];
+  }
+  const commissionFor = new Map(commissions.map((c) => [c.booking_id, c]));
+  const total = commissions.reduce(
+    (sum, c) => ({
+      price: sum.price + c.price_centavos,
+      commission: sum.commission + c.commission_centavos,
+      tutor: sum.tutor + c.tutor_amount_centavos,
+    }),
+    { price: 0, commission: 0, tutor: 0 },
+  );
+
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-10">
       <header className="flex flex-col gap-2">
@@ -63,6 +92,18 @@ export default async function MySessionsPage() {
             : "Your session requests and their status."}
         </p>
       </header>
+
+      {isTutor && commissions.length > 0 && (
+        <Card className="border-primary">
+          <CardContent className="flex flex-col gap-1 pt-6 text-sm">
+            <p className="font-semibold">Completed sessions: {formatPeso(total.price)}</p>
+            <p>
+              {formatPeso(total.commission)} TutorMatch (10%) · {formatPeso(total.tutor)} you
+            </p>
+            <p className="mt-1 font-medium text-primary">Recorded, not collected — no real money has moved.</p>
+          </CardContent>
+        </Card>
+      )}
 
       {error ? (
         <Card className="border-destructive">
@@ -102,6 +143,7 @@ export default async function MySessionsPage() {
             const other = isTutor
               ? (b.learner?.display_name ?? "A learner")
               : (b.tutor?.profiles?.display_name ?? "your tutor");
+            const commission = commissionFor.get(b.id);
             return (
               <li key={b.id}>
                 <Card>
@@ -121,6 +163,21 @@ export default async function MySessionsPage() {
                       </span>
                     </div>
 
+                    {isTutor && b.status === "completed" && commission && (
+                      <p className="rounded-[var(--radius)] bg-secondary px-3 py-2 text-secondary-foreground">
+                        {formatPeso(commission.price_centavos)} session →{" "}
+                        {formatPeso(commission.commission_centavos)} TutorMatch (10%) →{" "}
+                        {formatPeso(commission.tutor_amount_centavos)} you
+                      </p>
+                    )}
+                    {isTutor && b.status === "accepted" && (
+                      <StatusButtons
+                        bookingId={b.id}
+                        choices={[
+                          { status: "completed", label: "Mark completed", confirm: `Mark the session with ${other} as completed? This can't be undone.` },
+                        ]}
+                      />
+                    )}
                     {isTutor && b.status === "pending" && (
                       <StatusButtons
                         bookingId={b.id}

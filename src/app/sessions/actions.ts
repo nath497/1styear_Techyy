@@ -6,8 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 export type StatusFormState = { error?: string };
 
 // The statuses a button can ask for. Who may do what is decided by the
-// database (supabase/sql/004-booking-status-changes.sql), not here.
-const ALLOWED = ["accepted", "declined", "cancelled"];
+// database (supabase/sql/004 and 005), not here.
+const ALLOWED = ["accepted", "declined", "cancelled", "completed"];
 
 export async function changeBookingStatus(
   _prev: StatusFormState,
