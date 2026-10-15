@@ -9,15 +9,15 @@ allowed with a warning. The Overview shows the next activity.
 
 **Blocked by:** 22
 
-**Status:** todo
+**Status:** done
 
-- [ ] Adding, editing and deleting an activity work; mistakes keep what
+- [x] Adding, editing and deleting an activity work; mistakes keep what
       was typed and show a friendly error
-- [ ] An end time before the start time is refused
-- [ ] An activity that clashes with another is refused with "clashes
+- [x] An end time before the start time is refused
+- [x] An activity that clashes with another is refused with "clashes
       with …" (checked on the database, not just the screen)
-- [ ] Overlapping a tutoring session shows a warning but saves
-- [ ] This week and next are listed by day, with sessions shown
-- [ ] The Overview shows the next activity
-- [ ] A second learner and a tutor can't see the activities
-- [ ] Works on the live URL, on a phone
+- [x] Overlapping a tutoring session shows a warning but saves
+- [x] This week and next are listed by day, with sessions shown
+- [x] The Overview shows the next activity
+- [x] A second learner and a tutor can't see the activities
+- [x] Works on the live URL, on a phone
