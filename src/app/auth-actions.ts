@@ -67,7 +67,7 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
   }
 
   // New tutors go straight to their profile, unless a page asked to come back.
-  redirect(safeNext(formData.get("next"), role === "tutor" ? "/tutor-profile" : "/tutors"));
+  redirect(safeNext(formData.get("next"), role === "tutor" ? "/tutor-profile" : "/dashboard"));
 }
 
 export async function logIn(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
@@ -83,7 +83,8 @@ export async function logIn(_prev: AuthFormState, formData: FormData): Promise<A
     return { error: friendly(error.message) };
   }
 
-  redirect(safeNext(formData.get("next")));
+  // Each person lands on their own dashboard (unless a page asked to come back).
+  redirect(safeNext(formData.get("next"), "/dashboard"));
 }
 
 export async function logOut() {

@@ -312,3 +312,46 @@ export function isUuid(value: string) {
 export function firstName(name: string | null | undefined, fallback = "A learner") {
   return name?.trim().split(/\s+/)[0] || fallback;
 }
+
+// ---- Dashboards -----------------------------------------------------------
+
+// Does an open help request fit this tutor? Returns the reasons when it
+// does (subject, level, rate within the learner's budget, mode), or null.
+export function helpRequestFit(
+  request: { subject: Subject; level: Level; budget_centavos: number; mode: WantedMode },
+  tutor: { subjects: Subject[]; levels: Level[]; rate_centavos: number; mode: Mode },
+) {
+  const fits =
+    tutor.subjects.includes(request.subject) &&
+    tutor.levels.includes(request.level) &&
+    tutor.rate_centavos <= request.budget_centavos &&
+    (tutor.mode === "both" || tutor.mode === request.mode);
+  if (!fits) return null;
+  return [
+    `you teach ${SUBJECTS[request.subject]}`,
+    LEVELS[request.level],
+    `your ${formatPeso(tutor.rate_centavos)} fits their ${formatPeso(request.budget_centavos)} budget`,
+    request.mode === "online" ? "online" : "face-to-face",
+  ];
+}
+
+// What's still missing from a tutor's listing, so learners can find and
+// trust it. Only real fields — nothing about ratings or verification.
+export function profileChecklist(
+  tutor: { bio: string; subjects: Subject[]; levels: Level[]; rate_centavos: number; availability: string } | null,
+) {
+  const items = [
+    { label: "Tutor profile created", done: Boolean(tutor) },
+    { label: "A short bio", done: Boolean(tutor?.bio.trim()) },
+    { label: "Subjects you teach", done: Boolean(tutor?.subjects.length) },
+    { label: "Levels you teach", done: Boolean(tutor?.levels.length) },
+    { label: "Your rate per session", done: Boolean(tutor && tutor.rate_centavos > 0) },
+    { label: "When you're available", done: Boolean(tutor?.availability.trim()) },
+  ];
+  return { items, done: items.filter((i) => i.done).length, total: items.length };
+}
+
+// e.g. "Thursday, October 15" in Philippine time.
+export function todayInManila(now = new Date()) {
+  return now.toLocaleDateString("en-PH", { timeZone: "Asia/Manila", weekday: "long", month: "long", day: "numeric" });
+}

@@ -15,18 +15,16 @@ export function navFor(account: Account): NavItem[] {
   }
   if (account.role === "tutor") {
     return [
-      { href: "/", label: "Home", icon: "home" },
-      { href: "/dashboard", label: "Dashboard", icon: "dashboard", soon: true },
+      { href: "/dashboard/tutor", label: "Dashboard", icon: "dashboard" },
       { href: "/tutors", label: "Find a Tutor", icon: "search" },
-      { href: "/help-requests", label: "Help Requests", icon: "help" },
+      { href: "/help-requests", label: "Find Help Requests", icon: "help" },
       { href: "/sessions", label: "My Sessions", icon: "sessions" },
       { href: "/tutor-profile", label: "My Profile", icon: "profile" },
       { href: "/subscription", label: "Subscription", icon: "subscription", soon: true },
     ];
   }
   return [
-    { href: "/", label: "Home", icon: "home" },
-    { href: "/dashboard", label: "Dashboard", icon: "dashboard", soon: true },
+    { href: "/dashboard/learner", label: "Dashboard", icon: "dashboard" },
     { href: "/tutors", label: "Find a Tutor", icon: "search" },
     { href: "/help-requests", label: "Request Help", icon: "help" },
     { href: "/sessions", label: "My Sessions", icon: "sessions" },

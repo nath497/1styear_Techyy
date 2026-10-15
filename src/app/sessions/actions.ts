@@ -34,5 +34,6 @@ export async function changeBookingStatus(
   if (!data || data.length === 0) return { error: "You can't change this session. Please refresh." };
 
   revalidatePath("/sessions");
+  revalidatePath("/dashboard/tutor");
   return {};
 }

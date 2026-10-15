@@ -228,6 +228,26 @@ to tutors.
 - [x] A second learner cannot see the first learner's help requests or
       offers, and help_requests / help_offers show RLS enabled.
 
+## Stretch: Dashboards
+
+Each role gets its own home page after logging in, so learners and
+tutors only see what matters to them. Built from existing data only —
+no new tables, no invented numbers.
+
+- **Learner dashboard** — greeting and today's date; Find a Tutor and
+  Request Help buttons; counts of pending, upcoming and completed
+  sessions; next upcoming and pending sessions; BudgetMatch suggestions
+  based on their latest help request (or a button to start
+  BudgetMatch); their latest help requests with status.
+- **Tutor dashboard** — greeting and today's date; Manage Tutor Profile
+  and Find Help Requests buttons; counts of pending, upcoming and
+  completed sessions and recorded earnings (labelled "recorded, not
+  collected"); requests waiting for an answer with Accept / Decline;
+  upcoming sessions; open help requests that fit their subjects,
+  levels, rate and mode, with why; a profile checklist.
+- Logged-out visitors are sent to log in; each role can only open its
+  own dashboard (checked on the server from the database role).
+
 ## Out of scope
 - Subscriptions, pricing page, TutorMatch Plus / Tutor Pro
 - Real payments, collection and payouts
@@ -237,5 +257,5 @@ to tutors.
 - Profile photos
 - Forgot-password / password-reset flow
 - Email confirmation on sign-up (off for the demo)
-- Full dashboards, earnings charts
+- Dashboard charts and earnings graphs
 - Chat, messaging, video calls

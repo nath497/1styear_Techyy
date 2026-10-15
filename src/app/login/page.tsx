@@ -12,7 +12,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
-  if (data.user) redirect("/tutors");
+  if (data.user) redirect("/dashboard");
 
   const nextPath = typeof next === "string" ? next : "";
 
