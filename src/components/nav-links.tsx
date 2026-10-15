@@ -225,6 +225,13 @@ export function ProfileMenu({ account }: { account: NonNullable<Account> }) {
           <p className="px-2 py-1.5 text-xs text-muted-foreground">
             Signed in as a {account.role === "tutor" ? "Tutor" : "Learner"}
           </p>
+          <Link
+            href="/profile"
+            onClick={() => setOpenedOn(null)}
+            className="flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-muted"
+          >
+            <UserRound className="h-4 w-4" aria-hidden /> {account.role === "tutor" ? "Account details" : "Profile"}
+          </Link>
           {account.role === "tutor" && (
             <Link
               href="/tutor-profile"

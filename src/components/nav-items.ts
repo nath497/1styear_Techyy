@@ -33,6 +33,6 @@ export function navFor(account: Account): NavItem[] {
     { href: "/planner", label: "Study Planner", icon: "planner" },
     { href: "/learntrack", label: "LearnTrack", icon: "learntrack", soon: true },
     { href: "/subscription", label: "Subscription", icon: "subscription", soon: true },
-    { href: "/profile", label: "Profile", icon: "profile", soon: true },
+    { href: "/profile", label: "Profile", icon: "profile" },
   ];
 }

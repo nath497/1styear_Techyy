@@ -79,7 +79,12 @@ export default async function TutorProfilePage() {
           <CardDescription>
             {existing
               ? "This is what learners see on Find a Tutor. Update it any time."
-              : "Tell learners what you teach and what you charge. You'll appear on Find a Tutor once you save."}
+              : "Tell learners what you teach and what you charge. You'll appear on Find a Tutor once you save."}{" "}
+            To change your name or level, go to{" "}
+            <Link href="/profile" className="font-medium text-primary hover:underline">
+              Account details
+            </Link>
+            .
           </CardDescription>
         </CardHeader>
         <CardContent>
