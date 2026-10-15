@@ -7,11 +7,11 @@ Accepted.
 
 **Blocked by:** 06
 
-**Status:** todo
+**Status:** done
 
-- [ ] The tutor has a My sessions screen in the navigation, showing the learner's name, subject, topic, date, price and status, with an empty state
-- [ ] The tutor can Accept or Decline a Pending request
-- [ ] The learner can Cancel a request that is Pending or Accepted
-- [ ] The database only allows: tutor Pending → Accepted or Declined; learner Pending or Accepted → Cancelled; nothing else, and no deletes
-- [ ] Checked with two accounts: the learner sees the tutor's decision, and the tutor sees a cancellation
-- [ ] Works on the live URL
+- [x] The tutor has a My sessions screen in the navigation, showing the learner's name, subject, topic, date, price and status, with an empty state
+- [x] The tutor can Accept or Decline a Pending request
+- [x] The learner can Cancel a request that is Pending or Accepted
+- [x] The database only allows: tutor Pending → Accepted or Declined; learner Pending or Accepted → Cancelled; nothing else, and no deletes
+- [x] Checked with two accounts: the learner sees the tutor's decision, and the tutor sees a cancellation
+- [x] Works on the live URL
