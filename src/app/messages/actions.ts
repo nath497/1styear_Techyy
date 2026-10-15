@@ -63,3 +63,39 @@ export async function sendMessage(_prev: SendState, formData: FormData): Promise
   revalidatePath("/messages", "layout");
   return { sentAt: Date.now() };
 }
+
+// "Message [learner]" on a help request: a tutor who made an offer on it
+// opens their conversation with that learner, or starts one. The database
+// only allows it after an offer (SQL 012).
+export async function messageLearner(_prev: ChatFormState, formData: FormData): Promise<ChatFormState> {
+  const requestId = String(formData.get("request_id") ?? "");
+  if (!isUuid(requestId)) return { error: "Something went wrong. Please refresh." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Please log in again." };
+
+  // Row Level Security only shows this request to a tutor who offered on
+  // it (or while it's open).
+  const { data: request } = await supabase.from("help_requests").select("learner_id").eq("id", requestId).maybeSingle();
+  if (!request) return { error: "This help request couldn't be found." };
+
+  const find = () =>
+    supabase.from("conversations").select("id").eq("learner_id", request.learner_id).eq("tutor_id", user.id).maybeSingle();
+
+  let { data: existing } = await find();
+  if (!existing) {
+    const { error } = await supabase.from("conversations").insert({ learner_id: request.learner_id, tutor_id: user.id });
+    if (error && error.code !== "23505") {
+      console.error("Message a learner: could not start conversation", error.code, error.message);
+      if (error.code === "42501") return { error: "Make an offer on this request first, then you can message the learner." };
+      return { error: "We couldn't open the chat. Please try again." };
+    }
+    ({ data: existing } = await find());
+  }
+  if (!existing) return { error: "We couldn't open the chat. Please try again." };
+
+  redirect(`/messages/${existing.id}`);
+}

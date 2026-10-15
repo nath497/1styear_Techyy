@@ -18,6 +18,7 @@ import {
   type Level,
   type Subject,
 } from "@/lib/tutormatch";
+import { MessageLearnerButton } from "@/app/messages/message-learner-button";
 import { ChooseOfferButton } from "./choose-button";
 import { OfferForm } from "./offer-form";
 
@@ -184,6 +185,8 @@ async function TutorOfferCard({
             </p>
             <p className="whitespace-pre-line break-words">{myOffer.message}</p>
             <p className="text-muted-foreground">Sent {formatSessionTime(myOffer.created_at)}</p>
+            {/* Allowed by the database only because this tutor made an offer (SQL 012). */}
+            <MessageLearnerButton requestId={requestId} learnerName={learnerFirstName} />
           </>
         ) : !isOpen ? (
           <p className="text-muted-foreground">This request is closed, so it isn&apos;t taking offers.</p>

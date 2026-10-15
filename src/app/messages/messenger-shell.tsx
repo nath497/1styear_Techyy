@@ -39,12 +39,10 @@ export function MessengerShell({
             <div className="flex flex-col gap-2 p-4 text-sm text-muted-foreground">
               <p className="font-medium text-foreground">No chats yet.</p>
               <p>
-                Open a tutor&apos;s page and tap <span className="font-medium">Message</span> to ask a question. Your
-                chats will show up here.
+                Learners: tap <span className="font-medium">Message</span> on a tutor&apos;s page. Tutors: tap{" "}
+                <span className="font-medium">Message</span> on a help request you offered on. Your chats will show up
+                here.
               </p>
-              <Link href="/tutors" className="font-medium text-primary hover:underline">
-                Find a Tutor
-              </Link>
             </div>
           ) : (
             <ul>
