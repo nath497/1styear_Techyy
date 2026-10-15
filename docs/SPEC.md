@@ -69,6 +69,10 @@ the learner from "stuck" to "session accepted".
    total at the top labelled **"Recorded, not collected — no real money
    has moved."**
 
+Both My sessions screens group sessions under **Pending**, **Upcoming**
+(Accepted) and **History** (Declined / Cancelled / Completed). Pending
+and Upcoming are soonest first; History is most recent first.
+
 Every screen has loading, empty and error states, works on a phone, and
 uses the TutorMatch colours (primary purple #6D40F4, lavender #EDE9FE,
 background #FAFAFF, white cards).
@@ -105,6 +109,11 @@ decimal rounding errors. Row Level Security is ON for every table.
 - Create: a logged-in learner, for themselves only, always as
   `pending`. The price is **copied from the tutor's current rate by the
   database**, never taken from the browser.
+- No double-booking: a tutor can't have two active (Pending or
+  Accepted) sessions that overlap. Every session counts as **1 hour**,
+  so back-to-back sessions are fine. Enforced by the database, so
+  simultaneous requests can't both get in; cancelling or declining
+  frees the time.
 - Update: only the status may change, and only along these paths:
   tutor `pending → accepted` or `pending → declined`; tutor
   `accepted → completed`; learner `pending → cancelled` or
