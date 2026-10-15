@@ -11,13 +11,13 @@ a "coming soon" page at the address. No database changes.
 
 **Blocked by:** None.
 
-**Status:** todo
+**Status:** done
 
-- [ ] The preview list is a private Vercel setting, checked on the
+- [x] The preview list is a private Vercel setting, checked on the
       server; no email appears in the code or the browser
-- [ ] The preview account sees Subscription unlocked in the sidebar and
+- [x] The preview account sees Subscription unlocked in the sidebar and
       all three plans, with their role's plan highlighted
-- [ ] Subscribe shows the prototype message; nothing is charged or saved
-- [ ] Any other account (and logged-out visitors) sees "Soon" in the
+- [x] Subscribe shows the prototype message; nothing is charged or saved
+- [x] Any other account (and logged-out visitors) sees "Soon" in the
       sidebar and "coming soon" at the address
-- [ ] Works on the live URL, on a phone
+- [x] Works on the live URL, on a phone

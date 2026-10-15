@@ -680,10 +680,10 @@ browser or written in the code, so no email is published. Nothing is
 saved when someone presses Subscribe.
 
 ### Subscription: done for the demo
-- [ ] Logged in as the preview account: Subscription is unlocked in the
+- [x] Logged in as the preview account: Subscription is unlocked in the
       sidebar and the page shows all three plans.
-- [ ] Subscribe shows the prototype message; nothing is charged or saved.
-- [ ] Any other account still sees "Soon"; the address shows "coming
+- [x] Subscribe shows the prototype message; nothing is charged or saved.
+- [x] Any other account still sees "Soon"; the address shows "coming
       soon".
 
 ## Out of scope
