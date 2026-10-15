@@ -23,6 +23,10 @@ function friendly(message: string) {
   if (m.includes("invalid login credentials")) return "Wrong email or password. Please try again.";
   if (m.includes("already registered")) return "An account with this email already exists. Try logging in instead.";
   if (m.includes("email not confirmed")) return "Please confirm your email first — check your inbox.";
+  // Supabase's built-in email sends only a few emails an hour. This only
+  // happens if "Confirm email" is ON (sign-up is trying to send one).
+  if (m.includes("email rate limit"))
+    return "Sign-up is paused: too many confirmation emails this hour. Ask your team to check that \"Confirm email\" is off in Supabase.";
   if (m.includes("rate limit") || m.includes("too many")) return "Too many attempts. Please wait a minute and try again.";
   if (m.includes("password")) return message;
   return "Something went wrong. Please try again.";
@@ -50,7 +54,11 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
     options: { data: { display_name: displayName, role, level } },
   });
 
-  if (error) return { error: friendly(error.message) };
+  if (error) {
+    // The real message, for Vercel's logs (Project → Logs).
+    console.error("Auth error:", error.status, error.code, error.message);
+    return { error: friendly(error.message) };
+  }
 
   // If "Confirm email" is still ON in Supabase there is no session yet.
   if (!data.session) {
@@ -68,7 +76,11 @@ export async function logIn(_prev: AuthFormState, formData: FormData): Promise<A
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: friendly(error.message) };
+  if (error) {
+    // The real message, for Vercel's logs (Project → Logs).
+    console.error("Auth error:", error.status, error.code, error.message);
+    return { error: friendly(error.message) };
+  }
 
   redirect(safeNext(formData.get("next")));
 }
