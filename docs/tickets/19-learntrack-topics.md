@@ -9,16 +9,16 @@ only their owner can see.
 
 **Blocked by:** None.
 
-**Status:** todo
+**Status:** done
 
-- [ ] learn_topics exists with Row Level Security on and policies: only
+- [x] learn_topics exists with Row Level Security on and policies: only
       the owner reads and changes their topics; only learners can add
-- [ ] A learner adds a topic; it starts at Need to Review
-- [ ] Adding the same topic name twice in one subject is refused with a
+- [x] A learner adds a topic; it starts at Need to Review
+- [x] Adding the same topic name twice in one subject is refused with a
       friendly message
-- [ ] Changing a topic's status takes one tap and the progress bar
+- [x] Changing a topic's status takes one tap and the progress bar
       updates
-- [ ] Empty, loading and error states; tutors see a learners-only note
-- [ ] A second learner and a tutor can't see the first learner's topics
-- [ ] LearnTrack is no longer greyed out in the learner sidebar
-- [ ] Works on the live URL, on a phone
+- [x] Empty, loading and error states; tutors see a learners-only note
+- [x] A second learner and a tutor can't see the first learner's topics
+- [x] LearnTrack is no longer greyed out in the learner sidebar
+- [x] Works on the live URL, on a phone
