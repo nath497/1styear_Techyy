@@ -27,6 +27,21 @@ What Josh told us (interview, October 2026):
   to actually understand the lesson, and the senior is **always busy**.
   One senior is not enough: help depends on someone else's free time.
 
+Two more learners we asked, both struggling with Math:
+- **Jamaica** studies on her own with her notes. It "works a little
+  bit". She pays nothing today.
+- **Angel** reviews with a friend, "but I'm still stuck". Angel pays
+  nothing today.
+
+**The pattern (3 of 3):** every learner we asked tries to get help on
+their own or from someone they know, and every one is still struggling
+to understand the lesson.
+
+**What we don't know yet:** whether Jamaica and Angel would pay a
+tutor. They pay nothing today because they study on their own, which is
+not the same as "would never pay". Josh is the only one who told us a
+budget (₱100).
+
 Background (not our own observation): a Philippine study (September
 2026) lists barriers to online tutoring such as unstable internet,
 lack of devices, and inflexible schedules. This is why TutorMatch

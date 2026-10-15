@@ -64,9 +64,11 @@ come back and tell you what got in the way.
 
 ## The three hardest questions
 
-**Honest warning first:** Josh's story is now complete. Your other
-interviews are not written down yet. Add each classmate's name and
-answers to `docs/PROBLEM.md` before you present, so you can quote them.
+**Honest warning first:** your evidence is now three real learners with
+the same struggle, which is a pattern. The open gap is willingness to
+pay: only Josh gave a number. Before Session 3, ask Jamaica and Angel:
+*"If a classmate who's good at Math tutored you, would you pay anything
+per session? If yes, how much?"*
 
 ### Q1 — "Why doesn't Josh just keep asking his senior? That's free."
 
@@ -77,10 +79,19 @@ he can afford."
 
 ### Q2 — "That's one student. How do you know anyone else has this problem?"
 
-*Honest answer:* "Right now, we don't. Josh is our first interview. By
-Session 3 we'll have talked to [N] more learners, and Josh and at least
-one other learner will have tried the app on the live site." Only say
-this if you'll actually do it.
+*Honest answer:* "We asked three learners, all struggling with Math.
+Josh asks a senior who's always busy. Jamaica studies with her notes,
+and it works a little bit. Angel reviews with a friend but is still
+stuck. All three are still struggling. What we don't know yet is
+whether all of them would pay. Josh would, up to ₱100. That's what our
+demo will test."
+
+### Q2b — Follow-up you may get: "Two of them pay nothing. Why would they pay you?"
+
+*Honest answer:* "They pay nothing today because they study on their
+own, not because they said they'd never pay. We'll ask them before
+Session 3. Tutors set their own rate, so a classmate can choose a
+low price."
 
 ### Q3 — "Why would a good student tutor for ₱100 minus your 10%?"
 
