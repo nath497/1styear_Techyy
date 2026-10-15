@@ -118,3 +118,32 @@ export function parseTaskForm(form: FormData): { task: TaskInput } | { error: st
     },
   };
 }
+
+// ---- Filters and sessions in the planner (ticket 17) ----------------------
+
+export const STATUS_FILTERS = { all: "All", todo: "To do", done: "Done" } as const;
+export type StatusFilter = keyof typeof STATUS_FILTERS;
+
+// Read ?subject=…&status=… from the page address. Unknown values are
+// ignored, so a bad link never breaks the page.
+export function parsePlannerFilters(params: Record<string, string | string[] | undefined>) {
+  const one = (k: string) => {
+    const v = params[k];
+    return typeof v === "string" ? v : "";
+  };
+  const subject = one("subject");
+  const status = one("status");
+  return {
+    subject: Object.hasOwn(SUBJECTS, subject) ? (subject as Subject) : undefined,
+    status: (Object.hasOwn(STATUS_FILTERS, status) ? status : "all") as StatusFilter,
+  };
+}
+
+// A tutoring session's start time as a Philippine date and time, so it can
+// sit in the planner next to tasks: "2026-10-20" and "16:00:00".
+export function toManilaDateTime(iso: string) {
+  const d = new Date(iso);
+  const date = d.toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
+  const time = d.toLocaleTimeString("en-GB", { timeZone: "Asia/Manila", hour12: false });
+  return { date, time };
+}

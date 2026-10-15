@@ -45,3 +45,42 @@ export async function setTaskStatus(_prev: TaskFormState, formData: FormData): P
   revalidatePath("/dashboard/learner");
   return { saved: Date.now() };
 }
+
+// Edit a task — same checks as adding. Only the owner can (SQL 015).
+export async function updateTask(_prev: TaskFormState, formData: FormData): Promise<TaskFormState> {
+  const taskId = String(formData.get("task_id") ?? "");
+  if (!isUuid(taskId)) return { error: "Something went wrong. Please refresh." };
+  const parsed = parseTaskForm(formData);
+  if ("error" in parsed) return { error: parsed.error };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("study_tasks").update(parsed.task).eq("id", taskId).select("id");
+  if (error) {
+    console.error("Study Planner: edit failed", error.code, error.message);
+    return { error: "We couldn't save your changes. Please try again." };
+  }
+  if (!data || data.length === 0) return { error: "You can't change this task. Please refresh." };
+
+  revalidatePath("/planner");
+  revalidatePath("/dashboard/learner");
+  return { saved: Date.now() };
+}
+
+// Delete a task. These are the learner's private notes, so deleting is
+// allowed — but only by the owner (SQL 015).
+export async function deleteTask(_prev: TaskFormState, formData: FormData): Promise<TaskFormState> {
+  const taskId = String(formData.get("task_id") ?? "");
+  if (!isUuid(taskId)) return { error: "Something went wrong. Please refresh." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("study_tasks").delete().eq("id", taskId).select("id");
+  if (error) {
+    console.error("Study Planner: delete failed", error.code, error.message);
+    return { error: "We couldn't delete the task. Please try again." };
+  }
+  if (!data || data.length === 0) return { error: "You can't delete this task. Please refresh." };
+
+  revalidatePath("/planner");
+  revalidatePath("/dashboard/learner");
+  return { saved: Date.now() };
+}

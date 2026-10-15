@@ -25,6 +25,8 @@ import {
   type Subject,
 } from "@/lib/tutormatch";
 import { JoinCallLink } from "@/components/join-call-link";
+import { TaskDoneButton } from "@/app/planner/task-done-button";
+import { formatDue, manilaToday, type StudyTask } from "@/lib/planner";
 import { loadInbox } from "@/lib/chat";
 import { Empty, LoadError, RecentChats, Section, StatCard, Welcome } from "../parts";
 
@@ -129,6 +131,25 @@ export default async function LearnerDashboard() {
 
   // Latest chats (only shown once there are any).
   const inbox = await loadInbox(supabase, user.id, 3);
+
+  // Today's study tasks: up to 3 due today or overdue (soonest first), and
+  // whether the learner has any tasks at all — the card only appears once
+  // they do. Row Level Security only returns their own tasks (SQL 015).
+  const today = manilaToday();
+  const [dueRes, anyRes] = await Promise.all([
+    supabase
+      .from("study_tasks")
+      .select("id, title, subject, due_date, due_time, priority, estimated_minutes, notes, status, completed_at")
+      .eq("status", "todo")
+      .lte("due_date", today)
+      .order("due_date", { ascending: true })
+      .order("due_time", { ascending: true, nullsFirst: false })
+      .limit(3)
+      .returns<StudyTask[]>(),
+    supabase.from("study_tasks").select("id", { count: "exact", head: true }),
+  ]);
+  if (dueRes.error) console.error("Dashboard: could not load study tasks", dueRes.error);
+  const hasTasks = (anyRes.count ?? 0) > 0;
   if (inbox.error) console.error("Dashboard: could not load chats", inbox.error);
 
   return (
@@ -152,6 +173,34 @@ export default async function LearnerDashboard() {
       </div>
 
       {inbox.items.length > 0 && <RecentChats items={inbox.items} />}
+
+      {hasTasks && (
+        <Section title="Today's study tasks" action={{ href: "/planner", label: "Open Study Planner" }}>
+          {dueRes.error ? (
+            <LoadError what="your study tasks" />
+          ) : !dueRes.data?.length ? (
+            <Empty>Nothing due today. Nice work!</Empty>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {dueRes.data.map((t) => (
+                <li
+                  key={t.id}
+                  className="flex items-center justify-between gap-3 rounded-[var(--radius)] bg-muted/60 px-3 py-2"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium">{t.title}</span>
+                    <span className={t.due_date < today ? "text-destructive" : "text-muted-foreground"}>
+                      {t.due_date < today ? "Overdue · " : ""}
+                      {SUBJECTS[t.subject]} · {formatDue(t.due_date, t.due_time)}
+                    </span>
+                  </span>
+                  <TaskDoneButton taskId={t.id} done={false} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </Section>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         <Section title="Next sessions" action={{ href: "/sessions", label: "All sessions" }}>
