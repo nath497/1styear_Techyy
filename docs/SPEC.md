@@ -367,12 +367,12 @@ Cancelled or Completed ones.
   it is Accepted. A learner can never set it. Enforced by the database.
 
 ### Video call links: done for the demo
-- [ ] A tutor adds a Google Meet link to an accepted session; the
+- [x] A tutor adds a Google Meet link to an accepted session; the
       learner sees Join video call and it opens.
-- [ ] A link from any other site is refused with a clear message.
-- [ ] A learner cannot set or change the link (checked on the database,
+- [x] A link from any other site is refused with a clear message.
+- [x] A learner cannot set or change the link (checked on the database,
       not just the screen).
-- [ ] No one outside the session can see the link.
+- [x] No one outside the session can see the link.
 
 ## Out of scope
 - Subscriptions, pricing page, TutorMatch Plus / Tutor Pro

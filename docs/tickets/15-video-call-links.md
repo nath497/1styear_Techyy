@@ -9,14 +9,14 @@ shows the same button. TutorMatch doesn't run the call itself.
 
 **Blocked by:** None
 
-**Status:** todo
+**Status:** done
 
-- [ ] `meeting_link` is added to bookings from a numbered SQL file; nothing else about bookings changes
-- [ ] Only the tutor on a booking can set, change or remove the link, and only while it is Accepted (enforced by the database, not just the screen)
-- [ ] The link must be https and from Google Meet, Zoom, Microsoft Teams or Jitsi, up to 300 characters; anything else gets a clear message
-- [ ] A learner can never set or change the link
-- [ ] Learners see "Join video call" (opens in a new tab, says it leaves TutorMatch) or "Your tutor hasn't added a video link yet"
-- [ ] Both dashboards show "Join video call" on upcoming sessions that have a link
-- [ ] The link never shows on Pending, Declined, Cancelled or Completed sessions, and no one outside the session can see it
-- [ ] Works on a phone
-- [ ] Works on the live URL
+- [x] `meeting_link` is added to bookings from a numbered SQL file; nothing else about bookings changes
+- [x] Only the tutor on a booking can set, change or remove the link, and only while it is Accepted (enforced by the database, not just the screen)
+- [x] The link must be https and from Google Meet, Zoom, Microsoft Teams or Jitsi, up to 300 characters; anything else gets a clear message
+- [x] A learner can never set or change the link
+- [x] Learners see "Join video call" (opens in a new tab, says it leaves TutorMatch) or "Your tutor hasn't added a video link yet"
+- [x] Both dashboards show "Join video call" on upcoming sessions that have a link
+- [x] The link never shows on Pending, Declined, Cancelled or Completed sessions, and no one outside the session can see it
+- [x] Works on a phone
+- [x] Works on the live URL
