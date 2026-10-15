@@ -27,11 +27,12 @@ export async function SiteNav() {
   return (
     <header className="sticky top-0 z-10 border-b border-border bg-background/90 backdrop-blur">
       <nav className="mx-auto flex h-16 w-full max-w-5xl items-center gap-2 px-4">
-        <Link href="/" className="mr-auto flex items-center gap-2 font-semibold">
+        <Link href="/" aria-label="TutorMatch home" className="mr-auto flex items-center gap-2 font-semibold">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <GraduationCap className="h-5 w-5" aria-hidden />
           </span>
-          <span className="text-lg tracking-tight">TutorMatch</span>
+          {/* The word hides on narrow phones so the links fit. */}
+          <span className="hidden text-lg tracking-tight sm:inline">TutorMatch</span>
         </Link>
 
         <Link href="/tutors" className={buttonVariants({ variant: "ghost", size: "sm" })}>
@@ -40,9 +41,13 @@ export async function SiteNav() {
 
         {user ? (
           <>
-            {isTutor && (
+            {isTutor ? (
               <Link href="/tutor-profile" className={buttonVariants({ variant: "ghost", size: "sm" })}>
                 My profile
+              </Link>
+            ) : (
+              <Link href="/sessions" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                My sessions
               </Link>
             )}
             <span className="hidden max-w-40 truncate text-sm text-muted-foreground sm:inline">

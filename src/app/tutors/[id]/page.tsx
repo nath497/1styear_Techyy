@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 import { formatPeso, LEVELS, MODES, SUBJECTS, type Level, type Mode, type Subject } from "@/lib/tutormatch";
+import { RequestForm } from "./request-form";
 
 export const metadata: Metadata = { title: "Tutor · TutorMatch" };
 
@@ -54,6 +55,13 @@ export default async function TutorPage({ params }: PageProps<"/tutors/[id]">) {
   const name = tutor.profiles?.display_name ?? "Tutor";
   const user = auth.user;
 
+  // Only learners can request sessions (the database enforces this too).
+  let isLearner = false;
+  if (user) {
+    const { data: viewer } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+    isLearner = viewer?.role === "learner";
+  }
+
   return (
     <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-4 px-4 py-10">
       <Link href="/tutors" className="text-sm font-medium text-primary hover:underline">
@@ -89,10 +97,15 @@ export default async function TutorPage({ params }: PageProps<"/tutors/[id]">) {
           <CardTitle>Request a Session</CardTitle>
         </CardHeader>
         <CardContent>
-          {user ? (
-            // The request form arrives in ticket 06.
+          {isLearner ? (
+            <RequestForm
+              tutorId={tutor.tutor_id}
+              subjects={tutor.subjects}
+              priceLabel={formatPeso(tutor.rate_centavos)}
+            />
+          ) : user ? (
             <p className="text-sm text-muted-foreground">
-              Session requests are coming in the next update.
+              Session requests are sent from learner accounts.
             </p>
           ) : (
             <div className="flex flex-col gap-3">

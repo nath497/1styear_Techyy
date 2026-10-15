@@ -87,3 +87,37 @@ export function matchReason(rateCentavos: number, f: MatchFilters) {
   const mode = f.mode === "online" ? "online" : "face-to-face";
   return `${formatPeso(rateCentavos)} ≤ your ${formatPeso(f.budgetCentavos)} budget · teaches ${SUBJECTS[f.subject]} · ${mode}`;
 }
+
+// ---- Session requests (bookings) ---------------------------------------
+
+export const STATUSES = {
+  pending: "Pending",
+  accepted: "Accepted",
+  declined: "Declined",
+  completed: "Completed",
+  cancelled: "Cancelled",
+} as const;
+
+export type Status = keyof typeof STATUSES;
+
+// TutorMatch runs in the Philippines, but Vercel's servers run on UTC.
+// A date-time picker sends e.g. "2026-10-20T16:00" with no time zone, so
+// we pin it to Philippine time (UTC+8, no daylight saving).
+export function parseManilaDateTime(value: string): Date | null {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return null;
+  const date = new Date(`${value}:00+08:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+// e.g. "Tue, Oct 20, 2026, 4:00 PM" in Philippine time.
+export function formatSessionTime(iso: string) {
+  return new Date(iso).toLocaleString("en-PH", {
+    timeZone: "Asia/Manila",
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
