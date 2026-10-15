@@ -11,7 +11,7 @@ export const SUBJECTS = {
 } as const;
 
 export const LEVELS = {
-  shs: "Senior High",
+  shs: "High School",
   college: "College",
 } as const;
 

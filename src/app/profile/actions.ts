@@ -15,7 +15,7 @@ export async function saveAccount(_prev: AccountFormState, formData: FormData): 
 
   if (!displayName) return { error: "Please enter your name." };
   if (displayName.length > 80) return { error: "Please use a shorter name (80 characters max)." };
-  if (!Object.hasOwn(LEVELS, level)) return { error: "Choose Senior High or College." };
+  if (!Object.hasOwn(LEVELS, level)) return { error: "Choose High School or College." };
 
   const supabase = await createClient();
   const {

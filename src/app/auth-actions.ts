@@ -45,7 +45,7 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
   if (!email) return { error: "Please enter your email." };
   if (password.length < 6) return { error: "Your password needs at least 6 characters." };
   if (role !== "learner" && role !== "tutor") return { error: "Choose whether you are a Learner or a Tutor." };
-  if (!(level in LEVELS)) return { error: "Choose Senior High or College." };
+  if (!(level in LEVELS)) return { error: "Choose High School or College." };
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({

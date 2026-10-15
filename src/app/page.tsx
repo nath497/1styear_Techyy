@@ -68,7 +68,7 @@ export default function Home() {
             <p className="text-2xl font-medium text-primary">Affordable. Flexible. Made for you.</p>
             <p className="max-w-md text-muted-foreground">
               Get help with your subjects, or share what you know and earn — TutorMatch is
-              student-to-student tutoring for Senior High and college learners.
+              student-to-student tutoring for high school and college learners.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/tutors" className={buttonVariants({ size: "lg" })}>
