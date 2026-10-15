@@ -17,7 +17,6 @@ search on Find a Tutor.
   Tutor Pro (₱149/month), demo entitlements. Show as a pitch slide.
 - **Real payments** — payment collection and tutor payouts need a
   payment provider.
-- **Study Planner** — personal study tasks with due dates and priority.
 - **LearnTrack** — topics marked Need to Review / Learning / Understood.
 - **Reviews and ratings** — only for completed sessions, one per session.
 - **Favourite tutors.**
@@ -57,8 +56,8 @@ stretch goal, has since been built.)
 - **Help Request Match Score** (the board itself is built).
 - **LearnTrack** — goals, topics, confidence, Learning Gap Finder,
   Next Best Study Step, progress over time.
-- **Study Planner** — tasks, due dates, priorities, Smart Study
-  Suggestions; connect to LearnTrack.
+- **Smart Study Suggestions** for the Study Planner (the planner itself
+  is in the spec as a stretch goal).
 - **Trust Score + Trust Breakdown** — only from real data (profile
   completeness, completed sessions); "Not enough data yet" otherwise.
 - **Subscription page** — information only, no payments (pitch slide).
@@ -93,3 +92,11 @@ stretch goal, has since been built.)
 - **Call reminders** before a session starts.
 - **Recording online/face-to-face on each session** — today the tutor
   just doesn't add a link for face-to-face sessions.
+
+## Parked from the Study Planner spec (2026-10-15)
+
+- **Smart Study Suggestions** — breaking a big goal into smaller tasks.
+- **Reminders and notifications** for tasks that are due.
+- **Recurring tasks** (e.g. "every Monday").
+- **Linking tasks to LearnTrack** — LearnTrack doesn't exist yet.
+- **A planner for tutors.**

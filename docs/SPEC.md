@@ -89,7 +89,7 @@ and Upcoming are soonest first; History is most recent first.
 built per role on the server — logged-out visitors see Home, Find a
 Tutor and Become a Tutor; learners and tutors see their own Dashboard
 first and only their own tools. Planned features from LATER.md
-(Study Planner, LearnTrack, Subscription, account Profile) show greyed
+(LearnTrack, Subscription, account Profile) show greyed
 out with a "Soon" tag and can't be clicked. Hiding a link is only
 tidiness; pages and the database do the real permission checks.
 
@@ -374,10 +374,71 @@ Cancelled or Completed ones.
       not just the screen).
 - [x] No one outside the session can see the link.
 
+## Stretch goal: Study Planner
+
+Learners plan their own study around their **session requests**: a
+private to-do list of study tasks with due dates and priorities, with
+their accepted tutoring sessions shown alongside. Learners only — tutors
+don't see a planner.
+
+### Study Planner user stories
+15. As a learner, I want to add study tasks with a subject, due date and
+    priority, so that I know what to study and when.
+16. As a learner, I want to see what's due today and mark tasks done, so
+    that I keep on top of my studying.
+17. As a learner, I want my accepted tutoring sessions to appear in my
+    planner, so that I see my study tasks and sessions together.
+
+### Study Planner screens
+20. **Study Planner** (learners only; the sidebar link stops being
+    greyed out) — tasks grouped into **Overdue**, **Today**,
+    **Upcoming** and **Done**, each showing title, subject, due date
+    (and time), priority (High / Medium / Low, colour-coded) and
+    estimated time. Filters by subject and status. Accepted tutoring
+    sessions appear on their dates as read-only "Session with [tutor]"
+    rows. Empty state: "No study tasks yet — add your first one." Plus
+    loading and error states.
+21. **Add / edit a task** — title (required, up to 100 characters),
+    subject (fixed list), due date (required) and optional time
+    (Philippine time), priority (Low / Medium / High), estimated minutes
+    (optional, 5–600), notes (optional, up to 500 characters).
+22. **Task actions** — **Mark done** (one tap; **Undo** moves it back),
+    **Edit**, **Delete** (asks "are you sure?").
+23. **Learner dashboard** — a **Today's study tasks** card with up to 3
+    tasks due today or overdue, each with a quick **Mark done**; only
+    shown once the learner has tasks.
+
+### Study Planner data
+**study_tasks** — a learner's own study to-do list.
+- Columns: id, learner_id, title, subject, due_date, due_time
+  (optional), priority (`low`, `medium` or `high`), estimated_minutes
+  (optional, 5–600), notes, status (`todo` or `done`), completed_at,
+  created_at, updated_at.
+- Read, edit, delete: only the learner who created the task. Tutors,
+  other learners and logged-out visitors can't see anyone's planner.
+- Create: a logged-in learner, for themselves only (tutors can't).
+- The database sets learner_id (always the logged-in user),
+  completed_at (filled when marked done, cleared on undo), created_at
+  and updated_at.
+- Delete is allowed — these are a learner's private notes, not shared
+  records like session requests.
+
+Sessions in the planner are read from **bookings** (the learner's own
+Accepted ones only). Nothing new is stored for them.
+
+### Study Planner: done for the demo
+- [ ] A learner adds a task, sees it under Today, and marks it done
+      (and can undo).
+- [ ] Editing and deleting a task work.
+- [ ] The dashboard card shows today's tasks.
+- [ ] An accepted tutoring session appears in the planner on its date.
+- [ ] A second learner and a tutor can't see the first learner's tasks;
+      study_tasks shows RLS enabled.
+
 ## Out of scope
 - Subscriptions, pricing page, TutorMatch Plus / Tutor Pro
 - Real payments, collection and payouts
-- Study Planner, LearnTrack
+- LearnTrack
 - Reviews and ratings, favourite tutors
 - Admin dashboard, reports, moderation
 - Profile photos
