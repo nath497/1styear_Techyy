@@ -1,17 +1,15 @@
 # 02 — Connected to Supabase
 
-**What to build:** The app talks to the team's hosted Supabase project.
-The `profiles` and `tutor_profiles` tables from the spec exist with Row
-Level Security on, and a Find a Tutor page on the live site reads from
-`tutor_profiles` (showing a friendly "no tutors yet" message while it is
-empty).
+**What to build:** The app reads from the team's hosted Supabase
+project. The `profiles` and `tutor_profiles` tables exist with Row
+Level Security on, and Find a Tutor lists tutors from the database.
 
 **Blocked by:** 01
 
 **Status:** done
 
-- [x] Supabase URL and publishable key are set in `.env.local` and in Vercel (no secret / service_role key anywhere)
-- [x] `profiles` and `tutor_profiles` are created from a numbered SQL file in the repo, matching the spec's columns
-- [x] RLS is ON for both tables, with the read/write rules from the spec (role cannot change after sign-up; only tutors can write their own tutor profile; anyone can read tutor profiles)
-- [x] The Find a Tutor page loads data from Supabase and shows the empty state, or a clear error if it cannot connect
+- [x] Supabase URL and publishable key are set locally and in Vercel; no secret or service_role key anywhere
+- [x] Both tables are created from a numbered SQL file, matching the spec's columns
+- [x] RLS is ON for both, with the spec's rules: role never changes after sign-up; only tutors write their own tutor profile; anyone can read tutor profiles
+- [x] Find a Tutor loads from Supabase, with an empty state and an error state
 - [x] Works on the live URL

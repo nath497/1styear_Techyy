@@ -1,18 +1,19 @@
 # 06 — Session requests
 
 **What to build:** A logged-in learner sends a session request from a
-tutor page (subject, topic, date and time). It appears as Pending in
-the learner's My sessions and in the tutor's My sessions, where the
-tutor can accept or decline it. The learner can cancel while it is
+tutor page. It shows as Pending on both people's My sessions screens.
+The tutor accepts or declines it; the learner can cancel it while it is
 Pending or Accepted.
 
 **Blocked by:** 05
 
 **Status:** todo
 
-- [ ] `bookings` table created from a numbered SQL file, with RLS ON
-- [ ] The price is copied from the tutor's rate by the database, not sent from the browser
+- [ ] `bookings` is created from a numbered SQL file with RLS ON and no delete
+- [ ] The request form takes a subject from the tutor's list, a topic, and a future date and time
+- [ ] Only learners can send requests, only for themselves, always as Pending
+- [ ] The price is copied from the tutor's rate by the database, never sent from the browser
 - [ ] Only the learner and tutor on a booking can see it
-- [ ] Status rules are enforced by the database: tutor pending → accepted/declined; learner pending/accepted → cancelled; nothing else
-- [ ] Both My sessions screens show status clearly, with empty states for new users
+- [ ] The database only allows: tutor Pending → Accepted or Declined; learner Pending or Accepted → Cancelled
+- [ ] Learner and tutor each have a My sessions screen in the navigation, showing the other person's name, subject, topic, date, price and status, with an empty state
 - [ ] Works on the live URL
