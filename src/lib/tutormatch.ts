@@ -283,3 +283,12 @@ export const HELP_STATUSES = {
 } as const;
 
 export type HelpStatus = keyof typeof HELP_STATUSES;
+
+// The honest budget tag on an offer: the tutor's listed rate against the
+// learner's budget. Never says "within budget" when it isn't.
+export function budgetTag(rateCentavos: number, budgetCentavos: number) {
+  const over = rateCentavos - budgetCentavos;
+  return over > 0
+    ? { within: false, text: `${formatPeso(over)} over your budget` }
+    : { within: true, text: "Within your budget" };
+}

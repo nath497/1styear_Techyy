@@ -122,3 +122,30 @@ export async function sendHelpOffer(_prev: HelpFormState, formData: FormData): P
   revalidatePath("/help-requests");
   return {};
 }
+
+export async function chooseHelpOffer(_prev: HelpFormState, formData: FormData): Promise<HelpFormState> {
+  const requestId = String(formData.get("request_id") ?? "");
+  const offerId = String(formData.get("offer_id") ?? "");
+  if (!requestId || !offerId) return { error: "Something went wrong. Please refresh." };
+
+  const supabase = await createClient();
+  // The database checks it's your Open request and an offer made on it
+  // (SQL 009). Choosing never books a session by itself.
+  const { data, error } = await supabase
+    .from("help_requests")
+    .update({ status: "matched", chosen_offer_id: offerId })
+    .eq("id", requestId)
+    .select("id");
+
+  if (error) {
+    console.error("Choose an offer: update failed", error.code, error.message);
+    // P0001 = a message we wrote ourselves in the SQL trigger.
+    if (error.code === "P0001") return { error: error.message };
+    return { error: "We couldn't save your choice. Please try again." };
+  }
+  if (!data || data.length === 0) return { error: "You can't change this request. Please refresh." };
+
+  revalidatePath(`/help-requests/${requestId}`);
+  revalidatePath("/help-requests");
+  return {};
+}

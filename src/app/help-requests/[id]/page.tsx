@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 import {
+  budgetTag,
   formatPeso,
   formatSessionTime,
   HELP_STATUSES,
@@ -14,6 +15,7 @@ import {
   type Level,
   type Subject,
 } from "@/lib/tutormatch";
+import { ChooseOfferButton } from "./choose-button";
 import { OfferForm } from "./offer-form";
 
 export const metadata: Metadata = { title: "Help request · TutorMatch" };
@@ -29,6 +31,7 @@ type HelpRequest = {
   mode: "online" | "face_to_face";
   preferred_time: string;
   status: HelpStatus;
+  chosen_offer_id: string | null;
   offer_count: number;
   created_at: string;
   learner: { display_name: string } | null;
@@ -52,7 +55,7 @@ export default async function HelpRequestPage({ params }: PageProps<"/help-reque
   const { data: r, error } = await supabase
     .from("help_requests")
     .select(
-      "id, learner_id, title, details, subject, level, budget_centavos, mode, preferred_time, status, offer_count, created_at, learner:profiles(display_name)",
+      "id, learner_id, title, details, subject, level, budget_centavos, mode, preferred_time, status, chosen_offer_id, offer_count, created_at, learner:profiles(display_name)",
     )
     .eq("id", id)
     .maybeSingle<HelpRequest>();
@@ -113,30 +116,40 @@ export default async function HelpRequestPage({ params }: PageProps<"/help-reque
       </Card>
 
       {isOwner ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Offers</CardTitle>
-            <CardDescription>
-              {r.offer_count === 0
-                ? "No offers yet. Tutors who teach this subject can see your request."
-                : `${r.offer_count} ${r.offer_count === 1 ? "tutor has" : "tutors have"} offered. Comparing offers and choosing a tutor arrives in the next update.`}
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <LearnerOffers request={r} />
       ) : (
-        <TutorOfferCard requestId={r.id} isOpen={r.status === "open"} tutorId={user.id} />
+        <TutorOfferCard
+          requestId={r.id}
+          status={r.status}
+          chosenOfferId={r.chosen_offer_id}
+          learnerFirstName={learnerFirstName}
+          tutorId={user.id}
+        />
       )}
     </main>
   );
 }
 
 // The tutor's side: their offer if they made one, otherwise the form.
-async function TutorOfferCard({ requestId, isOpen, tutorId }: { requestId: string; isOpen: boolean; tutorId: string }) {
+async function TutorOfferCard({
+  requestId,
+  status,
+  chosenOfferId,
+  learnerFirstName,
+  tutorId,
+}: {
+  requestId: string;
+  status: HelpStatus;
+  chosenOfferId: string | null;
+  learnerFirstName: string;
+  tutorId: string;
+}) {
+  const isOpen = status === "open";
   const supabase = await createClient();
   const [{ data: myOffer }, { data: myListing }] = await Promise.all([
     supabase
       .from("help_offers")
-      .select("message, proposed_time, created_at")
+      .select("id, message, proposed_time, created_at")
       .eq("request_id", requestId)
       .eq("tutor_id", tutorId)
       .maybeSingle(),
@@ -151,6 +164,21 @@ async function TutorOfferCard({ requestId, isOpen, tutorId }: { requestId: strin
       <CardContent className="flex flex-col gap-3 text-sm">
         {myOffer ? (
           <>
+            {status === "matched" &&
+              (chosenOfferId === myOffer.id ? (
+                <p className="rounded-[var(--radius)] bg-success/15 px-3 py-2 font-medium text-green-800">
+                  {learnerFirstName} chose you! They&apos;ll send you a session request — watch My Sessions.
+                </p>
+              ) : (
+                <p className="rounded-[var(--radius)] bg-muted px-3 py-2 text-muted-foreground">
+                  {learnerFirstName} chose another tutor this time.
+                </p>
+              ))}
+            {status === "cancelled" && (
+              <p className="rounded-[var(--radius)] bg-muted px-3 py-2 text-muted-foreground">
+                {learnerFirstName} cancelled this request.
+              </p>
+            )}
             <p>
               <span className="text-muted-foreground">Proposed time:</span> {myOffer.proposed_time}
             </p>
@@ -168,6 +196,103 @@ async function TutorOfferCard({ requestId, isOpen, tutorId }: { requestId: strin
           </div>
         ) : (
           <OfferForm requestId={requestId} rateLabel={formatPeso(myListing.rate_centavos)} />
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+type OfferRow = {
+  id: string;
+  tutor_id: string;
+  message: string;
+  proposed_time: string;
+  created_at: string;
+  // help_offers → tutor_profiles (rate) → profiles (name)
+  tutor: { rate_centavos: number; profiles: { display_name: string } | null } | null;
+};
+
+// The learner's side: every offer on their request, with an honest
+// budget tag, and "Choose this tutor" while the request is Open.
+async function LearnerOffers({ request: r }: { request: HelpRequest }) {
+  const supabase = await createClient();
+  // Row Level Security only returns offers on the learner's own request.
+  const { data: offers, error } = await supabase
+    .from("help_offers")
+    .select("id, tutor_id, message, proposed_time, created_at, tutor:tutor_profiles(rate_centavos, profiles(display_name))")
+    .eq("request_id", r.id)
+    .order("created_at", { ascending: true })
+    .returns<OfferRow[]>();
+  if (error) console.error("Help request page: could not load offers", error);
+
+  const chosen = offers?.find((o) => o.id === r.chosen_offer_id);
+  const chosenName = chosen?.tutor?.profiles?.display_name ?? "your tutor";
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Offers</CardTitle>
+        <CardDescription>
+          {r.status === "matched"
+            ? `You chose ${chosenName}. Now send them a session request — nothing is booked until you do.`
+            : r.status === "cancelled"
+              ? "You cancelled this request."
+              : "Compare the offers and choose one tutor. Choosing doesn't book anything by itself."}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3 text-sm">
+        {r.status === "matched" && chosen && (
+          <Link href={`/tutors/${chosen.tutor_id}`} className={buttonVariants({ className: "self-start" })}>
+            Request a session with {chosenName}
+          </Link>
+        )}
+
+        {error ? (
+          <p className="text-destructive">We couldn&apos;t load the offers right now. Please refresh.</p>
+        ) : !offers || offers.length === 0 ? (
+          <p className="text-muted-foreground">
+            No offers yet. Tutors who teach {SUBJECTS[r.subject]} can see your request.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {offers.map((o) => {
+              const name = o.tutor?.profiles?.display_name ?? "Tutor";
+              const tag = o.tutor ? budgetTag(o.tutor.rate_centavos, r.budget_centavos) : null;
+              const isChosen = o.id === r.chosen_offer_id;
+              return (
+                <li
+                  key={o.id}
+                  className={`flex flex-col gap-2 rounded-[var(--radius)] border p-4 ${isChosen ? "border-primary bg-secondary/50" : "border-border"}`}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <Link href={`/tutors/${o.tutor_id}`} className="font-semibold hover:underline">
+                      {name}
+                    </Link>
+                    {isChosen && (
+                      <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground">
+                        Chosen
+                      </span>
+                    )}
+                  </div>
+                  {o.tutor && tag && (
+                    <p className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium">{formatPeso(o.tutor.rate_centavos)} / session</span>
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${tag.within ? "bg-success/15 text-green-800" : "bg-warning/15 text-amber-900"}`}
+                      >
+                        {tag.text}
+                      </span>
+                    </p>
+                  )}
+                  <p>
+                    <span className="text-muted-foreground">Proposed time:</span> {o.proposed_time}
+                  </p>
+                  <p className="whitespace-pre-line break-words">{o.message}</p>
+                  {r.status === "open" && <ChooseOfferButton requestId={r.id} offerId={o.id} tutorName={name} />}
+                </li>
+              );
+            })}
+          </ul>
         )}
       </CardContent>
     </Card>
