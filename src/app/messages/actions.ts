@@ -58,6 +58,8 @@ export async function sendMessage(_prev: SendState, formData: FormData): Promise
     return { error: "Your message didn't send. Please try again." };
   }
 
-  revalidatePath(`/messages/${conversationId}`);
+  // Refresh the chat and the inbox order (the other person's screen
+  // updates through Realtime).
+  revalidatePath("/messages", "layout");
   return { sentAt: Date.now() };
 }

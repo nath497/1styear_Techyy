@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  MessageCircle,
   Search,
   UserPlus,
   UserRound,
@@ -36,6 +37,7 @@ const ICONS = {
   subscription: CreditCard,
   profile: UserRound,
   join: UserPlus,
+  chat: MessageCircle,
 };
 export type IconName = keyof typeof ICONS;
 

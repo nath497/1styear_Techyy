@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { inboxTime, type InboxItem } from "@/lib/chat";
 import { todayInManila } from "@/lib/tutormatch";
 
 // Small building blocks shared by the learner and tutor dashboards, so
@@ -69,4 +70,40 @@ export function Empty({ children }: { children: React.ReactNode }) {
 
 export function LoadError({ what }: { what: string }) {
   return <p className="text-destructive">We couldn&apos;t load {what} right now. Please refresh.</p>;
+}
+
+// The latest chats, like a Messenger preview. Only shown once there are
+// any (the dashboards skip it when the list is empty).
+export function RecentChats({ items }: { items: InboxItem[] }) {
+  return (
+    <Section title="Messages" action={{ href: "/messages", label: "Open Messages" }}>
+      <ul className="flex flex-col gap-2">
+        {items.map((c) => (
+          <li key={c.id}>
+            <Link
+              href={`/messages/${c.id}`}
+              className="flex items-center gap-3 rounded-[var(--radius)] bg-muted/60 px-3 py-2 hover:bg-muted"
+            >
+              <span
+                aria-hidden
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-secondary-foreground"
+              >
+                {c.otherName.trim().slice(0, 1).toUpperCase() || "?"}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline justify-between gap-2">
+                  <span className="truncate font-medium">{c.otherName}</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">{inboxTime(c.lastAt)}</span>
+                </span>
+                <span className="block truncate text-muted-foreground">
+                  {c.lastFromMe ? "You: " : ""}
+                  {c.lastBody}
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
 }

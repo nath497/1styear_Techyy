@@ -19,7 +19,8 @@ import {
   type Subject,
   type WantedMode,
 } from "@/lib/tutormatch";
-import { Empty, LoadError, Section, StatCard, Welcome } from "../parts";
+import { loadInbox } from "@/lib/chat";
+import { Empty, LoadError, RecentChats, Section, StatCard, Welcome } from "../parts";
 
 export const metadata: Metadata = { title: "Tutor dashboard · TutorMatch" };
 
@@ -109,6 +110,10 @@ export default async function TutorDashboard() {
         .slice(0, 3)
     : [];
 
+  // Latest chats (only shown once there are any).
+  const inbox = await loadInbox(supabase, user.id, 3);
+  if (inbox.error) console.error("Dashboard: could not load chats", inbox.error);
+
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-4 py-8">
       <Welcome
@@ -134,6 +139,8 @@ export default async function TutorDashboard() {
           note="Recorded, not collected"
         />
       </div>
+
+      {inbox.items.length > 0 && <RecentChats items={inbox.items} />}
 
       <div className="grid gap-6 md:grid-cols-2">
         <Section title="Requests to answer" action={{ href: "/sessions", label: "All sessions" }}>

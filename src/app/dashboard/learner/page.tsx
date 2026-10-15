@@ -24,7 +24,8 @@ import {
   type Status,
   type Subject,
 } from "@/lib/tutormatch";
-import { Empty, LoadError, Section, StatCard, Welcome } from "../parts";
+import { loadInbox } from "@/lib/chat";
+import { Empty, LoadError, RecentChats, Section, StatCard, Welcome } from "../parts";
 
 export const metadata: Metadata = { title: "Dashboard · TutorMatch" };
 
@@ -124,6 +125,10 @@ export default async function LearnerDashboard() {
   const listings = (tutorsRes.data ?? []).map((t) => ({ ...t, name: t.profiles?.display_name ?? "Tutor" }) as Listing & TutorRow);
   const suggestions = filters ? sortListings(listings.filter((t) => tutorMatches(t, filters)), filters).slice(0, 3) : [];
 
+  // Latest chats (only shown once there are any).
+  const inbox = await loadInbox(supabase, user.id, 3);
+  if (inbox.error) console.error("Dashboard: could not load chats", inbox.error);
+
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-4 py-8">
       <Welcome
@@ -143,6 +148,8 @@ export default async function LearnerDashboard() {
         <StatCard label="Upcoming sessions" value={bookingsRes.error ? "—" : sessions.upcoming.length} href="/sessions" />
         <StatCard label="Completed" value={bookingsRes.error ? "—" : completed} href="/sessions" />
       </div>
+
+      {inbox.items.length > 0 && <RecentChats items={inbox.items} />}
 
       <div className="grid gap-6 md:grid-cols-2">
         <Section title="Next sessions" action={{ href: "/sessions", label: "All sessions" }}>

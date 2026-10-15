@@ -19,6 +19,7 @@ export function navFor(account: Account): NavItem[] {
       { href: "/tutors", label: "Find a Tutor", icon: "search" },
       { href: "/help-requests", label: "Find Help Requests", icon: "help" },
       { href: "/sessions", label: "My Sessions", icon: "sessions" },
+      { href: "/messages", label: "Messages", icon: "chat" },
       { href: "/tutor-profile", label: "My Profile", icon: "profile" },
       { href: "/subscription", label: "Subscription", icon: "subscription", soon: true },
     ];
@@ -28,6 +29,7 @@ export function navFor(account: Account): NavItem[] {
     { href: "/tutors", label: "Find a Tutor", icon: "search" },
     { href: "/help-requests", label: "Request Help", icon: "help" },
     { href: "/sessions", label: "My Sessions", icon: "sessions" },
+    { href: "/messages", label: "Messages", icon: "chat" },
     { href: "/planner", label: "Study Planner", icon: "planner", soon: true },
     { href: "/learntrack", label: "LearnTrack", icon: "learntrack", soon: true },
     { href: "/subscription", label: "Subscription", icon: "subscription", soon: true },
