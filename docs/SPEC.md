@@ -326,6 +326,54 @@ Only display names are shown — never emails or phone numbers.
 - [x] No one can send a message as someone else; conversations and
       messages show RLS enabled.
 
+## Stretch goal: Video call links
+
+Tutors and learners meet online using apps students already use. When a
+**session request** is Accepted, the tutor can add a video call link
+(Google Meet, Zoom, Microsoft Teams or Jitsi), and both people get a
+**Join video call** button. TutorMatch doesn't run the call itself.
+Session requests don't record online vs face-to-face, so the tutor
+simply doesn't add a link for face-to-face sessions.
+
+### Video call user stories
+13. As a tutor, I want to add a video call link to an accepted session,
+    so that my learner knows where to meet me online.
+14. As a learner, I want a Join video call button on my accepted
+    session, so that I can join without searching through messages.
+
+### Video call screens
+17. **My sessions (tutor)** — each Accepted session has an **Add video
+    call link** box and **Save**; once saved it shows the link with
+    **Change** and **Remove**. A link that isn't from Google Meet, Zoom,
+    Microsoft Teams or Jitsi gets a clear message.
+18. **My sessions (learner)** — an Accepted session with a link shows
+    **Join video call** (opens in a new tab, noting that it leaves
+    TutorMatch, e.g. "Opens Google Meet"); without one: "Your tutor
+    hasn't added a video link yet."
+19. **Both dashboards** — Next / Upcoming sessions show the same **Join
+    video call** button when there is a link.
+
+The link only appears on Accepted sessions — never on Pending, Declined,
+Cancelled or Completed ones.
+
+### Video call data
+**bookings** — one new column; nothing else changes.
+- meeting_link (text, optional, up to 300 characters). Must start with
+  `https://` and point to meet.google.com, zoom.us (including
+  subdomains like school.zoom.us), teams.microsoft.com, teams.live.com
+  or meet.jit.si.
+- Read: only the learner and tutor on that booking (unchanged).
+- Set, change or remove: only the tutor on that booking, and only while
+  it is Accepted. A learner can never set it. Enforced by the database.
+
+### Video call links: done for the demo
+- [ ] A tutor adds a Google Meet link to an accepted session; the
+      learner sees Join video call and it opens.
+- [ ] A link from any other site is refused with a clear message.
+- [ ] A learner cannot set or change the link (checked on the database,
+      not just the screen).
+- [ ] No one outside the session can see the link.
+
 ## Out of scope
 - Subscriptions, pricing page, TutorMatch Plus / Tutor Pro
 - Real payments, collection and payouts
@@ -336,4 +384,4 @@ Only display names are shown — never emails or phone numbers.
 - Forgot-password / password-reset flow
 - Email confirmation on sign-up (off for the demo)
 - Dashboard charts and earnings graphs
-- Video calls
+- Video calling built into TutorMatch

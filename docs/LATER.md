@@ -26,7 +26,8 @@ search on Find a Tutor.
 - **Forgot-password / password-reset flow.**
 - **Dashboard charts** — earnings graphs and learning goals (the
   dashboards show counts and lists only).
-- **Video calls.** (Text chat is in the spec as a stretch goal.)
+- **Video calling built into TutorMatch.** (Text chat and video call
+  links are in the spec as stretch goals.)
 - **Email confirmation on sign-up** — turned off for the demo because
   Supabase's built-in email has a low hourly limit. Turn it back on
   (with a real email provider) before real users.
@@ -81,3 +82,14 @@ stretch goal, has since been built.)
 - **Attachments** (photos, files).
 - **Group chats.**
 - **Message notifications** (emails, push) when you're not on the page.
+
+## Parked from the Video call links spec (2026-10-15)
+
+- **Built-in video calling** (WebRTC, like FaceTime inside TutorMatch) —
+  needs a relay (TURN) server to work on school wifi and mobile data,
+  which costs money or hosting, plus ringing, hang-up and reconnecting.
+- **Automatically created meeting rooms** (e.g. Jitsi) — a new outside
+  service; tutors paste their own link instead.
+- **Call reminders** before a session starts.
+- **Recording online/face-to-face on each session** — today the tutor
+  just doesn't add a link for face-to-face sessions.
