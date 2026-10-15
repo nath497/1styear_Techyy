@@ -23,9 +23,9 @@ What Josh told us (interview, October 2026):
 - He has **not** asked for Math help in a group chat. We do not claim
   group chats failed him.
 
-> **Still to ask Josh:** did the senior's help work, how long did it
-> take to get help, and was the senior ever busy or unavailable? His
-> answer is the evidence for why one senior is not enough.
+- Asking the senior **"kinda worked"**: it took Josh about **3 hours**
+  to actually understand the lesson, and the senior is **always busy**.
+  One senior is not enough: help depends on someone else's free time.
 
 Background (not our own observation): a Philippine study (September
 2026) lists barriers to online tutoring such as unstable internet,

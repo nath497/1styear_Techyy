@@ -15,9 +15,11 @@ to explain it to him more clearly.
 So what did Josh do? He searched the topic online. Then he asked a
 senior he knows for help.
 
-That's smart. But look at what it depends on. Josh happened to know a
-senior who is good at math. And that senior had to be free when Josh
-needed help.
+Did it work? In Josh's words, it "kinda worked." It took him three
+hours to actually understand the lesson. And his senior? Always busy.
+
+Josh is lucky to know a senior at all. But his help depends on
+someone else's free time.
 
 ### 2. Today (~30s) — Speaker 1
 
@@ -62,29 +64,16 @@ come back and tell you what got in the way.
 
 ## The three hardest questions
 
-**Honest warning first:** your problem evidence is one interview with
-one person, and the most important part of it is still missing. Before
-you present, do two things:
-
-1. Message Josh and ask: *"When you asked your senior, did you
-   understand the lesson afterwards? How long did it take? Was the
-   senior ever busy?"*
-2. Ask the same four interview questions to **two more** classmates
-   who struggle with a subject. Three real people is a pattern. One is
-   an anecdote.
+**Honest warning first:** Josh's story is now complete. Your other
+interviews are not written down yet. Add each classmate's name and
+answers to `docs/PROBLEM.md` before you present, so you can quote them.
 
 ### Q1 — "Why doesn't Josh just keep asking his senior? That's free."
 
-This is the weakest point in `docs/PROBLEM.md`, so expect it.
-
-*Honest answer, before you hear back from Josh:* "Good question. We're
-still checking that with Josh. What we do know is that asking a senior
-only works if you already know one who's good at the subject and free
-when you need them. TutorMatch is for the learner who doesn't have
-that senior, or whose senior is busy."
-
-*If Josh says the senior was sometimes busy, or he felt shy asking
-again:* use his exact words instead. They are much stronger than ours.
+*Honest answer:* "He does, and it kinda works. But in Josh's words, his
+senior is always busy, and it took him three hours to understand one
+lesson. TutorMatch gives him more than one person to ask, at a price
+he can afford."
 
 ### Q2 — "That's one student. How do you know anyone else has this problem?"
 
