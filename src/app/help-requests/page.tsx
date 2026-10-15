@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 import {
   formatPeso,
@@ -15,9 +15,10 @@ import {
   type Level,
   type Subject,
 } from "@/lib/tutormatch";
+import { HelpBoard } from "./board";
 import { CancelHelpRequestButton } from "./cancel-button";
 
-export const metadata: Metadata = { title: "Request Help · TutorMatch" };
+export const metadata: Metadata = { title: "Help requests · TutorMatch" };
 
 type HelpRequestRow = {
   id: string;
@@ -29,6 +30,7 @@ type HelpRequestRow = {
   mode: "online" | "face_to_face";
   preferred_time: string;
   status: HelpStatus;
+  offer_count: number;
   created_at: string;
 };
 
@@ -38,7 +40,7 @@ const statusStyle: Record<HelpStatus, string> = {
   cancelled: "bg-muted text-muted-foreground",
 };
 
-export default async function HelpRequestsPage() {
+export default async function HelpRequestsPage({ searchParams }: PageProps<"/help-requests">) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -47,24 +49,17 @@ export default async function HelpRequestsPage() {
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
 
-  // The tutors' Help Request Board arrives in ticket 10.
+  // Tutors get the Help Request Board instead.
   if (profile?.role === "tutor") {
-    return (
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-10">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Help Request Board</CardTitle>
-            <CardDescription>Open help requests from learners will show here in the next update.</CardDescription>
-          </CardHeader>
-        </Card>
-      </main>
-    );
+    const params = await searchParams;
+    const one = (key: string) => (typeof params[key] === "string" ? (params[key] as string) : "");
+    return <HelpBoard tutorId={user.id} subject={one("subject")} level={one("level")} />;
   }
 
   // Row Level Security only returns this learner's own requests.
   const { data, error } = await supabase
     .from("help_requests")
-    .select("id, title, details, subject, level, budget_centavos, mode, preferred_time, status, created_at")
+    .select("id, title, details, subject, level, budget_centavos, mode, preferred_time, status, offer_count, created_at")
     .eq("learner_id", user.id)
     .order("created_at", { ascending: false })
     .returns<HelpRequestRow[]>();
@@ -126,7 +121,12 @@ export default async function HelpRequestsPage() {
                   <p className="text-muted-foreground">
                     {r.preferred_time ? `Preferred: ${r.preferred_time} · ` : ""}Posted {formatSessionTime(r.created_at)}
                   </p>
-                  {r.status === "open" && <CancelHelpRequestButton requestId={r.id} />}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Link href={`/help-requests/${r.id}`} className={buttonVariants({ size: "sm" })}>
+                      {r.offer_count} {r.offer_count === 1 ? "offer" : "offers"} · View
+                    </Link>
+                    {r.status === "open" && <CancelHelpRequestButton requestId={r.id} />}
+                  </div>
                 </CardContent>
               </Card>
             </li>

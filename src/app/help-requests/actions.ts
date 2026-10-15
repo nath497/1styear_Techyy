@@ -79,3 +79,46 @@ export async function cancelHelpRequest(_prev: HelpFormState, formData: FormData
   revalidatePath("/help-requests");
   return {};
 }
+
+export async function sendHelpOffer(_prev: HelpFormState, formData: FormData): Promise<HelpFormState> {
+  const text = (key: string) => String(formData.get(key) ?? "").trim();
+  const requestId = text("request_id");
+  const proposedTime = text("proposed_time");
+  const message = text("message");
+
+  if (!requestId) return { error: "Something went wrong. Please refresh." };
+  if (!proposedTime) return { error: "Suggest a day and time for the session." };
+  if (proposedTime.length > 200) return { error: "Please keep the proposed time under 200 characters." };
+  if (!message) return { error: "Add a short message for the learner." };
+  if (message.length > 500) return { error: "Please keep your message under 500 characters." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Please log in again." };
+
+  // The database checks the rest: tutors only, for themselves, on Open
+  // requests, once per request (SQL 008).
+  const { error } = await supabase.from("help_offers").insert({
+    request_id: requestId,
+    tutor_id: user.id,
+    proposed_time: proposedTime,
+    message,
+  });
+
+  if (error) {
+    console.error("Send an offer: insert failed", error.code, error.message);
+    // 23505 = the one-offer-per-request rule.
+    if (error.code === "23505") return { error: "You've already made an offer on this request." };
+    // 23503 = no tutor profile yet (an offer must belong to one).
+    if (error.code === "23503") return { error: "Create your tutor profile first, then you can make offers." };
+    // 42501 = blocked by Row Level Security (request no longer Open, or not a tutor).
+    if (error.code === "42501") return { error: "This request isn't open for offers any more." };
+    return { error: "We couldn't send your offer. Please try again." };
+  }
+
+  revalidatePath(`/help-requests/${requestId}`);
+  revalidatePath("/help-requests");
+  return {};
+}
