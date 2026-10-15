@@ -64,7 +64,7 @@ export default function Home() {
               <Search className="h-4 w-4" aria-hidden /> Find a Tutor
             </Link>
             <Link
-              href="/signup?role=tutor&next=/tutor-profile"
+              href="/signup?role=tutor"
               className={buttonVariants({ size: "lg", variant: "outline" })}
             >
               <Wallet className="h-4 w-4" aria-hidden /> Become a Tutor

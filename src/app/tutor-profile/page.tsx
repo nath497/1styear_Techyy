@@ -22,6 +22,7 @@ export default async function TutorProfilePage() {
     .maybeSingle();
 
   // If we can't tell who this is, say so — don't guess "learner".
+  // A database hiccup may pass on refresh; a missing row will not.
   if (profileError || !profile) {
     if (profileError) console.error("Tutor profile: could not load account", profileError);
     return (
@@ -29,7 +30,11 @@ export default async function TutorProfilePage() {
         <Card className="border-destructive">
           <CardHeader>
             <CardTitle className="text-2xl">We couldn&apos;t load your account</CardTitle>
-            <CardDescription>Please refresh the page in a moment.</CardDescription>
+            <CardDescription>
+              {profileError
+                ? "Please refresh the page in a moment."
+                : "Your account isn't set up properly. Please log out, sign up again, or ask your team for help."}
+            </CardDescription>
           </CardHeader>
         </Card>
       </main>
@@ -38,7 +43,7 @@ export default async function TutorProfilePage() {
 
   // Learners see a friendly message instead of the form. (The database
   // would refuse to save a learner's listing anyway.)
-  if (profile?.role !== "tutor") {
+  if (profile.role !== "tutor") {
     return (
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-10">
         <Card>

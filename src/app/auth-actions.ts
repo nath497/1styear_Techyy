@@ -7,13 +7,14 @@ import { LEVELS } from "@/lib/tutormatch";
 export type AuthFormState = { error?: string; message?: string };
 
 // Only allow redirects to pages on this site (e.g. "/tutors"), never to
-// another website. Browsers treat a backslash like "/", so "/\evil.com"
-// would leave the site too — reject any backslash.
+// another website. Browsers treat a backslash like "/" and silently drop
+// tabs and newlines, so "/\evil.com" or "/<tab>/evil.com" would both turn
+// into "//evil.com". So: plain visible characters only, no backslash.
 function safeNext(value: FormDataEntryValue | null, fallback = "/tutors") {
   const next = typeof value === "string" ? value : "";
-  return next.startsWith("/") && !next.startsWith("//") && !next.includes("\\")
-    ? next
-    : fallback;
+  const isSafe =
+    /^\/[\x21-\x7E]*$/.test(next) && !next.startsWith("//") && !next.includes("\\");
+  return isSafe ? next : fallback;
 }
 
 // Turn Supabase's technical messages into friendly ones.
