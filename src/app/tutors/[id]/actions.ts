@@ -46,6 +46,9 @@ export async function requestSession(
     if (error.code === "P0001") return { error: error.message };
     // 42501 = blocked by Row Level Security (e.g. a tutor account).
     if (error.code === "42501") return { error: "Only learner accounts can request sessions." };
+    // 23P01 = the no-double-booking rule (SQL 006). Sessions are 1 hour.
+    if (error.code === "23P01")
+      return { error: "This tutor already has a session within an hour of that time. Please pick another time." };
     return { error: "We couldn't send your request. Please try again." };
   }
 

@@ -128,3 +128,19 @@ export function formatSessionTime(iso: string) {
     minute: "2-digit",
   });
 }
+
+// Split My sessions into its three sections:
+//   pending  — waiting for the tutor (soonest first)
+//   upcoming — accepted (soonest first)
+//   history  — declined, cancelled or completed (most recent first)
+export function groupSessions<T extends { status: Status; starts_at: string }>(sessions: T[]) {
+  const time = (s: T) => new Date(s.starts_at).getTime();
+  const soonestFirst = (a: T, b: T) => time(a) - time(b);
+  return {
+    pending: sessions.filter((s) => s.status === "pending").sort(soonestFirst),
+    upcoming: sessions.filter((s) => s.status === "accepted").sort(soonestFirst),
+    history: sessions
+      .filter((s) => s.status !== "pending" && s.status !== "accepted")
+      .sort((a, b) => time(b) - time(a)),
+  };
+}

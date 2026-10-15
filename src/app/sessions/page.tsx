@@ -4,7 +4,15 @@ import { redirect } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
-import { formatPeso, formatSessionTime, STATUSES, SUBJECTS, type Status, type Subject } from "@/lib/tutormatch";
+import {
+  formatPeso,
+  formatSessionTime,
+  groupSessions,
+  STATUSES,
+  SUBJECTS,
+  type Status,
+  type Subject,
+} from "@/lib/tutormatch";
 import { StatusButtons } from "./status-buttons";
 
 export const metadata: Metadata = { title: "My sessions · TutorMatch" };
@@ -60,14 +68,9 @@ export default async function MySessionsPage() {
 
   if (error) console.error("My sessions: could not load bookings", error);
 
-  // Sessions that still need something done come first (soonest at the
-  // top); finished ones go below (most recent first).
-  const isActive = (b: BookingRow) => b.status === "pending" || b.status === "accepted";
-  const time = (b: BookingRow) => new Date(b.starts_at).getTime();
-  const bookings = [...(data ?? [])].sort((a, b) => {
-    if (isActive(a) !== isActive(b)) return isActive(a) ? -1 : 1;
-    return isActive(a) ? time(a) - time(b) : time(b) - time(a);
-  });
+  // Pending and Upcoming soonest first; History most recent first.
+  const bookings = data ?? [];
+  const sections = groupSessions(bookings);
 
   // Tutors also see the 10% commission the database recorded for each
   // completed session. (Learners can't read these — RLS, SQL 005.)
@@ -159,70 +162,97 @@ export default async function MySessionsPage() {
           </CardContent>
         </Card>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {bookings.map((b) => {
-            const other = isTutor
-              ? (b.learner?.display_name ?? "A learner")
-              : (b.tutor?.profiles?.display_name ?? "your tutor");
-            const commission = commissionFor.get(b.id);
-            return (
-              <li key={b.id}>
-                <Card>
-                  <CardContent className="flex flex-col gap-3 pt-6 text-sm">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex min-w-0 flex-col gap-1">
-                        <p className="text-base font-semibold">
-                          {SUBJECTS[b.subject]} {isTutor ? "for" : "with"} {other}
-                        </p>
-                        <p className="break-words">{b.topic}</p>
-                        <p className="text-muted-foreground">
-                          {formatSessionTime(b.starts_at)} · {formatPeso(b.price_centavos)}
-                        </p>
-                      </div>
-                      <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${statusStyle[b.status]}`}>
-                        {STATUSES[b.status]}
-                      </span>
-                    </div>
-
-                    {isTutor && b.status === "completed" && commission && (
-                      <p className="rounded-[var(--radius)] bg-secondary px-3 py-2 text-secondary-foreground">
-                        {formatPeso(commission.price_centavos)} session →{" "}
-                        {formatPeso(commission.commission_centavos)} TutorMatch (10%) →{" "}
-                        {formatPeso(commission.tutor_amount_centavos)} you
-                      </p>
-                    )}
-                    {isTutor && b.status === "accepted" && (
-                      <StatusButtons
-                        bookingId={b.id}
-                        choices={[
-                          { status: "completed", label: "Mark completed", confirm: `Mark the session with ${other} as completed? This can't be undone.` },
-                        ]}
-                      />
-                    )}
-                    {isTutor && b.status === "pending" && (
-                      <StatusButtons
-                        bookingId={b.id}
-                        choices={[
-                          { status: "accepted", label: "Accept" },
-                          { status: "declined", label: "Decline", confirm: `Decline ${other}'s request? This can't be undone.` },
-                        ]}
-                      />
-                    )}
-                    {!isTutor && (b.status === "pending" || b.status === "accepted") && (
-                      <StatusButtons
-                        bookingId={b.id}
-                        choices={[
-                          { status: "cancelled", label: "Cancel request", confirm: "Cancel this session? This can't be undone." },
-                        ]}
-                      />
-                    )}
-                  </CardContent>
-                </Card>
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          {(
+            [
+              ["Pending", sections.pending],
+              ["Upcoming", sections.upcoming],
+              ["History", sections.history],
+            ] as const
+          ).map(
+            ([title, list]) =>
+              list.length > 0 && (
+                <section key={title} className="flex flex-col gap-3">
+                  <h2 className="text-lg font-semibold tracking-tight">
+                    {title} <span className="text-sm font-normal text-muted-foreground">({list.length})</span>
+                  </h2>
+                  <ul className="flex flex-col gap-3">
+                    {list.map((b) => (
+                      <li key={b.id}>
+                        <BookingCard booking={b} isTutor={isTutor} commission={commissionFor.get(b.id)} />
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ),
+          )}
+        </>
       )}
     </main>
+  );
+}
+
+// One session in the list, with the buttons this person is allowed to use.
+// (The database decides what's really allowed — see SQL 004 and 005.)
+function BookingCard({
+  booking: b,
+  isTutor,
+  commission,
+}: {
+  booking: BookingRow;
+  isTutor: boolean;
+  commission: CommissionRow | undefined;
+}) {
+  const other = isTutor ? (b.learner?.display_name ?? "A learner") : (b.tutor?.profiles?.display_name ?? "your tutor");
+
+  return (
+    <Card>
+      <CardContent className="flex flex-col gap-3 pt-6 text-sm">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 flex-col gap-1">
+            <p className="text-base font-semibold">
+              {SUBJECTS[b.subject]} {isTutor ? "for" : "with"} {other}
+            </p>
+            <p className="break-words">{b.topic}</p>
+            <p className="text-muted-foreground">
+              {formatSessionTime(b.starts_at)} · {formatPeso(b.price_centavos)}
+            </p>
+          </div>
+          <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${statusStyle[b.status]}`}>
+            {STATUSES[b.status]}
+          </span>
+        </div>
+
+        {isTutor && b.status === "completed" && commission && (
+          <p className="rounded-[var(--radius)] bg-secondary px-3 py-2 text-secondary-foreground">
+            {formatPeso(commission.price_centavos)} session → {formatPeso(commission.commission_centavos)} TutorMatch
+            (10%) → {formatPeso(commission.tutor_amount_centavos)} you
+          </p>
+        )}
+        {isTutor && b.status === "accepted" && (
+          <StatusButtons
+            bookingId={b.id}
+            choices={[
+              { status: "completed", label: "Mark completed", confirm: `Mark the session with ${other} as completed? This can't be undone.` },
+            ]}
+          />
+        )}
+        {isTutor && b.status === "pending" && (
+          <StatusButtons
+            bookingId={b.id}
+            choices={[
+              { status: "accepted", label: "Accept" },
+              { status: "declined", label: "Decline", confirm: `Decline ${other}'s request? This can't be undone.` },
+            ]}
+          />
+        )}
+        {!isTutor && (b.status === "pending" || b.status === "accepted") && (
+          <StatusButtons
+            bookingId={b.id}
+            choices={[{ status: "cancelled", label: "Cancel request", confirm: "Cancel this session? This can't be undone." }]}
+          />
+        )}
+      </CardContent>
+    </Card>
   );
 }
