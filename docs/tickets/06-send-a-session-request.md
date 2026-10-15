@@ -1,9 +1,8 @@
-# 06 — Session requests
+# 06 — Send a session request
 
 **What to build:** A logged-in learner sends a session request from a
-tutor page. It shows as Pending on both people's My sessions screens.
-The tutor accepts or declines it; the learner can cancel it while it is
-Pending or Accepted.
+tutor page: a subject from the tutor's list, a topic, and a date and
+time. It appears as Pending on the learner's My sessions screen.
 
 **Blocked by:** 05
 
@@ -14,6 +13,5 @@ Pending or Accepted.
 - [ ] Only learners can send requests, only for themselves, always as Pending
 - [ ] The price is copied from the tutor's rate by the database, never sent from the browser
 - [ ] Only the learner and tutor on a booking can see it
-- [ ] The database only allows: tutor Pending → Accepted or Declined; learner Pending or Accepted → Cancelled
-- [ ] Learner and tutor each have a My sessions screen in the navigation, showing the other person's name, subject, topic, date, price and status, with an empty state
+- [ ] The learner has a My sessions screen in the navigation, showing the tutor's name, subject, topic, date, price and status, with an empty state
 - [ ] Works on the live URL

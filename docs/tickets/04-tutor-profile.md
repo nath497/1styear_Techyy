@@ -13,5 +13,5 @@ mode (online / face-to-face / both) and availability.
 - [x] The rate is typed in pesos and saved as whole centavos
 - [x] A tutor cannot edit someone else's profile (blocked by the database, not just the screen)
 - [x] A saved profile appears on Find a Tutor
-- [ ] 2–3 real classmates have tutor profiles (no fake data); all charge ₱150 or less, and at least one ₱100 or less
+- [x] 2–3 real classmates have tutor profiles (no fake data); all charge ₱150 or less, and at least one ₱100 or less
 - [x] Works on the live URL

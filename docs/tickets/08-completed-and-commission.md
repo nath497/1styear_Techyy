@@ -1,11 +1,11 @@
-# 07 — Completed sessions and commission
+# 08 — Completed sessions and commission
 
 **What to build:** A tutor marks an accepted session Completed. The
 database records the 10% commission exactly once (₱100 session → ₱10
 TutorMatch, ₱90 tutor). The tutor's My sessions shows each split and a
 total labelled "Recorded, not collected — no real money has moved."
 
-**Blocked by:** 06
+**Blocked by:** 07
 
 **Status:** todo
 
