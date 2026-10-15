@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GoalsTab } from "@/app/goals/goals-tab";
 import { LearnTrackTab } from "@/app/learntrack/learntrack-tab";
 import { StudyTasksTab } from "@/app/planner/tasks-tab";
 import { ScheduleTab } from "@/app/schedule/schedule-tab";
+import { SessionNotesTab } from "@/app/session-notes/notes-tab";
 import { createClient } from "@/lib/supabase/server";
-import { parseTab, SPACE_TABS, type SpaceTab } from "@/lib/learning-space";
+import { parseTab, SPACE_TABS } from "@/lib/learning-space";
 import { manilaToday } from "@/lib/planner";
 import { OverviewTab } from "./overview";
 import { TabBar } from "./tab-bar";
 
 export const metadata: Metadata = { title: "My Learning Space · TutorMatch" };
-
-// Tabs whose tickets aren't built yet (26).
-const COMING_NEXT: Partial<Record<SpaceTab, string>> = {
-  notes: "Write questions before a tutoring session and a reflection after it.",
-};
 
 export default async function LearningSpacePage({ searchParams }: PageProps<"/learning-space">) {
   const supabase = await createClient();
@@ -68,12 +64,7 @@ export default async function LearningSpacePage({ searchParams }: PageProps<"/le
       ) : tab === "goals" ? (
         <GoalsTab today={manilaToday()} />
       ) : (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-2 pt-6 text-center">
-            <p className="font-medium">{SPACE_TABS[tab]} is coming next.</p>
-            <p className="text-sm text-muted-foreground">{COMING_NEXT[tab]}</p>
-          </CardContent>
-        </Card>
+        <SessionNotesTab learnerId={user.id} />
       )}
     </main>
   );
