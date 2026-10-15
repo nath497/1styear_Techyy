@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { inboxTime, loadInbox } from "@/lib/chat";
 import { LiveRefresh } from "./live-refresh";
@@ -11,7 +10,9 @@ export default async function MessagesLayout({ children }: LayoutProps<"/message
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login?next=/messages");
+  // Logged out: let the page itself send you to log in — it knows which
+  // chat you asked for, so you come back to it afterwards.
+  if (!user) return children;
 
   const { items, error } = await loadInbox(supabase, user.id);
   if (error) console.error("Messages: could not load inbox", error);

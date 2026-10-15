@@ -14,9 +14,14 @@ const MAX = 1000;
 export function MessageForm({ conversationId }: { conversationId: string }) {
   const [text, setText] = useState("");
   const [state, formAction, pending] = useActionState<SendState, FormData>(async (prev, formData) => {
-    const result = await sendMessage(prev, formData);
-    if (!result.error) setText("");
-    return result;
+    try {
+      const result = await sendMessage(prev, formData);
+      if (!result.error) setText("");
+      return result;
+    } catch {
+      // No connection (or the server couldn't be reached): keep the text.
+      return { error: "Your message didn't send — check your connection and try again." };
+    }
   }, {});
 
   const left = MAX - text.length;
@@ -36,9 +41,11 @@ export function MessageForm({ conversationId }: { conversationId: string }) {
           rows={2}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          // Enter sends; Shift+Enter makes a new line.
+          // On a computer, Enter sends and Shift+Enter makes a new line.
+          // On phones (touch screens), Enter is just a new line.
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+            const touch = window.matchMedia("(pointer: coarse)").matches;
+            if (!touch && e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
               e.preventDefault();
               if (text.trim() && !pending) e.currentTarget.form?.requestSubmit();
             }
@@ -57,7 +64,7 @@ export function MessageForm({ conversationId }: { conversationId: string }) {
             {state.error}
           </p>
         ) : (
-          <span className="text-muted-foreground">Enter to send · Shift+Enter for a new line</span>
+          <span className="hidden text-muted-foreground md:inline">Enter to send · Shift+Enter for a new line</span>
         )}
         <span className={left < 50 ? "text-destructive" : "text-muted-foreground"}>{left}</span>
       </div>

@@ -54,6 +54,8 @@ export async function sendMessage(_prev: SendState, formData: FormData): Promise
 
   if (error) {
     console.error("Send a message: insert failed", error.code, error.message);
+    // P0001 = a message we wrote ourselves in SQL (e.g. the send limit).
+    if (error.code === "P0001") return { error: error.message };
     if (error.code === "42501") return { error: "You can't send messages in this conversation." };
     return { error: "Your message didn't send. Please try again." };
   }
