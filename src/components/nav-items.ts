@@ -18,7 +18,6 @@ export function navFor(account: Account, { subscriptionPreview = false } = {}): 
   if (account.role === "tutor") {
     return [
       { href: "/dashboard/tutor", label: "Dashboard", icon: "dashboard" },
-      { href: "/tutors", label: "Find a Tutor", icon: "search" },
       { href: "/help-requests", label: "Find Help Requests", icon: "help" },
       { href: "/sessions", label: "My Sessions", icon: "sessions" },
       { href: "/messages", label: "Messages", icon: "chat" },
