@@ -12,6 +12,27 @@ const nextConfig: NextConfig = {
   //
   // Turn them back on later if you want them, and read:
   // https://nextjs.org/docs/messages/blocking-prerender-dynamic
+  // Standard protective headers on every page:
+  // - no other site can show TutorMatch inside a frame (stops
+  //   "clickjacking" — tricking someone into clicking a hidden page)
+  // - browsers must not guess file types
+  // - other sites don't get our full page addresses
+  // - the camera, microphone and location are switched off
+  // (Vercel adds HTTPS-only — HSTS — itself.)
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+    ];
+  },
   turbopack: {
     rules: {
       "*.css": {

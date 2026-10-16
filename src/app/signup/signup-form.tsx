@@ -69,8 +69,8 @@ export function SignupForm({ defaultRole, next }: { defaultRole: string; next: s
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" required minLength={6} autoComplete="new-password" />
-          <p className="text-xs text-muted-foreground">At least 6 characters.</p>
+          <Input id="password" name="password" type="password" required minLength={8} autoComplete="new-password" />
+          <p className="text-xs text-muted-foreground">At least 8 characters.</p>
         </div>
       </Fragment>
 

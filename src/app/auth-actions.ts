@@ -43,7 +43,7 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
   if (!displayName) return { error: "Please enter your name." };
   if (displayName.length > 80) return { error: "Please use a shorter name (80 characters max)." };
   if (!email) return { error: "Please enter your email." };
-  if (password.length < 6) return { error: "Your password needs at least 6 characters." };
+  if (password.length < 8) return { error: "Your password needs at least 8 characters." };
   if (role !== "learner" && role !== "tutor") return { error: "Choose whether you are a Learner or a Tutor." };
   if (!(level in LEVELS)) return { error: "Choose High School or College." };
 
